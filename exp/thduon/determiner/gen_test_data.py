@@ -1,3 +1,5 @@
+from classifier_data import ClassifierData
+
 params = { 'num_words_before': 5,
 					 'num_words_after': 5,
 					 'embedding_size': 300,
@@ -8,3 +10,5 @@ params = { 'num_words_before': 5,
 					 'mini_batches_between_checkpoint': 100,
 					 'monolingual_dir': '/mnt/work/1-billion-word-language-modeling-benchmark'
 					 }
+test_data = ClassifierData.get_monolingual_test(params=params)
+print(test_data.next_batch(batch_size=16))

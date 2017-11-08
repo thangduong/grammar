@@ -1,14 +1,19 @@
 import os
 import random
 import framework.utils.common as utils
+import math
 
-def gen_data(tokens, keywords, num_before=5, num_after=5, pad_tok="<pad>"):
+def gen_data(tokens, keywords,
+						 num_before=5, num_after=5,
+						 pad_tok="<pad>", null_sample_factor=0):
 	tokens = [pad_tok] * num_before + tokens + [pad_tok]*num_after
 	n0 = []
 	n1 = []
+	if null_sample_factor < 0:
+		null_sample_factor = 1/len(keywords)
 	for toki, tok in enumerate(tokens):
-		if tok in keywords:
-			idx = keywords.index(tok)
+		if tok.lower() in keywords:
+			idx = keywords.index(tok.lower())
 			before_idx = toki - num_before
 			after_idx = toki + num_after + 1
 			#yield [tokens[before_idx:toki] + tokens[toki+1:after_idx], idx + 1]
@@ -19,15 +24,15 @@ def gen_data(tokens, keywords, num_before=5, num_after=5, pad_tok="<pad>"):
 			n0.append(tokens[before_idx:toki] + tokens[toki:after_idx])
 			#yield [tokens[before_idx:toki] + tokens[toki+1:after_idx], 0]
 	if len(n1) > 0:
-		n0 = random.sample(n0, math.ceil(len(n1)/3))
+		if null_sample_factor > 0:
+			n0 = random.sample(n0, math.ceil(len(n1)*null_sample_factor))
+#		n0 = random.sample(n0, math.ceil(len(n1)))
 		n = []
 		n += [[x,0] for x in n0]
 		n += [[x,y] for x,y in n1]
 		random.shuffle(n)
 		for x in n:
 			yield x
-
-
 
 def gen_data_from_file(filename, keywords=[','], num_before=5, num_after=5, pad_tok="<pad>"):
 	with open(filename) as f:
@@ -41,7 +46,7 @@ class ClassifierData:
 		self._file_list = file_list
 		self._cur_list = []
 		self._next_file = 0
-		self._keywords = [',']
+		self._keywords = utils.get_dict_value(params, 'keywords', [])
 		self._num_before = utils.get_dict_value(params, 'num_words_before', 5)
 		self._num_after = utils.get_dict_value(params, 'num_words_after', 5)
 		self.load_next_file()
@@ -50,6 +55,7 @@ class ClassifierData:
 		self._current_index = 0
 
 	def load_next_file(self):
+		print(self._file_list[self._next_file])
 		self._cur_list = gen_data_from_file(self._file_list[self._next_file],
 																				self._keywords,
 																				self._num_before,
