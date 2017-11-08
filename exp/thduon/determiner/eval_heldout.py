@@ -27,6 +27,7 @@ params = { 'num_words_before': 10,
 					 'mini_batches_between_checkpoint': 100,
 					 'monolingual_dir': '/mnt/work/1-billion-word-language-modeling-benchmark'
 					 }
+
 test_data = ClassifierData.get_monolingual_test(params=params)
 alist = []
 for cur_batch in range(10):

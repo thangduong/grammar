@@ -34,12 +34,14 @@ def gen_data(tokens, keywords,
 		for x in n:
 			yield x
 
-def gen_data_from_file(filename, keywords=[','], num_before=5, num_after=5, pad_tok="<pad>"):
+def gen_data_from_file(filename, keywords=[','], num_before=5, num_after=5, pad_tok="<pad>", null_sample_factor=0):
 	with open(filename) as f:
 		for line in f:
 			line = line.rstrip().lstrip()
 			tokens = line.split()
-			yield from gen_data(tokens, keywords=keywords, num_before=num_before, num_after=num_after, pad_tok=pad_tok)
+			yield from gen_data(tokens, keywords=keywords,
+													num_before=num_before, num_after=num_after,
+													pad_tok=pad_tok, null_sample_factor=null_sample_factor)
 
 class ClassifierData:
 	def __init__(self, file_list, indexer=None, params=None):
@@ -53,6 +55,7 @@ class ClassifierData:
 		self._indexer = indexer
 		self._current_epoch = 0
 		self._current_index = 0
+		self._num_minibatches = 0
 
 	def load_next_file(self):
 		print(self._file_list[self._next_file])
@@ -62,6 +65,8 @@ class ClassifierData:
 																				self._num_after)
 		self._next_file += 1
 		self._next_file %= len(self._file_list)
+		if self._next_file == 0:
+			self._current_epoch += 1
 
 	def next_batch(self, batch_size=2, params=None):
 		batch_x = []
@@ -81,6 +86,7 @@ class ClassifierData:
 			except Exception as e:
 				raise
 				# no more records
+		self._num_minibatches += 1
 		return {'sentence':batch_x, 'y': batch_y}
 
 	def current_epoch(self):
