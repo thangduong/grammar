@@ -16,22 +16,25 @@ e = Evaluator.load2(ckpt)
 i = TextIndexer.from_file(vocab_file)
 
 test_data = ClassifierData.get_monolingual_test(params=params)
-batch = test_data.next_batch(batch_size=200000)
-
 model_results = []
+
+
 f = open('heldout.txt', 'w')
 f.write('Exec Time\tModel Score\tGround Truth\tSentence\n')
-for sentence, ground_truth in zip(batch['sentence'], batch['y']):
-	_, indexed, _, _ = i.index_wordlist(sentence)
-	before_time = time()
-	r = e.eval({'sentence': [indexed]}, {'sm_decision'})
-	after_time = time()
-	model_score = r[0][0][1]
-	model_results.append([indexed, model_score, ground_truth])
-	f.write('%0.8f\t%0.8f\t%s\t%s\n'%(after_time-before_time,model_score,ground_truth,sentence))
+for batch_no in range(1):
+	print("WORKING ON BATCH %s" % batch_no)
+	batch = test_data.next_batch(batch_size=50000)
+	for sentence, ground_truth in zip(batch['sentence'], batch['y']):
+		_, indexed, _, _ = i.index_wordlist(sentence)
+		before_time = time()
+		r = e.eval({'sentence': [indexed]}, {'sm_decision'})
+		after_time = time()
+		model_score = r[0][0][1]
+		model_results.append([indexed, model_score, ground_truth])
+		f.write('%0.8f\t%0.8f\t%s\t%s\n'%(after_time-before_time,model_score,ground_truth,sentence))
 f.close()
 
-for thres in np.linspace(0,1,50):
+for thres in np.linspace(0,1,100):
 	tp = 0
 	fp = 0
 	tn = 0
