@@ -18,17 +18,18 @@ def sentence_encoder(emb_sentence, params, name='encoded_sentence'):
 	bipass_conv = utils.get_dict_value(params, 'bipass_conv', False)
 	mlp_activations = utils.get_dict_value(params, 'mlp_activations', 'sigmoid')
 	mlp_dropout_keep_probs = utils.get_dict_value(params, 'mlp_keep_probs', 0.9)
+	use_no_conv_path = utils.get_dict_value(params, 'use_no_conv_path', False)
 	if bipass_conv:
 		conv_group = [emb_sentence]
 	else:
-		conv_group = []
+		if use_no_conv_path:
+			conv_group = [emb_sentence]
+		else:
+			conv_group = []
 		for i, (conv_num_feature, conv_width) in enumerate(zip(conv_num_features, conv_widths)):
-			conv_out = nlp.conv1d_array(emb_sentence, conv_num_feature, conv_width,name='conv%s'%(str(i)))#, keep_probs=conv_keep_probs)
-# keep_probs=0.5, w_wds=0,
+			conv_out = nlp.conv1d_array(emb_sentence, conv_num_feature, conv_width,name='conv%s'%(str(i)), w_wds=0.000, b_wds=0.000, keep_probs=conv_keep_probs)
 			conv_group.append(conv_out)
-#		print(conv_group)
 	conv_out, _ = misc.concat(conv_group)
-#		print(conv_out)
 	mlp_out, _ = mlp.fully_connected_network(conv_out, mlp_config, layer_activations=mlp_activations, dropout_keep_probs=mlp_dropout_keep_probs)
 	return [tf.identity(mlp_out[0], name=name)], {}
 
@@ -40,7 +41,7 @@ def inference(params):
 	embedding_wd = utils.get_dict_value(params, 'embedding_wd', 0.0)
 	embedding_device = utils.get_dict_value(params, 'embedding_device', None)
 	embedding_initializer = utils.get_dict_value(params, 'embedding_initializer', None)
-
+	print("USING EMBEDDING DEVICE %s" %embedding_device)
 	if embedding_device is not None:
 		with tf.device(embedding_device):
 			embedding_matrix = nlp.variable_with_weight_decay('embedding_matrix',

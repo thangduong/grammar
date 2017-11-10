@@ -6,14 +6,17 @@ from framework.trainer import Trainer
 from time import time
 import model
 import os
+import shutil
 
-params = utils.load_param_file('params.py')
+param_file = 'params.py'
+params = utils.load_param_file(param_file)
 params['num_classes'] = len(params['keywords'])+1
 indexer = TextIndexer.from_txt_file(utils.get_dict_value(params, 'vocab_file'))
 indexer.add_token('<pad>')
 indexer.add_token('unk')
 os.makedirs(utils.get_dict_value(params,'output_location'), exist_ok=True)
 indexer.save_vocab_as_pkl(os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl'))
+shutil.copyfile(param_file,os.path.join(utils.get_dict_value(params,'output_location'), param_file))
 
 params['vocab_size'] = indexer.vocab_size()
 training_data = ClassifierData.get_monolingual_training(base_dir=params['monolingual_dir'],

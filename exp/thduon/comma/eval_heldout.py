@@ -18,12 +18,13 @@ i = TextIndexer.from_file(vocab_file)
 test_data = ClassifierData.get_monolingual_test(params=params)
 model_results = []
 
-
-f = open('heldout.txt', 'w')
+timestr = str(int(time()))
+f = open(os.path.join(utils.get_dict_value(params,'output_location'),
+											'heldout_%s.txt'%timestr), 'w')
 f.write('Exec Time\tModel Score\tGround Truth\tSentence\n')
 for batch_no in range(1):
 	print("WORKING ON BATCH %s" % batch_no)
-	batch = test_data.next_batch(batch_size=50000)
+	batch = test_data.next_batch(batch_size=10000)
 	for sentence, ground_truth in zip(batch['sentence'], batch['y']):
 		_, indexed, _, _ = i.index_wordlist(sentence)
 		before_time = time()
@@ -34,6 +35,8 @@ for batch_no in range(1):
 		f.write('%0.8f\t%0.8f\t%s\t%s\n'%(after_time-before_time,model_score,ground_truth,sentence))
 f.close()
 
+f = open(os.path.join(utils.get_dict_value(params,'output_location'),
+											timestr + ".txt"), 'w')
 for thres in np.linspace(0,1,100):
 	tp = 0
 	fp = 0
@@ -62,5 +65,8 @@ for thres in np.linspace(0,1,100):
 	recall = tp / nr
 #	print("precision: %s"%precision)
 #	print("recall: %s"%recall)
-	print('%s,%s,%s'%(thres,precision,recall))
+	msg = ('%s,%s,%s'%(thres,precision,recall))
+	f.write('%s\n'%msg)
+	print(msg)
 
+f.close()
