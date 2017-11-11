@@ -80,7 +80,7 @@ def conv2d_array(input, sizes, widths, heights, keep_probs=None, w_wds=0.005, b_
 def conv1d_array(input, sizes, widths, keep_probs=None, w_wds=0.005, b_wds=0.000,
                w_initializers=tf.truncated_normal_initializer(stddev=0.05),
                b_initializers=tf.truncated_normal_initializer(stddev=0.05),
-               name="conv2d_array",
+               name="conv1d_array",
                vlistin = None, vlistout = None):
   w_wd_list = expand_list(w_wds, sizes)
   b_wd_list = expand_list(b_wds, sizes)
@@ -88,7 +88,7 @@ def conv1d_array(input, sizes, widths, keep_probs=None, w_wds=0.005, b_wds=0.000
   w_initializer_list = expand_list(w_initializers, sizes)
   b_initializer_list = expand_list(b_initializers, sizes)
   input_size = input.get_shape().as_list()[-1]
-  print('embedding_dimension = ' + str(input_size))
+  print('conv1d_array: embedding_dimension = ' + str(input_size))
   out = input
   with tf.variable_scope(name):
     for i, (width, size, w_wd, b_wd, keep_prob, w_initializer, b_initializer) in enumerate(
@@ -109,4 +109,37 @@ def conv1d_array(input, sizes, widths, keep_probs=None, w_wds=0.005, b_wds=0.000
           [out],_ = core.dropout([out], keep_prob)
         input_size = size
         input = out
+  return out
+
+def conv1d(input, sizes, widths, keep_probs=None, w_wds=0.005, b_wds=0.000,
+               w_initializers=tf.truncated_normal_initializer(stddev=0.05),
+               b_initializers=tf.truncated_normal_initializer(stddev=0.05),
+               name="conv1d",
+               vlistin = None, vlistout = None):
+  w_wd_list = expand_list(w_wds, sizes)
+  b_wd_list = expand_list(b_wds, sizes)
+  keep_prob_list = expand_list(keep_probs, sizes)
+  w_initializer_list = expand_list(w_initializers, sizes)
+  b_initializer_list = expand_list(b_initializers, sizes)
+  input_size = input.get_shape().as_list()[-1]
+  print('conv1d: embedding_dimension = ' + str(input_size))
+  outlist = []
+  with tf.variable_scope(name):
+    for i, (width, size, w_wd, b_wd, keep_prob, w_initializer, b_initializer) in enumerate(
+            zip(widths, sizes, w_wd_list, b_wd_list, keep_prob_list, w_initializer_list, b_initializer_list)):
+      with tf.variable_scope('conv%s' % str(i)) as scope:
+        w = variable_with_weight_decay('w', [width, input_size, size],
+                                       initializer=w_initializer, wd=w_wd,vlist=vlistin)
+        if vlistout is not None:
+          vlistout.append(w)
+        b = variable_with_weight_decay('b', [size],
+                                       initializer=b_initializer, wd=b_wd,vlist=vlistin)
+        if vlistout is not None:
+          vlistout.append(b)
+        w_out = tf.nn.conv1d(input, w, 1, 'SAME')
+        b_out = tf.nn.bias_add(w_out, b)
+        out = tf.nn.relu(b_out)
+        if keep_prob is not None:
+          [out],_ = core.dropout([out], keep_prob)
+        out.append(out)
   return out
