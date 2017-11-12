@@ -11,6 +11,8 @@ import framework.utils.common as common_utils
 import logging
 import framework.evaluator
 import framework.utils.common as utils
+from time import time
+import collections
 
 LEARNING_RATE_PARAM_NAME = 'learning_rate'
 DEFAULT_LEARNING_RATE = 0.001
@@ -142,6 +144,9 @@ class Trainer(object):
         @return:
          None
         """
+        self._params['stats'] = {'next_batch_time_list': collections.deque(maxlen=10),
+                                 'training_time_list': collections.deque(maxlen=10),
+                                 'overhead_time_list': collections.deque(maxlen=10) }
 
         with self._graph.as_default():
             # save the inference and training network, too
@@ -186,13 +191,23 @@ class Trainer(object):
                 training_done = False
                 starting_epochs = self._training_data.current_epoch()
                 first_batch = None
+                time_after = time()
                 while not training_done:
+                    time_before = time()
+                    overhead_time = time_before - time_after
                     data_batch = self._training_data.next_batch(self._batch_size)
+                    time_after = time()
+                    next_batch_time = time_after - time_before
+
                     if first_batch is None:
                         first_batch = data_batch
 
+                    time_before = time()
                     training_done, loss_value, run_results = self._train_iteration(self._session, data_map, self._network_output_nodes, self._loss_nodes,
                                                                       self._optimizer_nodes, data_batch, additional_nodes_to_evaluate)
+                    time_after = time()
+                    training_time = time_after - time_before
+
                     iteration_count += 1
 
                     if (mini_batches_between_sanity_check is not None) and (0 == (iteration_count-1)%mini_batches_between_sanity_check):
@@ -216,7 +231,13 @@ class Trainer(object):
 
                     # call the train_iteration_done event handler
                     if self._train_iteration_done:
-                        training_done = self._train_iteration_done(self, self._training_data.current_epoch(), self._training_data.current_index(), iteration_count, loss_value, training_done, run_results, params=self._params)
+                        self._params['stats']['next_batch_time_list'].append(next_batch_time)
+                        self._params['stats']['training_time_list'].append(training_time)
+                        self._params['stats']['overhead_time_list'].append(overhead_time)
+                        training_done = self._train_iteration_done(self, self._training_data.current_epoch(),
+                                                                   self._training_data.current_index(), iteration_count,
+                                                                   loss_value, training_done, run_results,
+                                                                   params=self._params)
 
                     # save check point
                     if save_ckpt and (training_done or (0 == ((iteration_count - 1) % mini_batches_between_checkpoint))):
