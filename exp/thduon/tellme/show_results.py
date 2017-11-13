@@ -40,7 +40,8 @@ def main(argv):
 	ax.grid()
 
 	fig.savefig("test.png")
-	plt.ylim((.70,.78))
+	plt.ylim((.75,.78))
+	#plt.ylim((.75,1))
 	plt.show()
 #	print(data[1])
 
