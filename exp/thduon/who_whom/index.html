@@ -18,6 +18,9 @@
             decodeText();
         }
     }
+    function changeSentenceValue2(div) {
+	document.getElementById("sentence").value = div.innerText;
+    }
     </script>
 </head>
 
@@ -30,9 +33,20 @@ Input: <div id="input_sentence"></div>
 <br>
 Output: <div id="output_sentence"></div>
 <br>
-   <input id="sentence" onkeypress="return onEnterPressed(event)" size="200" value="In this work we presented the Transformer, the first sequence transduction model based entirely on attention replacing the recurrent layers most commonly used in encoder-decoder architectures with multi-headed self-attention" />
+   <input id="sentence" onkeypress="return onEnterPressed(event)" size="200" value="For ___ the bell tolls" />
 <br>
 <input value="Submit" type="button" onclick="decodeText()" />
+<br>
+<br>
+Some sample sentences to try (click and hit submit):
+<br>
+<br>
+<div font-color="blue" onclick="changeSentenceValue2(this)"> The money was handed to Wilkerson by a cooperating witness ___ the senator allegedly promised to help obtain the liquor license . </div>
+<div font-color="blue" onclick="changeSentenceValue2(this)"> To ___ it may concern </div>
+<div font-color="blue" onclick="changeSentenceValue2(this)"> He was being watched by millions of Kenyans on television, to ___ he paid tribute for their patience . </div>
+<div font-color="blue" onclick="changeSentenceValue2(this)"> ___ let the dogs out ? </div>
+<div font-color="blue" onclick="changeSentenceValue2(this)"> You have shrivelled and shrunk within yourself and you may need some help to come out of this sad shell ___ can only bathe in the dark . </div>
+
 </body>
 
 </html>
