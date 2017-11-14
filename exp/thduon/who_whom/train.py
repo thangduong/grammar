@@ -10,7 +10,10 @@ import shutil
 
 param_file = 'params.py'
 params = utils.load_param_file(param_file)
-params['num_classes'] = len(params['keywords'])+1
+if utils.get_dict_value(params, 'ignore_negative_data', False):
+	params['num_classes'] = len(params['keywords'])+1
+else:
+	params['num_classes'] = len(params['keywords'])
 indexer = TextIndexer.from_txt_file(utils.get_dict_value(params, 'vocab_file'))
 indexer.add_token('<pad>')
 indexer.add_token('unk')

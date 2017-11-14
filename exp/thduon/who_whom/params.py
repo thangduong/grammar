@@ -1,15 +1,17 @@
 import os
 
 
-model_name = 'commav0_10_10_3'
+model_name = 'whowhomV1'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
-					 'num_words_before': 10,
-					 'num_words_after': 10,
+					 'num_words_before': 20,
+					 'num_words_after': 20,
 					 'embedding_size': 500,
-					 'conv_num_features': [[200, 200, 200], [200]],
-					 'conv_widths': [[2, 3, 4], [3]],
+					 'conv_num_features': [[300, 300, 300, 300]],
+					 'conv_widths': [[2, 2, 2, 2]],
+					 'add_redundant_keyword_data': False,
+					 'ignore_negative_data': True,
 					 'conv_keep_probs': None,
 					 'use_no_conv_path': True,                       # enable embedding pass through to second stage
 					 'mlp_config': [512],
@@ -19,7 +21,7 @@ params = { 'model_name': model_name,
 					 'embedding_device': '/cpu:0',
 					 'batch_size': 8192,
 					 'learning_rate': 0.001,
-					 'keywords': [','],
+					 'keywords': ['who', 'whom'],
 					 'mini_batches_between_checkpoint': 100,
 					 'embedding_wd': 0.0001,                           # L2 WD regularization constant
 					 'enable_regularization': True,

@@ -19,7 +19,6 @@ def gen_data(tokens, keywords,
 						 pad_tok="<pad>", null_sample_factor=0,
 						 add_redundant_keyword_data=True,
 						 use_negative_only_data=True,
-						 ignore_negative_data=False,
 						 add_keyword_removal_data=False):
 	# assume incoming tokens constitute a correct sentences
 	tokens = [pad_tok] * num_before + tokens + [pad_tok]*num_after
@@ -30,18 +29,15 @@ def gen_data(tokens, keywords,
 	if null_sample_factor < 0:
 		null_sample_factor = 1/len(keywords)
 	#print(tokens)
-	class_offset = 1
-	if ignore_negative_data:
-		class_offset = 0
 	for toki, tok in enumerate(tokens):
 		if tok.lower() in keywords:
 			idx = keywords.index(tok.lower())
 			before_idx = toki - num_before
 			after_idx = toki + num_after + 1
 			#yield [tokens[before_idx:toki] + tokens[toki+1:after_idx], idx + 1]
-			n1.append([tokens[before_idx:toki] + tokens[toki+1:after_idx], idx + class_offset])#tokens[before_idx:toki] + tokens[toki+1:after_idx])
+			n1.append([tokens[before_idx:toki] + tokens[toki+1:after_idx], idx + 1])#tokens[before_idx:toki] + tokens[toki+1:after_idx])
 			n2.append(tokens[(before_idx+1):after_idx])
-		elif toki > num_before and toki < len(tokens)-num_after and not ignore_negative_data:
+		elif toki > num_before and toki < len(tokens)-num_after:
 			before_idx = toki - num_before
 			after_idx = toki + num_after
 			n0.append(tokens[before_idx:toki] + tokens[toki:after_idx])
@@ -49,12 +45,9 @@ def gen_data(tokens, keywords,
 			for keyword in keywords:
 				n3.append(tokens[before_idx:toki] + [keyword] + tokens[toki:after_idx-1])
 	if len(n1) > 0:
-		if ignore_negative_data:
-			n0 = []
-		else:
-			if null_sample_factor > 0:
-				n0 = random.sample(n0, math.ceil(len(n1)*null_sample_factor))
-	#		n0 = random.sample(n0, math.ceil(len(n1)))
+		if null_sample_factor > 0:
+			n0 = random.sample(n0, math.ceil(len(n1)*null_sample_factor))
+#		n0 = random.sample(n0, math.ceil(len(n1)))
 		n = []
 		n += [[x,0] for x in n0]
 		n += [[x,y] for x,y in n1]
@@ -64,7 +57,7 @@ def gen_data(tokens, keywords,
 		for x in n:
 			#print(x)
 			yield x
-	elif use_negative_only_data and not ignore_negative_data:
+	elif use_negative_only_data:
 		n = []
 		n += [[x,0] for x in n0]
 		if add_redundant_keyword_data:
@@ -75,21 +68,14 @@ def gen_data(tokens, keywords,
 			yield x
 
 
-def gen_data_from_file(filename, keywords=[','], num_before=5, num_after=5,
-											 pad_tok="<pad>", null_sample_factor=0,
-											 use_negative_only_data=True,
-											 add_redundant_keyword_data=True,
-											 ignore_negative_data=False):
+def gen_data_from_file(filename, keywords=[','], num_before=5, num_after=5, pad_tok="<pad>", null_sample_factor=0):
 	with open(filename) as f:
 		for line in f:
 			line = line.rstrip().lstrip()
 			tokens = line.split()
 			yield from gen_data(tokens, keywords=keywords,
 													num_before=num_before, num_after=num_after,
-													pad_tok=pad_tok, null_sample_factor=null_sample_factor,
-													add_redundant_keyword_data=add_redundant_keyword_data,
-													use_negative_only_data=use_negative_only_data,
-													ignore_negative_data=ignore_negative_data)
+													pad_tok=pad_tok, null_sample_factor=null_sample_factor)
 
 class ClassifierData:
 	def __init__(self, file_list, indexer=None, params=None):
@@ -100,9 +86,6 @@ class ClassifierData:
 		self._num_before = utils.get_dict_value(params, 'num_words_before', 5)
 		self._num_after = utils.get_dict_value(params, 'num_words_after', 5)
 		self._null_sample_factor = utils.get_dict_value(params, 'null_sample_factor', 0)
-		self._ignore_negative_data = utils.get_dict_value(params, 'ignore_negative_data', False)
-		self._use_negative_only_data = utils.get_dict_value(params, 'use_negative_only_data', True)
-		self._add_redundant_keyword_data = utils.get_dict_value(params, 'add_redundant_keyword_data', True)
 		self.load_next_file()
 		self._indexer = indexer
 		self._current_epoch = 0
@@ -115,10 +98,7 @@ class ClassifierData:
 																				keywords=self._keywords,
 																				num_before=self._num_before,
 																				num_after=self._num_after,
-																				null_sample_factor=self._null_sample_factor,
-																				ignore_negative_data=self._ignore_negative_data,
-																				add_redundant_keyword_data=self._add_redundant_keyword_data,
-																				use_negative_only_data=self._use_negative_only_data)
+																				null_sample_factor=self._null_sample_factor)
 		self._next_file += 1
 		self._next_file %= len(self._file_list)
 		if self._next_file == 0:
@@ -143,8 +123,7 @@ class ClassifierData:
 				raise
 				# no more records
 		self._num_minibatches += 1
-		result = {'sentence':batch_x, 'y': batch_y}
-		return result
+		return {'sentence':batch_x, 'y': batch_y}
 
 	def current_epoch(self):
 		return self._current_epoch
@@ -171,7 +150,7 @@ class ClassifierData:
 #for x in result:
 #	print(x)
 if __name__ == "__main__":
-	x = "We went to the store , and I bought some fruits".split()
+	x = "We went to the store and I bought some fruits".split()
 	print(x)
 	y = gen_data(x, [','])
 	for yy in y:

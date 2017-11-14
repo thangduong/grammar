@@ -445,22 +445,27 @@ class Trainer(object):
 
 def _default_train_iteration_done(trainer, epoch, index, iteration_count,
 								  loss_value, training_done, run_results, params):
-    stats = params['stats']
-    next_batch_time = np.mean(stats['next_batch_time_list'])
-    training_time = np.mean(stats['training_time_list'])
-    overhead_time = np.mean(stats['overhead_time_list'])
 
-    if iteration_count == 1:
-        trainer._out_file = open(os.path.join(utils.get_dict_value(params, 'output_location'), 'training_log.txt'), 'w')
+	stats = params['stats']
+	next_batch_time = np.mean(stats['next_batch_time_list'])
+	training_time = np.mean(stats['training_time_list'])
+	overhead_time = np.mean(stats['overhead_time_list'])
 
-    msg = ("%02d, %04d, %s, %s, %0.4f, %0.5f, %0.5f, %0.5f, %0.4f, %0.4f, %0.4f" %
-           (epoch, iteration_count, time(), loss_value, next_batch_time,
-            training_time, overhead_time,
-            training_time / sum([next_batch_time, training_time, overhead_time]),
-            params['eval_results'][0],
-            params['eval_results'][1],
-            params['eval_results'][2]))
-    print('%s' % msg)
-    trainer._out_file.write('%s\n' % msg)
-    trainer._out_file.flush()
-    return False
+	if iteration_count == 1:
+			trainer._training_log_file = open(os.path.join(utils.get_dict_value(params, 'output_location'), 'training_log.txt'), 'w')
+
+
+	msg = ("%02d, %04d, %s, %s, %0.4f, %0.5f, %0.5f, %0.5f" %
+				 (epoch, iteration_count, time(), loss_value, next_batch_time,
+					training_time, overhead_time,
+					training_time / sum([next_batch_time, training_time, overhead_time])))
+	if "eval_results" in params:
+		msg += ("%0.4f, %0.4f, %0.4f"%
+					params['eval_results'][0],
+					params['eval_results'][1],
+					params['eval_results'][2])
+
+	print('%s' % msg)
+	trainer._training_log_file.write('%s\n' % msg)
+	trainer._training_log_file.flush()
+	return False

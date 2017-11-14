@@ -21,10 +21,12 @@ model_results = []
 timestr = str(int(time()))
 f = open(os.path.join(utils.get_dict_value(params,'output_location'),
 											'heldout_%s.txt'%timestr), 'w')
+ferr = open(os.path.join(utils.get_dict_value(params,'output_location'),
+											'heldout_%s_err.txt'%timestr), 'w')
 f.write('Exec Time\tModel Score\tGround Truth\tSentence\n')
-for batch_no in range(10):
+for batch_no in range(4):
 	print("WORKING ON BATCH %s" % batch_no)
-	batch = test_data.next_batch(batch_size=10000)
+	batch = test_data.next_batch(batch_size=5000)
 	for sentence, ground_truth in zip(batch['sentence'], batch['y']):
 		_, indexed, _, _ = i.index_wordlist(sentence)
 		before_time = time()
@@ -32,8 +34,14 @@ for batch_no in range(10):
 		after_time = time()
 		model_score = r[0][0][1]
 		model_results.append([indexed, model_score, ground_truth])
+		if (model_score < .5 and ground_truth > .5) or \
+			(model_score > .5 and ground_truth < .5):
+			s1 = [x for x in sentence[0:20] if x!='<pad>']
+			s2 = [x for x in sentence[20:] if x!='<pad>']
+			ferr.write('%0.8f\t%0.8f\t%s\t%s\n'%(after_time-before_time,model_score,ground_truth,"%s ___ %s"%(' '.join(s1), ' '.join(s2))))
 		f.write('%0.8f\t%0.8f\t%s\t%s\n'%(after_time-before_time,model_score,ground_truth,sentence))
 f.close()
+ferr.close()
 
 f = open(os.path.join(utils.get_dict_value(params,'output_location'),
 											timestr + ".txt"), 'w')
