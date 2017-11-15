@@ -79,11 +79,14 @@ def gen_data_from_file(filename, keywords=[','], num_before=5, num_after=5,
 											 pad_tok="<pad>", null_sample_factor=0,
 											 use_negative_only_data=True,
 											 add_redundant_keyword_data=True,
+											 start_token=None,
 											 ignore_negative_data=False):
 	with open(filename) as f:
 		for line in f:
 			line = line.rstrip().lstrip()
 			tokens = line.split()
+			if start_token is not None and len(start_token)>0:
+				tokens = [start_token] + tokens
 			yield from gen_data(tokens, keywords=keywords,
 													num_before=num_before, num_after=num_after,
 													pad_tok=pad_tok, null_sample_factor=null_sample_factor,
@@ -103,6 +106,7 @@ class ClassifierData:
 		self._ignore_negative_data = utils.get_dict_value(params, 'ignore_negative_data', False)
 		self._use_negative_only_data = utils.get_dict_value(params, 'use_negative_only_data', True)
 		self._add_redundant_keyword_data = utils.get_dict_value(params, 'add_redundant_keyword_data', True)
+		self._start_token = utils.get_dict_value(params, 'start_token', None)
 		self.load_next_file()
 		self._indexer = indexer
 		self._current_epoch = 0
@@ -118,7 +122,8 @@ class ClassifierData:
 																				null_sample_factor=self._null_sample_factor,
 																				ignore_negative_data=self._ignore_negative_data,
 																				add_redundant_keyword_data=self._add_redundant_keyword_data,
-																				use_negative_only_data=self._use_negative_only_data)
+																				use_negative_only_data=self._use_negative_only_data,
+																				start_token=self._start_token)
 		self._next_file += 1
 		self._next_file %= len(self._file_list)
 		if self._next_file == 0:

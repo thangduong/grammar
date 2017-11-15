@@ -70,7 +70,7 @@ def conv2d_array(input, sizes, widths, heights, keep_probs=None, w_wds=0.005, b_
         w_out = tf.nn.conv2d(input, filter=w, strides=[1,1,1,1], padding='SAME')
         b_out = tf.nn.bias_add(w_out, b)
         out = tf.nn.relu(b_out)
-        if keep_prob is not None:
+        if keep_prob is not None and keep_prob < 1.0:
           [out], _ = core.dropout([out], keep_prob)
         input_size = size
         input = out
@@ -105,7 +105,7 @@ def conv1d_array(input, sizes, widths, keep_probs=None, w_wds=0.005, b_wds=0.000
         w_out = tf.nn.conv1d(input, w, 1, 'SAME')
         b_out = tf.nn.bias_add(w_out, b)
         out = tf.nn.relu(b_out)
-        if keep_prob is not None:
+        if keep_prob is not None and keep_prob < 1.0:
           [out],_ = core.dropout([out], keep_prob)
         input_size = size
         input = out
@@ -139,7 +139,7 @@ def conv1d(input, sizes, widths, keep_probs=None, w_wds=0.005, b_wds=0.000,
         w_out = tf.nn.conv1d(input, w, 1, 'SAME')
         b_out = tf.nn.bias_add(w_out, b)
         out = tf.nn.relu(b_out)
-        if keep_prob is not None:
+        if keep_prob is not None and keep_prob < 1.0:
           [out],_ = core.dropout([out], keep_prob)
         out.append(out)
   return out

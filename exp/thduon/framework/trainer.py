@@ -27,6 +27,34 @@ default_params = {
   IS_TRAINING_PLACEHOLDER_NAME: DEFAULT_LEARNING_RATE
 }
 
+
+def _default_train_iteration_done(trainer, epoch, index, iteration_count,
+								  loss_value, training_done, run_results, params):
+
+	stats = params['stats']
+	next_batch_time = np.mean(stats['next_batch_time_list'])
+	training_time = np.mean(stats['training_time_list'])
+	overhead_time = np.mean(stats['overhead_time_list'])
+
+	if iteration_count == 1:
+			trainer._training_log_file = open(os.path.join(utils.get_dict_value(params, 'output_location'), 'training_log.txt'), 'w')
+
+
+	msg = ("%02d, %04d, %s, %s, %0.4f, %0.5f, %0.5f, %0.5f" %
+				 (epoch, iteration_count, time(), loss_value, next_batch_time,
+					training_time, overhead_time,
+					training_time / sum([next_batch_time, training_time, overhead_time])))
+	if "eval_results" in params:
+		msg += ("%0.4f, %0.4f, %0.4f"%
+					params['eval_results'][0],
+					params['eval_results'][1],
+					params['eval_results'][2])
+
+	print('%s' % msg)
+	trainer._training_log_file.write('%s\n' % msg)
+	trainer._training_log_file.flush()
+	return False
+
 class Trainer(object):
 	"""
 	A trainer class that takes 3 methods: inference, and train.
@@ -44,7 +72,7 @@ class Trainer(object):
 	def __init__(self, inference, training_data, loss=None,
 				 batch_size=128, data_map=None, name='model',
 				 model_output_location='/tmp', optimizer=None,
-				 train_iteration=None, train_iteration_done=None,
+				 train_iteration=None, train_iteration_done=_default_train_iteration_done,
 				 params=None):
 		"""
 		Constructor for the trainer class
@@ -441,31 +469,3 @@ class Trainer(object):
 		for node, result in zip(additional_nodes_to_evaluate, run_results[1:]):
 			results_map[node] = result
 		return False, loss_value, results_map
-
-
-def _default_train_iteration_done(trainer, epoch, index, iteration_count,
-								  loss_value, training_done, run_results, params):
-
-	stats = params['stats']
-	next_batch_time = np.mean(stats['next_batch_time_list'])
-	training_time = np.mean(stats['training_time_list'])
-	overhead_time = np.mean(stats['overhead_time_list'])
-
-	if iteration_count == 1:
-			trainer._training_log_file = open(os.path.join(utils.get_dict_value(params, 'output_location'), 'training_log.txt'), 'w')
-
-
-	msg = ("%02d, %04d, %s, %s, %0.4f, %0.5f, %0.5f, %0.5f" %
-				 (epoch, iteration_count, time(), loss_value, next_batch_time,
-					training_time, overhead_time,
-					training_time / sum([next_batch_time, training_time, overhead_time])))
-	if "eval_results" in params:
-		msg += ("%0.4f, %0.4f, %0.4f"%
-					params['eval_results'][0],
-					params['eval_results'][1],
-					params['eval_results'][2])
-
-	print('%s' % msg)
-	trainer._training_log_file.write('%s\n' % msg)
-	trainer._training_log_file.flush()
-	return False
