@@ -1,12 +1,13 @@
 import framework.utils.common as utils
 import matplotlib.pyplot as plt
 import numpy as np
+import math
 import csv
 import gflags
 import os
 import sys
 
-gflags.DEFINE_string('paramsfile', 'output/tellmeV5/params.py', 'parameter files')
+gflags.DEFINE_string('paramsfile', 'output/tellmeV8/params.py', 'parameter files')
 FLAGS = gflags.FLAGS
 
 def load_results(params):
@@ -39,10 +40,27 @@ def main(argv):
 				 title=params['model_name'])
 	ax.grid()
 
-	fig.savefig("test.png")
-	plt.ylim((.75,.78))
+	max_value = np.max(data[8])
+	plt.ylim((.75,math.ceil(max_value*10)/10))
 	#plt.ylim((.75,1))
-	plt.show()
+	fig.savefig("accuracy.png")
+	plt.show(block=False)
+
+	fig, ax = plt.subplots()
+	ax.plot([(x * 8192)/1000000 for x in data[1]], data[3])
+
+	ax.set(xlabel='Million Records Seen', ylabel='Loss',
+				 title=params['model_name'])
+	ax.grid()
+
+	min_value = np.min(data[3])
+	plt.ylim((math.floor(min_value*10)/10,1))
+	#plt.ylim((.75,1))
+	fig.savefig("loss.png")
+	plt.show(block=False)
+
+
+	input("Press enter to exit...")
 #	print(data[1])
 
 

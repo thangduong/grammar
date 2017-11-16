@@ -45,10 +45,10 @@ def _default_train_iteration_done(trainer, epoch, index, iteration_count,
 					training_time, overhead_time,
 					training_time / sum([next_batch_time, training_time, overhead_time])))
 	if "eval_results" in params:
-		msg += ("%0.4f, %0.4f, %0.4f"%
-					params['eval_results'][0],
+		msg += (", %0.4f, %0.4f, %0.4f"%
+					(params['eval_results'][0],
 					params['eval_results'][1],
-					params['eval_results'][2])
+					params['eval_results'][2]))
 
 	print('%s' % msg)
 	trainer._training_log_file.write('%s\n' % msg)
