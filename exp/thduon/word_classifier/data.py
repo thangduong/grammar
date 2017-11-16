@@ -5,11 +5,31 @@ import math
 
 def merge_tokens_for_text(tokens):
 	text = ''
-	punctuation = [',', '.', ';']
+	punctuation = [',', '.', ';', "'s", "n't", "/", ')', '(', '[', ']']
+	no_space_after_toks = ["/"]
 	loc = []
+	no_space_after = False
+	quotes = ['"', "'"]
+	quote_count = [0,0]
+	in_quote = False
 	for toki, tok in enumerate(tokens):
-		if len(text) > 0 and not tok in punctuation:
+		quote_tok = False
+		if text in quotes:
+			quote_tok = True
+			quote_count[quotes.index(text)] += 1
+			if (quote_count[quotes.index(text)]%2) == 1:
+				in_quote = True
+			else:
+				in_quote = False
+		if len(text) > 0 \
+				and (not tok in punctuation) \
+				and (not no_space_after) \
+				:
 			text += ' '
+		if tok in no_space_after_toks:
+			no_space_after = True
+		else:
+			no_space_after = False
 		loc.append(len(text))
 		text += tok
 	return text, loc
