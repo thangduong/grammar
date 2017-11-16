@@ -23,7 +23,7 @@ def eval(params):
 #	num_test_records = 0000 #22596471
 	for i in range(20):
 		batch = training_data.next_batch(batch_size=batch_size)
-		[r] = e.eval({'tcids_before': batch['tcids_before']}, {'sm_decision'})
+		[r] = e.eval(batch, {'sm_decision'})
 		ccorrect = 0
 		cincorrect = 0
 		for model, gt in zip(r, batch['y']):
