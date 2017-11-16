@@ -39,7 +39,7 @@ def dropout(in_nodes, keep_probs, name="dropout"):
         for in_node, keep_prob in zip(in_nodes, keep_probs):
 #            keep_prop_tensor = tf.cond(is_training, lambda: tf.constant(keep_prob), lambda: tf.constant(1.0))
 #            out_nodes.append(tf.nn.dropout(in_node, keep_prop_tensor))
-             out_nodes.append(tf.cond(is_training, lambda:tf.nn.dropout(in_node, keep_prob)), lambda:in_node)
+             out_nodes.append(tf.cond(is_training, lambda:tf.nn.dropout(in_node, keep_prob), lambda:in_node))
         return out_nodes, {}
 
 def rename_nodes(in_nodes, out_names):

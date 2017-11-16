@@ -3,7 +3,7 @@ import framework.subgraph.nlp as nlp
 import framework.utils.common as utils
 import framework.subgraph.mlp as mlp
 import framework.subgraph.misc as misc
-import numpy as np
+
 
 def sentence_encoder(emb_sentence, params, name='encoded_sentence'):
 	"""
@@ -51,11 +51,8 @@ def inference(params):
 		embedding_matrix = nlp.variable_with_weight_decay('embedding_matrix', [vocab_size, embedding_size],
 																											initializer=embedding_initializer, wd=embedding_wd)
 
-	timing_info = tf.placeholder(tf.float32, [None, sentence_len], 'timing_info')
-	input_sentence = tf.placeholder(tf.int32, [None, sentence_len], 'tcids_before')
+	input_sentence = tf.placeholder(tf.int32, [None, sentence_len], 'sentence')
 	emb_sentence = tf.nn.embedding_lookup(embedding_matrix, input_sentence, 'emb_sentence')
-	timing = tf.reshape(timing_info,np.asarray([-1,sentence_len,1]))
-	emb_sentence = tf.concat([emb_sentence, timing], axis=2)
 	enc_sentence, _ = sentence_encoder(emb_sentence, params)
 
 	return enc_sentence, None
