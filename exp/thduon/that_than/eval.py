@@ -32,7 +32,7 @@ def eval_candidates(candidates, evaluator, indexer, thres):
 	return locations
 
 
-params = utils.load_param_file('params.10_10.py')
+params = utils.load_param_file('params.py')
 
 vocab_file = os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl')
 ckpt = os.path.join(utils.get_dict_value(params,'output_location'),

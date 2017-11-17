@@ -1,7 +1,9 @@
 import os
 import numpy as np
+import framework.utils.common as utils
+
 class TellmeData:
-    def __init__(self, tellme_datadir='/mnt/work/tellme/data', datafiles = ['trn1.npy', 'trn2.npy']):
+    def __init__(self, tellme_datadir='/mnt/work/tellme/data', datafiles = ['trn1.npy', 'trn2.npy'], params = {}):
         self._tcid_count = 2
         ticid_mapfile = os.path.join(tellme_datadir, "tcid.map")
         with open(ticid_mapfile, "r") as f:
@@ -13,6 +15,7 @@ class TellmeData:
         self._data_chunks = []
         print("self._tcid_count = %s" % self._tcid_count)
         print("Loading data...")
+        self._separate_epochs = utils.get_dict_value(params, "separate_epochs", False)
         self._tcids_data = np.load(os.path.join(tellme_datadir, datafiles[0]))
         self._timing_info_data = np.load(os.path.join(tellme_datadir, datafiles[1]))
         print("done loading data!")
@@ -33,8 +36,8 @@ class TellmeData:
         tcids_before = np.empty((0,20))
         tcid_after = np.empty((0))
         timing_info = np.empty((0,20))
-        while (len(tcid_after) < batch_size):
-            end_idx = self._current_index + batch_size
+        while (len(tcid_after) < batch_size) and not ((len(tcid_after)>0) and self._separate_epochs):
+            end_idx = self._current_index + batch_size - len(tcid_after)
             if end_idx > len(self._tcids_data):
                 end_idx = len(self._tcids_data)
                 next_current_idx = 0
