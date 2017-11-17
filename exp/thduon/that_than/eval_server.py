@@ -12,7 +12,7 @@ run_server = True
 
 paramsfile = "params.py"
 data_base_dir = ""
-http_port = 8080
+http_port = 8082
 params = utils.load_param_file(paramsfile)
 
 vocab_file = os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl')
@@ -51,9 +51,9 @@ def score_text(text):
 		atime = time()
 		pr = x[0][0][1]
 		if pr > .5:
-			mid_word = "whom"
+			mid_word = params['keywords'][1]
 		else:
-			mid_word = "who"
+			mid_word = params['keywords'][0]
 		filled = (merge_sentence(sentence, num_before, num_after, "<u>"+mid_word+"</u>"))
 		filled_list.append((filled, pr, x[0][0], atime-btime))
 	return filled_list
