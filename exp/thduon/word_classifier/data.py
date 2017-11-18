@@ -34,7 +34,7 @@ def merge_tokens_for_text(tokens):
 		text += tok
 	return text, loc
 
-def gen_data(tokens, keywords,
+def _gen_data(tokens, keywords,
 						 num_before=5, num_after=5,
 						 pad_tok="<pad>", null_sample_factor=0,
 						 add_redundant_keyword_data=True,
@@ -60,7 +60,8 @@ def gen_data(tokens, keywords,
 			after_idx = toki + num_after + 1
 			#yield [tokens[before_idx:toki] + tokens[toki+1:after_idx], idx + 1]
 			n1.append([tokens[before_idx:toki] + tokens[toki+1:after_idx], idx + class_offset])#tokens[before_idx:toki] + tokens[toki+1:after_idx])
-			n2.append(tokens[(before_idx+1):after_idx])
+			n2.append(tokens[(before_idx + 1):after_idx])
+			n2.append(tokens[(before_idx):(after_idx-1)])
 		elif toki > num_before and toki < len(tokens)-num_after and not ignore_negative_data:
 			before_idx = toki - num_before
 			after_idx = toki + num_after
@@ -95,19 +96,20 @@ def gen_data(tokens, keywords,
 			yield x
 
 
-def gen_data_from_file(filename, keywords=[','], num_before=5, num_after=5,
+def _gen_data_from_file(filename, keywords=[','], num_before=5, num_after=5,
 											 pad_tok="<pad>", null_sample_factor=0,
 											 use_negative_only_data=True,
 											 add_redundant_keyword_data=True,
 											 start_token=None,
-											 ignore_negative_data=False):
+											 ignore_negative_data=False,
+											 gen_data_fcn = _gen_data):
 	with open(filename) as f:
 		for line in f:
 			line = line.rstrip().lstrip()
 			tokens = line.split()
 			if start_token is not None and len(start_token)>0:
 				tokens = [start_token] + tokens
-			yield from gen_data(tokens, keywords=keywords,
+			yield from gen_data_fcn(tokens, keywords=keywords,
 													num_before=num_before, num_after=num_after,
 													pad_tok=pad_tok, null_sample_factor=null_sample_factor,
 													add_redundant_keyword_data=add_redundant_keyword_data,
@@ -115,7 +117,11 @@ def gen_data_from_file(filename, keywords=[','], num_before=5, num_after=5,
 													ignore_negative_data=ignore_negative_data)
 
 class ClassifierData:
-	def __init__(self, file_list, indexer=None, params=None):
+	def __init__(self, file_list, indexer=None, params=None,
+							 gen_data_from_file_fcn = _gen_data_from_file,
+							 gen_data_fcn = _gen_data):
+		self._gen_data_from_file_fcn = gen_data_from_file_fcn
+		self._gen_data_fcn = gen_data_fcn
 		self._file_list = file_list
 		self._cur_list = []
 		self._next_file = 0
@@ -132,10 +138,13 @@ class ClassifierData:
 		self._current_epoch = 0
 		self._current_index = 0
 		self._num_minibatches = 0
+		self._dump_num_batches = 1
+		self._y_count = [0]*utils.get_dict_value(params,'num_classes',2)
+		self._count_y = True
 
 	def load_next_file(self):
 		print(self._file_list[self._next_file])
-		self._cur_list = gen_data_from_file(self._file_list[self._next_file],
+		self._cur_list = self._gen_data_from_file_fcn(self._file_list[self._next_file],
 																				keywords=self._keywords,
 																				num_before=self._num_before,
 																				num_after=self._num_after,
@@ -143,7 +152,8 @@ class ClassifierData:
 																				ignore_negative_data=self._ignore_negative_data,
 																				add_redundant_keyword_data=self._add_redundant_keyword_data,
 																				use_negative_only_data=self._use_negative_only_data,
-																				start_token=self._start_token)
+																				start_token=self._start_token,
+																				gen_data_fcn=self._gen_data_fcn)
 		self._next_file += 1
 		self._next_file %= len(self._file_list)
 		if self._next_file == 0:
@@ -169,6 +179,15 @@ class ClassifierData:
 				# no more records
 		self._num_minibatches += 1
 		result = {'sentence':batch_x, 'y': batch_y}
+
+		if self._dump_num_batches > 0:
+			with open('dump_batch_%02d.txt'%self._dump_num_batches,'w') as f:
+				for (x,y) in zip(result['sentence'], result['y']):
+					f.write('%02d: %s\n'%(y,x))
+			self._dump_num_batches -= 1
+		if self._count_y:
+			for classi in range(len(self._y_count)):
+				self._y_count[classi] += batch_y.count(classi)
 		return result
 
 	def current_epoch(self):
@@ -178,18 +197,26 @@ class ClassifierData:
 		return self._current_index
 
 	@staticmethod
-	def get_monolingual_training(base_dir = '/mnt/work/1-billion-word-language-modeling-benchmark', indexer=None, params=None):
+	def get_monolingual_training(base_dir = '/mnt/work/1-billion-word-language-modeling-benchmark', indexer=None, params=None,
+							 gen_data_from_file_fcn = _gen_data_from_file,
+							 gen_data_fcn = _gen_data):
 		sub_path = 'training-monolingual.tokenized.shuffled'
 		data_files = os.listdir(os.path.join(base_dir, sub_path))
 		data_files = [os.path.join(base_dir, sub_path, x) for x in data_files]
-		return ClassifierData(file_list = data_files, indexer=indexer, params=params)
+		return ClassifierData(file_list = data_files, indexer=indexer, params=params,
+							 gen_data_from_file_fcn = gen_data_from_file_fcn,
+							 gen_data_fcn = gen_data_fcn)
 
 	@staticmethod
-	def get_monolingual_test(base_dir = '/mnt/work/1-billion-word-language-modeling-benchmark', indexer=None, params=None):
+	def get_monolingual_test(base_dir = '/mnt/work/1-billion-word-language-modeling-benchmark', indexer=None, params=None,
+							 gen_data_from_file_fcn = _gen_data_from_file,
+							 gen_data_fcn = _gen_data):
 		sub_path = 'heldout-monolingual.tokenized.shuffled'
 		data_files = os.listdir(os.path.join(base_dir, sub_path))
 		data_files = [os.path.join(base_dir, sub_path, x) for x in data_files]
-		return ClassifierData(file_list = data_files, indexer=indexer, params=params)
+		return ClassifierData(file_list = data_files, indexer=indexer, params=params,
+							 gen_data_from_file_fcn = gen_data_from_file_fcn,
+							 gen_data_fcn = gen_data_fcn)
 
 
 #result = gen_data_from_file('/mnt/work/1-billion-word-language-modeling-benchmark/training-monolingual.tokenized.shuffled/news.en-00001-of-00100')

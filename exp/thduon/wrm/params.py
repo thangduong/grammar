@@ -1,15 +1,15 @@
 import os
 
 
-model_name = 'commaV2_10_10'
+model_name = 'wrmV0'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
 					 'num_words_before': 10,
 					 'num_words_after': 10,
 					 'embedding_size': 500,
-					 'conv_num_features': [[200, 200, 200]],
-					 'conv_widths': [[2,2,2]],
+					 'conv_num_features': [[500, 500, 500]],
+					 'conv_widths': [[2, 2, 2]],
 					 'conv_keep_probs': None,
 					 'use_no_conv_path': True,                       # enable embedding pass through to second stage
 					 'mlp_config': [512],
@@ -19,10 +19,15 @@ params = { 'model_name': model_name,
 					 'embedding_device': '/cpu:0',
 					 'batch_size': 8192,
 					 'learning_rate': 0.001,
-					 'keywords': [','],
+					 'start_token': '<S>',
+					 'unk_token': 'unk',
+					 'keywords': [
+						 						['than','then'],
+						 						['their','there',['they',"'re"]],
+						 						['accept','except']
+					 							],
 					 'mini_batches_between_checkpoint': 100,
 					 'embedding_wd': 0.0001,                           # L2 WD regularization constant
-					 'start_token': '<S>',
 					 'enable_regularization': True,
 					 'monolingual_dir': '/mnt/work/1-billion-word-language-modeling-benchmark',
 					 'vocab_file': '/mnt/work/1-billion-word-language-modeling-benchmark/1b_word_vocab.txt'
