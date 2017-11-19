@@ -126,6 +126,7 @@ class ClassifierData:
 		self._file_list = file_list
 		self._cur_list = []
 		self._next_file = 0
+		self._params = params
 		self._keywords = utils.get_dict_value(params, 'keywords', [])
 		self._num_before = utils.get_dict_value(params, 'num_words_before', 5)
 		self._num_after = utils.get_dict_value(params, 'num_words_after', 5)
@@ -140,6 +141,7 @@ class ClassifierData:
 		self._current_index = 0
 		self._num_minibatches = 0
 		self._dump_num_batches = 10
+		self._mimibatch_dump_dir = utils.get_dict_value(params, 'output_location', '.')
 		self._y_count = [0]*utils.get_dict_value(params,'num_classes',2)
 		self._count_y = True
 
@@ -163,9 +165,19 @@ class ClassifierData:
 	def next_batch(self, batch_size=2, params=None):
 		batch_x = []
 		batch_y = []
+
+
+		if self._dump_num_batches > 0:
+			mb_dump_file = open(os.path.join(self._mimibatch_dump_dir, "mb_dump_%05d.txt"%self._dump_num_batches ),'w')
+			self._dump_num_batches-=1
+		else:
+			mb_dump_file = None
+
 		while (len(batch_y) < batch_size):
 			try:
 				rec = next(self._cur_list)
+				if mb_dump_file is not None:
+					mb_dump_file.write('%03d %s\n'%(rec[1], rec[0]))
 				if self._indexer is None:
 					batch_x.append(rec[0])
 				else:
@@ -181,11 +193,14 @@ class ClassifierData:
 		self._num_minibatches += 1
 		result = {'sentence':batch_x, 'y': batch_y}
 
-		if self._dump_num_batches > 0:
-			with open('dump_batch_%02d.txt'%self._dump_num_batches,'w') as f:
-				for (x,y) in zip(result['sentence'], result['y']):
-					f.write('%02d: %s\n'%(y,x))
-			self._dump_num_batches -= 1
+
+		if mb_dump_file is not None:
+			mb_dump_file.close()
+#		if self._dump_num_batches > 0:
+#			with open('dump_batch_%02d.txt'%self._dump_num_batches,'w') as f:
+#				for (x,y) in zip(result['sentence'], result['y']):
+#					f.write('%02d: %s\n'%(y,x))
+#			self._dump_num_batches -= 1
 		if self._count_y:
 			for classi in range(len(self._y_count)):
 				self._y_count[classi] += batch_y.count(classi)

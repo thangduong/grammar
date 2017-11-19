@@ -16,9 +16,9 @@ def split_sentence_for_eval(tokens, keywords, num_before, num_after):
 	tokens = [pad_tok] * (num_before -1) + ['<S>']+ tokens + [pad_tok]*(num_after+5)
 	result = []
 	for toki in range(num_before, len(tokens)-num_before-5):
-		tok0 = tokens[toki].lower()
-		tok1 = tuple([x.lower() for x in tokens[toki:toki + 2]])
-		tok2 = tuple([x.lower() for x in tokens[toki:toki + 3]])
+		tok0 = tokens[toki]
+		tok1 = tuple([x for x in tokens[toki:toki + 2]])
+		tok2 = tuple([x for x in tokens[toki:toki + 3]])
 		bucket = None
 		sl = 0
 		if tok2 in keywords:
@@ -68,7 +68,7 @@ class WRMEval:
 			r = self._e.eval({'sentence': [it]}, {'sm_decision'})
 			sm = r[0][0]
 			repl = np.argmax(sm)
-
+			pr = sm[repl]
 			if repl > 0:
 				target_word = self._id_to_word[repl-1]
 				src_word = tokens[task[1]:task[2]]
@@ -107,6 +107,8 @@ class WRMEval:
 
 	def get_model_name(self):
 		return utils.get_dict_value(self._params, 'model_name', '_UNKNOWN_MODEL_')
+
+
 if __name__ == '__main__':
 	e = WRMEval()
 	e.load("./output/wrmV1/")
