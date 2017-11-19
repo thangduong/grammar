@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from wrmeval import WRMEval
 
-http_port = 8080
+http_port = 8083
 e = WRMEval()
 e.load('./output/wrmV1/')
 
