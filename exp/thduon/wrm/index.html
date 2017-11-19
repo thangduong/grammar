@@ -1,0 +1,58 @@
+<html>
+<head>
+    <script type="text/javascript">
+    function decodeText() {
+            sentence = document.getElementById("sentence").value
+            url = "/decode?"+sentence;
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function() {
+                if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                    document.getElementById("input_sentence").innerHTML = sentence
+                    document.getElementById("output_sentence").innerHTML = xmlHttp.responseText
+            }
+            xmlHttp.open("GET", url, true); // true for asynchronous
+            xmlHttp.send(null);
+    }
+    function onEnterPressed(e) {
+        if (e.keyCode == 13) {
+            decodeText();
+        }
+    }
+    function changeSentenceValue2(div) {
+	document.getElementById("sentence").value = div.innerText;
+    }
+    </script>
+</head>
+
+<body>
+The model is ___MODEL_NAME___
+<br>
+<br>
+Input: <div id="input_sentence"></div>
+<br>
+Output: <div id="output_sentence"></div>
+<br>
+   <input id="sentence" onkeypress="return onEnterPressed(event)" size="200"
+   value="too errors are better then one error" />
+<br>
+<input value="Submit" type="button" onclick="decodeText()" />
+<br>
+<br>
+Some sample sentences to try (click and hit submit):
+<br>
+<br>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+    this is better then that
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+    forever is not two long
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+    there are too fishes in the same bucket .
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+two big to fail my ass
+</div>
+</body>
+
+</html>

@@ -49,11 +49,15 @@ def eval(params,
 #	test_sentence = "<S> there are two fishes in the same bucket ."
 #	test_sentence = "<S> there are too fishes in the same bucket ."
 	#test_sentence = "<S> I had two fishes for dinner"
-#	test_sentence = "its raining men . hallelujah !"
+	test_sentence = "<S> its raining men . hallelujah !"
 #	test_sentence = "it 's head is too big"
 	#test_sentence = "if it 's not one than it 's true"
 	#test_sentence = "i would except it , but i don 't think it 's true"
+
+	print("HELLO")
+	print(keywords)
 	split_sentence = list(split_sentence_for_eval(test_sentence.split(), keywords, num_before, num_after))
+	print(split_sentence)
 	for j in range(len(split_sentence)):
 		print(split_sentence[j][0])
 		_, sentence, _, _ = i.index_wordlist(split_sentence[j][0])

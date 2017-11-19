@@ -13,7 +13,7 @@ import sys
 
 def split_sentence_for_eval(tokens, keywords, num_before, num_after):
 	pad_tok = "<pad>"
-	tokens = [pad_tok] * num_before + tokens + [pad_tok]*(num_after+5)
+	tokens = [pad_tok] * (num_before -1) + ['<S>']+ tokens + [pad_tok]*(num_after+5)
 	result = []
 	for toki in range(num_before, len(tokens)-num_before-5):
 		tok0 = tokens[toki].lower()
@@ -59,17 +59,27 @@ class WRMEval:
 
 	def critique(self, sentence):
 		tokens = sentence.split()
+		print(tokens)
 		tasks = split_sentence_for_eval(tokens, self._keywords, self._num_before, self._num_after)
 		corrections = []
 		for task in tasks:
+			print(task[0])
 			_,it,_,_ = self._i.index_wordlist(task[0])
 			r = self._e.eval({'sentence': [it]}, {'sm_decision'})
 			sm = r[0][0]
 			repl = np.argmax(sm)
+
 			if repl > 0:
 				target_word = self._id_to_word[repl-1]
 				src_word = tokens[task[1]:task[2]]
 				corrections.append([task[1], task[2], src_word, target_word])
+
+			k = [''] + self._id_to_word
+			sm, k = zip(*sorted(zip(sm, k), reverse=True))
+			for q, (x, y) in enumerate(zip(sm, k)):
+				if q > 10:
+					break
+				print("%0.4f %s" % (x, y))
 		return corrections, tokens
 
 	def markup_critique(self, corrections, tokens):
@@ -82,10 +92,10 @@ class WRMEval:
 			if len(cur_corrections)>0 and i >= cur_corrections[0][0]:
 				i = cur_corrections[0][1]
 				src_word = cur_corrections[0][2]
-				if type(cur_corrections[0][3]) is not list:
+				if type(cur_corrections[0][3]) is not tuple:
 					target_word = [cur_corrections[0][3]]
 				else:
-					target_word = cur_corrections[0][3]
+					target_word = list(cur_corrections[0][3])
 				target_word = ' '.join(target_word)
 				src_word = ' '.join(src_word)
 				result += "<b><strike>%s</strike>%s</b>" % (src_word,target_word)
@@ -94,6 +104,9 @@ class WRMEval:
 				result += tokens[i]
 				i += 1
 		return result
+
+	def get_model_name(self):
+		return utils.get_dict_value(self._params, 'model_name', '_UNKNOWN_MODEL_')
 if __name__ == '__main__':
 	e = WRMEval()
 	e.load("./output/wrmV1/")
