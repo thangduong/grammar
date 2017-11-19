@@ -14,9 +14,6 @@ import numpy as np
 
 param_file = 'params.py'
 params = utils.load_param_file(param_file)
-with open('keywords.pkl', 'rb') as f:
-	keywords = pickle.load(f)
-params['keywords'] = keywords
 params['num_classes'] = len(params['keywords'])+1
 indexer = TextIndexer.from_txt_file(utils.get_dict_value(params, 'vocab_file'))
 indexer.add_token('<pad>')
@@ -26,7 +23,7 @@ output_indexer.add_token('<blank>')
 os.makedirs(utils.get_dict_value(params,'output_location'), exist_ok=True)
 indexer.save_vocab_as_pkl(os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl'))
 
-files_to_copy = ['keywords.pkl', param_file]
+files_to_copy = [param_file]
 for file in files_to_copy:
 	shutil.copyfile(file,os.path.join(utils.get_dict_value(params,'output_location'), file))
 
@@ -48,7 +45,7 @@ def save_y_count(trainer, filename = 'replacement_counts.txt'):
 		total = np.sum(trainer._training_data._y_count)
 		for i, j in enumerate(trainer._training_data._y_count):
 			if i > 0:
-				f.write("%02d %05d %0.5f %s\n" % (i, j, j/total, params['keywords'][i - 1]))
+				f.write("%02d %05d %0.5f %s\n" % (i, j, j/total, params['id_to_keyword'][i - 1]))
 			else:
 				f.write("%02d %05d %0.5f %s\n" % (i, j, j/total, ''))
 

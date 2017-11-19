@@ -15,7 +15,7 @@ def gen_data(tokens, keywords,
 	results = []
 	unk_list = []
 	no_insert_list = []
-	for toki in range(num_before, len(tokens)-num_before):
+	for toki in range(num_before, len(tokens)-num_before-4):
 		tok0 = tokens[toki].lower()
 		tok1 = [x.lower() for x in tokens[toki:toki+2]]
 		tok2 = [x.lower() for x in tokens[toki:toki+3]]

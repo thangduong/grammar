@@ -2,6 +2,7 @@ import os
 import random
 import framework.utils.common as utils
 import math
+import numpy as np
 
 def merge_tokens_for_text(tokens):
 	text = ''
@@ -138,7 +139,7 @@ class ClassifierData:
 		self._current_epoch = 0
 		self._current_index = 0
 		self._num_minibatches = 0
-		self._dump_num_batches = 1
+		self._dump_num_batches = 10
 		self._y_count = [0]*utils.get_dict_value(params,'num_classes',2)
 		self._count_y = True
 
