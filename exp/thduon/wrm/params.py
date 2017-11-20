@@ -5,8 +5,8 @@ model_name = 'wrmV6'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
-					 'num_words_before': 5,
-					 'num_words_after': 5,
+					 'num_words_before': 10,
+					 'num_words_after': 10,
 					 'embedding_size': 500,
 					 'conv_num_features': [[500, 500, 500, 500, 500]],
 					 'conv_widths': [[3,3,3,3,3]],
