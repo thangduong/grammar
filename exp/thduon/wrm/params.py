@@ -1,7 +1,7 @@
 import os
 import copy
 
-model_name = 'wrmV3'
+model_name = 'wrmV6'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
@@ -22,6 +22,7 @@ params = { 'model_name': model_name,
 					 'learning_rate': 0.0005,
 					 'start_token': '<S>',
 					 'unk_token': 'unk',
+					 'max_vocab_size': 10000,
 					 'keywords': {},
 					 'keyword_buckets': [
 						 [('who', "'s"), 'whose'],

@@ -15,7 +15,7 @@ import numpy as np
 param_file = 'params.py'
 params = utils.load_param_file(param_file)
 params['num_classes'] = len(params['keywords'])+1
-indexer = TextIndexer.from_txt_file(utils.get_dict_value(params, 'vocab_file'))
+indexer = TextIndexer.from_txt_file(utils.get_dict_value(params, 'vocab_file'), max_size=utils.get_dict_value(params,'max_vocab_size',-1))
 indexer.add_token('<pad>')
 indexer.add_token('unk')
 output_indexer = copy.deepcopy(indexer)
