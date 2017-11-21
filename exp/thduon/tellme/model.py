@@ -4,6 +4,7 @@ import framework.utils.common as utils
 import framework.subgraph.mlp as mlp
 import framework.subgraph.misc as misc
 import numpy as np
+import framework.subgraph.core as core
 
 def sentence_encoder(emb_sentence, params, name='encoded_sentence'):
 	"""
@@ -41,6 +42,7 @@ def inference(params):
 	embedding_wd = utils.get_dict_value(params, 'embedding_wd', 0.0)
 	embedding_device = utils.get_dict_value(params, 'embedding_device', None)
 	embedding_initializer = utils.get_dict_value(params, 'embedding_initializer', None)
+	embedding_keep_prob = utils.get_dict_value(params, 'embedding_keep_prob', 1.0)
 	print("USING EMBEDDING DEVICE %s" %embedding_device)
 	if embedding_device is not None:
 		with tf.device(embedding_device):
@@ -54,6 +56,8 @@ def inference(params):
 	timing_info = tf.placeholder(tf.float32, [None, sentence_len], 'timing_info')
 	input_sentence = tf.placeholder(tf.int32, [None, sentence_len], 'tcids_before')
 	emb_sentence = tf.nn.embedding_lookup(embedding_matrix, input_sentence, 'emb_sentence')
+	if embedding_keep_prob is not None and embedding_keep_prob < 1.0:
+		[emb_sentence],_ = core.dropout([emb_sentence], [embedding_keep_prob])
 	timing = tf.reshape(timing_info,np.asarray([-1,sentence_len,1]))
 	emb_sentence = tf.concat([emb_sentence, timing], axis=2)
 	enc_sentence, _ = sentence_encoder(emb_sentence, params)

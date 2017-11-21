@@ -7,7 +7,7 @@ import gflags
 import os
 import sys
 
-gflags.DEFINE_string('paramsfile', 'output/tellmeV8/params.py', 'parameter files')
+gflags.DEFINE_string('paramsfile', 'output/tellmeV13/params.py', 'parameter files')
 FLAGS = gflags.FLAGS
 
 def load_results(params):
@@ -41,9 +41,11 @@ def main(argv):
 	ax.grid()
 
 	max_value = np.max(data[8])
-	plt.ylim((.75,math.ceil(max_value*10)/10))
+#	plt.ylim((.75,math.ceil(max_value*10)/10))
 	#plt.ylim((.75,1))
-	fig.savefig("accuracy.png")
+	fig.savefig(
+		os.path.join(utils.get_dict_value(params,'output_location'),
+											"accuracy.png"))
 	plt.show(block=False)
 
 	fig, ax = plt.subplots()
@@ -54,9 +56,11 @@ def main(argv):
 	ax.grid()
 
 	min_value = np.min(data[3])
-	plt.ylim((math.floor(min_value*10)/10,1))
+#	plt.ylim((math.floor(min_value*10)/10,1))
 	#plt.ylim((.75,1))
-	fig.savefig("loss.png")
+	fig.savefig(
+		os.path.join(utils.get_dict_value(params,'output_location'),
+											"loss.png"))
 	plt.show(block=False)
 
 

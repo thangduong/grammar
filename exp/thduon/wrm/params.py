@@ -7,8 +7,8 @@ params = { 'model_name': model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
 					 'num_words_before': 10,
 					 'num_words_after': 10,
-					 'embedding_size': 500,
-					 'conv_num_features': [[500, 500, 500, 500, 500]],
+					 'embedding_size': 100,
+					 'conv_num_features': [[200, 200, 200, 200, 200]],
 					 'conv_widths': [[3,3,3,3,3]],
 					 'conv_keep_probs': None,
 					 'use_no_conv_path': True,                       # enable embedding pass through to second stage
