@@ -68,13 +68,8 @@ class WRMEval:
 			r = self._e.eval({'sentence': [it]}, {'sm_decision'})
 			sm = r[0][0]
 			repl = np.argmax(sm)
-<<<<<<< HEAD
-
-			if repl > 0 and sm[repl] > .6:
-=======
 			pr = sm[repl]
-			if repl > 0:
->>>>>>> b3f678a0c595b31d15ec89e7d56789ffff09f688
+			if repl > 0 and pr > 0.6:
 				target_word = self._id_to_word[repl-1]
 				src_word = tokens[task[1]:task[2]]
 				corrections.append([task[1], task[2], src_word, target_word])
