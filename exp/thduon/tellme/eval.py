@@ -21,6 +21,8 @@ def eval(params,
 	accuracy_file = os.path.join(utils.get_dict_value(params,'output_location'),
 											'accuracy.txt')
 	e = Evaluator.load2(ckpt)
+	if verbose:
+		e.dump_variable_sizes()
 	training_data = TellmeData(tellme_datadir='/mnt/work/tellme/data',datafiles=['tst1.npy', 'tst2.npy'])
 	correct_list = []
 	incorrect_list = []

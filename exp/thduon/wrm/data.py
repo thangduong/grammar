@@ -18,9 +18,12 @@ def gen_data(tokens, keywords,
 	replaced_list = []
 	original = []
 	for toki in range(num_before, len(tokens)-num_before-5):
-		tok0 = tokens[toki].lower()
-		tok1 = tuple([x.lower() for x in tokens[toki:toki+2]])
-		tok2 = tuple([x.lower() for x in tokens[toki:toki+3]])
+#		tok0 = tokens[toki].lower()
+#		tok1 = tuple([x.lower() for x in tokens[toki:toki+2]])
+#		tok2 = tuple([x.lower() for x in tokens[toki:toki+3]])
+		tok0 = tokens[toki]
+		tok1 = tuple([x for x in tokens[toki:toki+2]])
+		tok2 = tuple([x for x in tokens[toki:toki+3]])
 		bucket = None
 		sl = 0
 		if tok2 in keywords:
@@ -46,8 +49,8 @@ def gen_data(tokens, keywords,
 				replaced_list.append((test_sentence,ki + class_offset))
 			replaced_list.append((tokens[(toki-num_before):(toki+num_after)], 0))
 		original.append((tokens[(toki-num_before):(toki+num_after)], 0))
-	random.shuffle(original)
-	results = replaced_list + original[:len(replaced_list)]
+#	random.shuffle(original)
+	results = replaced_list # + original[:len(replaced_list)]
 	return results
 
 random.seed(time())

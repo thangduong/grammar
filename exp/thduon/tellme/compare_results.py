@@ -7,8 +7,6 @@ import gflags
 import os
 import sys
 
-gflags.DEFINE_string('paramsfile', 'output/tellmeV13/params.py', 'parameter files')
-FLAGS = gflags.FLAGS
 
 def load_results(params):
 	traininglog_file = os.path.join(utils.get_dict_value(params,'output_location'),
@@ -25,42 +23,45 @@ def load_results(params):
 
 
 def main(argv):
-	try:
-		argv = FLAGS(argv)  # parse flags
-	except gflags.FlagsError as e:
-		print('%s\\nUsage: %s ARGS\\n%s' % (e, sys.argv[0], FLAGS))
-		sys.exit(1)
-	print(FLAGS.paramsfile)
-	params = utils.load_param_file(FLAGS.paramsfile)
-	data = load_results(params)
+	params_files_list = ['output/tellmeV12/params.py','output/tellmeV15/params.py'
+	, 'output/tellmeV17/params.py'
+	, 'output/tellmeV18/params.py'
+		, 'output/tellmeV19/params.py']
+
+	params = []
+	data = []
+	for paramsfile in params_files_list:
+		params.append(utils.load_param_file(paramsfile))
+		data.append(load_results(params[-1]))
+
 	fig, ax = plt.subplots()
-	ax.plot([(x * 8192)/1000000 for x in data[1]], data[8])
+
+	for cdata in data:
+		ax.plot([(x * 8192)/1000000 for x in cdata[1]], cdata[8])
 
 	ax.set(xlabel='Million Records Seen', ylabel='Accuracy @ 1',
-				 title=params['model_name'])
+				 title=','.join([x['model_name'] for x in params]))
 	ax.grid()
 
-	max_value = np.max(data[8])
-#	plt.ylim((.75,math.ceil(max_value*10)/10))
+	max_value = .82#np.max(data[8])
+	#plt.ylim((.75,math.ceil(max_value*10)/10))
+	plt.ylim((.75,.81))
 	#plt.ylim((.75,1))
-	fig.savefig(
-		os.path.join(utils.get_dict_value(params,'output_location'),
-											"accuracy.png"))
+	fig.savefig("accuracy_compare.png")
 	plt.show(block=False)
 
 	fig, ax = plt.subplots()
-	ax.plot([(x * 8192)/1000000 for x in data[1]], data[3])
+	for cdata in data:
+		ax.plot([(x * 8192)/1000000 for x in cdata[1]], cdata[3])
 
 	ax.set(xlabel='Million Records Seen', ylabel='Loss',
-				 title=params['model_name'])
+				 title=','.join([x['model_name'] for x in params]))
 	ax.grid()
 
-	min_value = np.min(data[3])
-#	plt.ylim((math.floor(min_value*10)/10,1))
+	min_value = 0#np.min(data[3])
+	plt.ylim((math.floor(min_value*10)/10,1))
 	#plt.ylim((.75,1))
-	fig.savefig(
-		os.path.join(utils.get_dict_value(params,'output_location'),
-											"loss.png"))
+	fig.savefig("loss_compare.png")
 	plt.show(block=False)
 
 

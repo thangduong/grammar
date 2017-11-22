@@ -36,8 +36,9 @@ def gen_data(tokens, keywords,
 				 ki + class_offset))
 		else:
 			# add unk
-			ki = keywords.index('unk')
-			unk_list.append((tokens[(toki-num_before):toki]+tokens[(toki+1):(toki+num_after+1)], ki + class_offset))
+			if 'unk' in keywords:
+				ki = keywords.index('unk')
+				unk_list.append((tokens[(toki-num_before):toki]+tokens[(toki+1):(toki+num_after+1)], ki + class_offset))
 		no_insert_list.append((tokens[(toki-num_before):toki]+tokens[(toki):(toki+num_after)], 0))
 	num_to_add = min([int(len(results)/len(keywords)),len(no_insert_list),len(unk_list)])
 	if num_to_add == 0 and len(results)>0:
