@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from clmeval import CLMEval
 
-http_port = 8080
+http_port = 8086
 e = CLMEval()
 e.load('./output/clmV0/')
 

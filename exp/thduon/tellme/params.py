@@ -1,18 +1,18 @@
 import os
 
 
-model_name = 'tellmeV11'
+model_name = 'tellmeV19'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
 					 'num_words_before': 10,
 					 'num_words_after': 10,
-					 'embedding_size': 512,
-					 'conv_num_features': [[1000,1000,1000,1000]],
-					 'conv_widths': [[2,2,2,2]],
+					 'embedding_size': 50,
+					 'conv_num_features': [[100]],
+					 'conv_widths': [[2]],
 					 'conv_keep_probs': None,
 					 'use_no_conv_path': False,                       # enable embedding pass through to second stage
-					 'mlp_config': [512],
+					 'mlp_config': [32],
 					 'bipass_conv': False,
 					 'mlp_activations': 'sigmoid',
 					 'mlp_keep_probs': 0.9,

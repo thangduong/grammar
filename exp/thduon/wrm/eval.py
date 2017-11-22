@@ -40,6 +40,8 @@ def eval(params,
 	vocab_file = os.path.join(utils.get_dict_value(params, 'output_location'), 'vocab.pkl')
 	e = Evaluator.load2(ckpt)
 	i = TextIndexer.from_file(vocab_file)
+	e.dump_variable_sizes()
+	exit(0)
 	test_sentence = "it is better to die happy then to live miserably"
 #	test_sentence = "there going two make a turkey today"
 #	test_sentence = "they 're going two make a turkey today"

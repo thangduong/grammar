@@ -69,7 +69,7 @@ class WRMEval:
 			sm = r[0][0]
 			repl = np.argmax(sm)
 			pr = sm[repl]
-			if repl > 0:
+			if repl > 0 and pr > 0.6:
 				target_word = self._id_to_word[repl-1]
 				src_word = tokens[task[1]:task[2]]
 				corrections.append([task[1], task[2], src_word, target_word])
