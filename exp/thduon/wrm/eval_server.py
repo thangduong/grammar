@@ -9,9 +9,9 @@ from urllib.parse import urlparse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from wrmeval import WRMEval
 
-http_port = 8083
+http_port = 8085
 e = WRMEval()
-e.load('./output/wrmV1/')
+e.load('./output/wrmV7/')
 
 class HttpHandler(BaseHTTPRequestHandler):
 
@@ -23,10 +23,13 @@ class HttpHandler(BaseHTTPRequestHandler):
 		if parsed_path.path == "/decode":
 			sentence = urllib.parse.unquote(parsed_path.query)
 			sentence = sentence.replace("'s", " 's")
+			sentence = sentence.replace("'re", " 're")
+			sentence = sentence.replace("'n't", " n't")
 			sentence = sentence.replace("\"", " \"")
 			sentence = sentence.replace(".", " .")
 			sentence = sentence.replace("?", " ?")
 			sentence = sentence.replace("!", " !")
+			sentence = sentence.replace(",", " ,")
 			corrections, tokens = e.critique(sentence)
 			markup = e.markup_critique(corrections, tokens)
 			msg = markup
