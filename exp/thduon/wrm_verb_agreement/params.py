@@ -1,15 +1,15 @@
 import os
 import copy
 
-model_name = 'wrmV6'
+model_name = 'wrmvaV0'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
 					 'num_words_before': 10,
 					 'num_words_after': 10,
 					 'embedding_size': 100,
-					 'conv_num_features': [[200, 200, 200, 200, 200]],
-					 'conv_widths': [[3,3,3,3,3]],
+					 'conv_num_features': [[200, 200, 200]],
+					 'conv_widths': [[2,2,2]],
 					 'conv_keep_probs': None,
 					 'use_no_conv_path': True,                       # enable embedding pass through to second stage
 					 'mlp_config': [512],
@@ -22,7 +22,7 @@ params = { 'model_name': model_name,
 					 'learning_rate': 0.0005,
 					 'start_token': '<S>',
 					 'unk_token': 'unk',
-					 'max_vocab_size': 10000,
+					 'max_vocab_size': 100000,
 					 'keywords': {},
 					 'keyword_buckets': [
 						 ['come','comes','came'],

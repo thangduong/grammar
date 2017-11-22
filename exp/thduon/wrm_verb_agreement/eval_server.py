@@ -9,9 +9,9 @@ from urllib.parse import urlparse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from wrmeval import WRMEval
 
-http_port = 8085
+http_port = 8090
 e = WRMEval()
-e.load('./output/wrmV7/')
+e.load('./output/wrmvaV0/')
 
 class HttpHandler(BaseHTTPRequestHandler):
 
