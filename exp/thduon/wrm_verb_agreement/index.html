@@ -1,0 +1,142 @@
+<html>
+<head>
+    <script type="text/javascript">
+    function decodeText() {
+            sentence = document.getElementById("sentence").value
+            url = "/decode?"+sentence;
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function() {
+                if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+                    document.getElementById("input_sentence").innerHTML = sentence
+                    document.getElementById("output_sentence").innerHTML = xmlHttp.responseText
+            }
+            xmlHttp.open("GET", url, true); // true for asynchronous
+            xmlHttp.send(null);
+    }
+    function onEnterPressed(e) {
+        if (e.keyCode == 13) {
+            decodeText();
+        }
+    }
+    function changeSentenceValue2(div) {
+	document.getElementById("sentence").value = div.innerText;
+    }
+    </script>
+</head>
+
+<body>
+The model is ___MODEL_NAME___
+<br>
+<br>
+Input: <div id="input_sentence"></div>
+<br>
+Output: <div id="output_sentence"></div>
+<br>
+   <input id="sentence" onkeypress="return onEnterPressed(event)" size="200"
+   value="too errors are better then one error" />
+<br>
+<input value="Submit" type="button" onclick="decodeText()" />
+<br>
+<br>
+Some sample sentences to try (click and hit submit):
+<br>
+<br>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+i read a book you gave me
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+you gave me the book to read
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+i got some grocery at a store today
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+i hope there is the store opening today
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+i would like to half of half the amount
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+i would like to half half the amount
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+it's quiet the day today
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+i played against may, and she definitely didn't like to loose
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+Jennifer and may went to the store
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+I May have some water
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+I may have some water
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+It rained until may last year !
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+May and march are the best times to visit
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+we March along main street
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+we march along main street
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+its difficult to estimate the affect of this drug
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+its big because it's head is bigger then yours
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+its good because their the best people i know
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+    its raining men
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+    it's raining men
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+    its head is bigger than its body
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+    it's head is bigger than its body
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+    it's head is bigger than it's body
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+    this is better then that
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+    forever is not two long
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+    there are too fishes in the same bucket .
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+    they 're are too fishes in the same bucket .
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+    their are too fishes in the same bucket .
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+    their too fishes in the same bucket
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+    there two fishes in the same bucket
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+    They're two fishes in the same bucket
+</div>
+<div font-color="blue" onclick="changeSentenceValue2(this)">
+two big to fail my ass
+</div>
+</body>
+
+</html>
