@@ -165,6 +165,9 @@ class Evaluator(object):
         for node in self._tf_session.graph.as_graph_def().node:
             print('%s (%s)' % (node.name, node.op))
 
+    def save_graph_as_pbtxt(self, filename):
+        tf.train.write_graph(self._tf_session.graph.as_graph_def(), '.',filename,as_text=True)
+
     def eval(self, inputs, output_names):
         """
         Evaluate a node in the model
