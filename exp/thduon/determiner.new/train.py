@@ -8,6 +8,8 @@ import model
 import os
 import shutil
 
+
+
 param_file = 'params.py'
 params = utils.load_param_file(param_file)
 params['num_classes'] = len(params['keywords'])+1
