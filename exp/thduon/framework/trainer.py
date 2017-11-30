@@ -426,8 +426,9 @@ class Trainer(object):
 		loss_value = run_results[0]
 
 		results_map = {}
-		for node, result in zip(additional_nodes_to_evaluate, run_results[2:]):
-			results_map[node] = result
+		if additional_nodes_to_evaluate is not None:
+			for node, result in zip(additional_nodes_to_evaluate, run_results[2:]):
+				results_map[node] = result
 		return False, loss_value, results_map
 
 	def _eval_iteration(self, tf_session, data_map, network_output_nodes, loss_nodes, optimizer_nodes, data_batch, additional_nodes_to_evaluate=None):
@@ -466,6 +467,7 @@ class Trainer(object):
 		loss_value = run_results[0]
 
 		results_map = {}
-		for node, result in zip(additional_nodes_to_evaluate, run_results[1:]):
-			results_map[node] = result
+		if additional_nodes_to_evaluate is not None:
+			for node, result in zip(additional_nodes_to_evaluate, run_results[1:]):
+				results_map[node] = result
 		return False, loss_value, results_map

@@ -6,7 +6,8 @@ from time import time
 import numpy as np
 import os
 
-params = utils.load_param_file('output/determinerV3/params.py')
+params = utils.load_param_file('output/determinerCCNNV3/params.py')
+#params = utils.load_param_file('params.py')
 
 vocab_file = os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl')
 ckpt = os.path.join(utils.get_dict_value(params,'output_location'),
@@ -39,21 +40,22 @@ last = 0
 for batch_no in range(1):
 	print("WORKING ON BATCH %s" % batch_no)
 	batch = test_data.next_batch(batch_size=200000)
-	for idx, (sentence, ground_truth) in enumerate(zip(batch['sentence'], batch['y'])):
+	for idx, (sentence, ground_truth, word) in enumerate(zip(batch['sentence'], batch['y'], batch['word'])):
 		_, indexed, _, _ = i.index_wordlist(sentence)
 		before_time = time()
-		r = e.eval({'sentence': [indexed]}, {'sm_decision'})
+		r = e.eval({'sentence': [indexed], 'word': [word]}, {'sm_decision'})
 		after_time = time()
+		dt = after_time-before_time
 		pick = np.argpartition(r[0][0], -topn)[-topn:]
 #		pick = np.argmax(r[0][0])
 		pickpr = [r[0][0][idx] for idx in pick]
 		model_score = r[0][0]
-		x = [after_time-before_time, pick, pickpr, ground_truth, r[0][0], sentence]
+		x = [dt, pick, pickpr, ground_truth, sentence]
 		if ground_truth in pick:
 			no_right[ground_truth] += 1
-			fip.write('1 %s %s\n'%(ground_truth,pickpr[0]))
+			fip.write('1 %s %s %s\n'%(dt,ground_truth,pickpr[0]))
 		else:
-			fip.write('0 %s %s\n'%(ground_truth,pickpr[0]))
+			fip.write('0 %s %s %s\n'%(dt,ground_truth,pickpr[0]))
 			fe.write('%s\n' % x)
 		if (ground_truth == 1 and pick[0] == 2) or (ground_truth == 2 and pick[0] == 1):
 			print([idx, ground_truth, pick, pickpr])

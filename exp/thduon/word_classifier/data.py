@@ -2,7 +2,6 @@ import os
 import random
 import framework.utils.common as utils
 import math
-import numpy as np
 
 def merge_tokens_for_text(tokens):
 	text = ''
@@ -135,6 +134,8 @@ class ClassifierData:
 		self._use_negative_only_data = utils.get_dict_value(params, 'use_negative_only_data', True)
 		self._add_redundant_keyword_data = utils.get_dict_value(params, 'add_redundant_keyword_data', True)
 		self._start_token = utils.get_dict_value(params, 'start_token', None)
+		self._use_char_cnn = utils.get_dict_value(params, 'use_char_cnn', False)
+		self._ccnn_word_len = utils.get_dict_value(params, 'word_len')
 		self.load_next_file()
 		self._indexer = indexer
 		self._current_epoch = 0
@@ -165,6 +166,8 @@ class ClassifierData:
 	def next_batch(self, batch_size=2, params=None):
 		batch_x = []
 		batch_y = []
+		if self._use_char_cnn:
+			batch_ccnn = []
 
 
 		if self._dump_num_batches > 0:
@@ -178,11 +181,29 @@ class ClassifierData:
 				rec = next(self._cur_list)
 				if mb_dump_file is not None:
 					mb_dump_file.write('%03d %s\n'%(rec[1], rec[0]))
+				tok0 = rec[0][int(len(rec[0]) / 2)]
+				tok1 = rec[0][int(len(rec[0]) / 2) + 1]
+				if len(tok0) == 1:
+					tok0 = tok1
 				if self._indexer is None:
 					batch_x.append(rec[0])
+#						batch_ccnn.append(tok0)
 				else:
 					_, rec_indexed, _, _ = self._indexer.index_wordlist(rec[0])
 					batch_x.append(rec_indexed)
+
+				# add the word input if use it
+				if self._use_char_cnn:
+					cinput = []
+					for ci, ch in enumerate(tok0):
+						if ci >= self._ccnn_word_len:
+							break
+						if ord(ch) >= 128:
+							cinput.append(127)
+						else:
+							cinput.append(ord(ch))
+					cinput += [0] * (self._ccnn_word_len - len(cinput))
+					batch_ccnn.append(cinput)
 				batch_y.append(rec[1])
 				self._current_index += 1
 			except StopIteration:
@@ -191,7 +212,10 @@ class ClassifierData:
 				raise
 				# no more records
 		self._num_minibatches += 1
-		result = {'sentence':batch_x, 'y': batch_y}
+		if self._use_char_cnn:
+			result = {'sentence':batch_x, 'y': batch_y, 'word': batch_ccnn}
+		else:
+			result = {'sentence':batch_x, 'y': batch_y}
 
 
 		if mb_dump_file is not None:
@@ -239,12 +263,20 @@ class ClassifierData:
 #for x in result:
 #	print(x)
 if __name__ == "__main__":
-	x = "We went to the store , and I bought some fruits".split()
-	print(x)
-	y = gen_data(x, [','])
-	for yy in y:
-		print(yy)
-#	training_data = ClassifierData.get_monolingual_training()
+	from framework.utils.data.text_indexer import TextIndexer
+#	x = "We went to the store , and I bought some fruits".split()
+#	print(x)
+#	y = gen_data(x, [','])
+#	for yy in y:
+#		print(yy)
+	params = utils.load_param_file('../determiner.ccnn/params.py')
+	indexer = TextIndexer.from_txt_file(utils.get_dict_value(params, 'vocab_file'),
+																			max_size=utils.get_dict_value(params, 'max_vocab_size', -1))
+	indexer.add_token('<pad>')
+	indexer.add_token('unk')
+	d = ClassifierData.get_monolingual_training(indexer=indexer, params=params)
+	a = d.next_batch(batch_size=2)
+	print(a)
 #	print(training_data.next_batch(batch_size=16))
 #	x = ['fraud', 'or', 'wrongdoing', 'have', 'contributed', 'to', 'the', 'current', 'problems', ';', 'authorities', 'need', 'to', ',', 'and', 'are', 'prosecuting', 'them', '.', '<pad>']
 #	a,b = merge_tokens_for_text(x)
