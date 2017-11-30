@@ -41,7 +41,7 @@ def inference(params):
 	embedding_wd = utils.get_dict_value(params, 'embedding_wd', 0.0)
 	embedding_device = utils.get_dict_value(params, 'embedding_device', None)
 	embedding_initializer = utils.get_dict_value(params, 'embedding_initializer', None)
-	embedding_keep_prob = utils.get_dict_value(params, 'embedding_keep_prob', 0.9)
+	embedding_keep_prob = utils.get_dict_value(params, 'embedding_keep_prob', 1.0)
 	print("USING EMBEDDING DEVICE %s" %embedding_device)
 	if embedding_device is not None:
 		with tf.device(embedding_device):

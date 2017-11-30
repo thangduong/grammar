@@ -1,15 +1,15 @@
 import os
 import copy
 
-model_name = 'wrmV6'
+model_name = 'wrmV8'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
 					 'num_words_before': 10,
 					 'num_words_after': 10,
 					 'embedding_size': 100,
-					 'conv_num_features': [[200, 200, 200, 200, 200]],
-					 'conv_widths': [[3,3,3,3,3]],
+					 'conv_num_features': [[200, 200, 200, 200, 200, 200]],
+					 'conv_widths': [[2,2,2,2,2, 2]],
 					 'conv_keep_probs': None,
 					 'use_no_conv_path': True,                       # enable embedding pass through to second stage
 					 'mlp_config': [512],
@@ -22,7 +22,7 @@ params = { 'model_name': model_name,
 					 'learning_rate': 0.0005,
 					 'start_token': '<S>',
 					 'unk_token': 'unk',
-					 'max_vocab_size': 10000,
+					 'max_vocab_size': 50000,
 					 'keywords': {},
 					 'keyword_buckets': [
 						 [('who', "'s"), 'whose'],
@@ -48,7 +48,7 @@ params = { 'model_name': model_name,
 						 ['gray','grey'],
 						 ['historic','historical'],
 						 ['imply','infer'],
-						 [('it',"'s"),'its'],
+						 [('it',"'s"),'its','it'],
 						 ['lay','lie'],
 						 ['lead','led'],
 						 ['learned','learnt'],
@@ -72,7 +72,21 @@ params = { 'model_name': model_name,
 						 ['bear','bare'],
 						 ['plain','plane'],
 						 ['for','four','fore','forth','fourth'],
-						 ['may'], ['march']
+						 ['may'], ['march'],
+						 ['a','an','the'],
+						 ['quiet','quite'],
+						 ['sole','soul'],
+						 ['soles','souls'],
+						 ['your',('you',"'re")],
+						 [('all','right'),'alright'],
+						 [('some','time'),'sometime','sometimes'],
+						 ['everyday',('every','day')],
+						 ['hoard','whore'],
+						 ['i'],
+						 ['besides','beside'],
+						 ['on','in'],
+						 ['around','about']
+						 ['from','of']
 					 	],
 					 'mini_batches_between_checkpoint': 100,
 					 'embedding_wd': 0.0001,                           # L2 WD regularization constant

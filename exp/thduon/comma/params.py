@@ -1,15 +1,15 @@
 import os
 
 
-model_name = 'commaV3_10_10'
+model_name = 'commaV4_10_10'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
 					 'num_words_before': 10,
 					 'num_words_after': 10,
 					 'embedding_size': 500,
-					 'conv_num_features': [[200, 200, 200]],
-					 'conv_widths': [[2,2,2]],
+					 'conv_num_features': [[500, 500, 500, 500, 500]],
+					 'conv_widths': [[2,2,2,2,2]],
 					 'conv_keep_probs': None,
 					 'use_no_conv_path': True,                       # enable embedding pass through to second stage
 					 'mlp_config': [512],
@@ -18,7 +18,8 @@ params = { 'model_name': model_name,
 					 'mlp_keep_probs': 0.9,
 					 'embedding_device': '/cpu:0',
 					 'batch_size': 8192,
-					 'learning_rate': 0.001,
+					 'embedding_keep_prob': .9,
+					 'learning_rate': 0.0001,
 					 'keywords': [','],
 					 'mini_batches_between_checkpoint': 100,
 					 'embedding_wd': 0.0001,                           # L2 WD regularization constant

@@ -48,15 +48,16 @@ for batch_no in range(1):
 #		pick = np.argmax(r[0][0])
 		pickpr = [r[0][0][idx] for idx in pick]
 		model_score = r[0][0]
-		x = [after_time-before_time, pick, pickpr, ground_truth, sentence]
+		x = [after_time-before_time, pick, pickpr, ground_truth, r[0][0], sentence]
 		if ground_truth in pick:
 			no_right[ground_truth] += 1
 			fip.write('1 %s %s\n'%(ground_truth,pickpr[0]))
 		else:
 			fip.write('0 %s %s\n'%(ground_truth,pickpr[0]))
 			fe.write('%s\n' % x)
-#			print([idx, ground_truth, pick, pickpr])
-#			print(sentence)
+		if (ground_truth == 1 and pick[0] == 2) or (ground_truth == 2 and pick[0] == 1):
+			print([idx, ground_truth, pick, pickpr])
+			print(sentence)
 		error_scenario[ground_truth][pick[0]] += 1
 		no_total[ground_truth] += 1
 		no_total_model[pick[0]] += 1
