@@ -2,10 +2,17 @@ import os
 import random
 import framework.utils.common as utils
 
-def _gen_data(sentence, num_before, num_after):
+max_value = 0
+
+def _gen_data(sentence, num_before, num_after, null_sample_factor=0):
+	global max_value
 	slen = len(sentence)
+	z = [ord(x) for x in sentence if ord(x)>255]
+	if len(z)>0 and max(z) > max_value:
+		max_value = max(z)
+		print('max_value = %s'%max_value)
 	sentence = [min(ord(x),255) for x in sentence]
-	sentence = [0]*(num_before) + sentence + [0]*(num_after)
+	sentence = [0]*(num_before-1) + [1] + sentence + [2] + [0]*(num_after - 1)
 
 	null_list = []
 	pos_list = []
@@ -13,19 +20,24 @@ def _gen_data(sentence, num_before, num_after):
 	for i in range(num_before, num_before+slen):
 		if sentence[i] in keychars:
 			pos_list.append(sentence[i-num_before:i] + sentence[i+1:i+num_after+1])
-		else:
-			null_list.append(sentence[i-num_before:i] + sentence[i:i+num_after])
+		null_list.append(sentence[i-num_before:i] + sentence[i:i+num_after])
 
+	if null_sample_factor<0:
+		random.shuffle(null_list)
+		null_list = null_list[:((len(pos_list)+1))]
+	elif null_sample_factor>0:
+		random.shuffle(null_list)
+		null_list = null_list[:(null_sample_factor * (len(pos_list) + 1))]
 	result = [[x,0] for x in null_list] + [[x,1] for x in pos_list]
-	random.shuffle(result)
 	for x in result:
 		yield x
 
-def _gen_data_from_file(filename, num_before, num_after):
+def _gen_data_from_file(filename, num_before, num_after, null_sample_factor=0):
 	with open(filename) as f:
 		for line in f:
 			line = line.rstrip().lstrip()
-			yield from _gen_data(line, num_before, num_after)
+			yield from _gen_data(line, num_before, num_after, null_sample_factor=null_sample_factor)
+			yield from _gen_data(line.lower(), num_before, num_after, null_sample_factor=null_sample_factor)
 
 class CharLevelData:
 	def __init__(self, file_list, params):
@@ -41,6 +53,7 @@ class CharLevelData:
 		self._use_negative_only_data = utils.get_dict_value(params, 'use_negative_only_data', True)
 		self._add_redundant_keyword_data = utils.get_dict_value(params, 'add_redundant_keyword_data', True)
 		self._start_token = utils.get_dict_value(params, 'start_token', None)
+		self._null_sample_factor = utils.get_dict_value(params, 'null_sample_factor')
 		self.load_next_file()
 		self._current_epoch = 0
 		self._current_index = 0
@@ -53,7 +66,8 @@ class CharLevelData:
 
 	def load_next_file(self):
 		print(self._file_list[self._next_file])
-		self._cur_list = _gen_data_from_file(self._file_list[self._next_file], self._num_before, self._num_after)
+		self._cur_list = _gen_data_from_file(self._file_list[self._next_file], self._num_before,
+																				 self._num_after, null_sample_factor=self._null_sample_factor)
 		self._next_file += 1
 		self._next_file %= len(self._file_list)
 		if self._next_file == 0:

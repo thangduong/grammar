@@ -3,22 +3,22 @@ import framework.subgraph.nlp as nlp
 import framework.utils.common as utils
 import framework.subgraph.mlp as mlp
 import framework.subgraph.misc as misc
+import framework.subgraph.core as core
 
-
-def sentence_encoder(emb_sentence, params, name='encoded_sentence'):
+def encoder(emb_sentence, params, name='encoded'):
 	"""
 	@param emb_sentence:
 	@param params:
 	@return:
 	"""
-	conv_num_features = utils.get_dict_value(params, 'conv_num_features', [[100,100,100],[100]])
-	conv_widths = utils.get_dict_value(params, 'conv_widths', [[2,3,4],[3]])
-	conv_keep_probs = utils.get_dict_value(params, 'conv_keep_probs', 0.5)
-	mlp_config = utils.get_dict_value(params, 'mlp_config', [512])
-	bipass_conv = utils.get_dict_value(params, 'bipass_conv', False)
-	mlp_activations = utils.get_dict_value(params, 'mlp_activations', 'sigmoid')
-	mlp_dropout_keep_probs = utils.get_dict_value(params, 'mlp_keep_probs', 0.9)
-	use_no_conv_path = utils.get_dict_value(params, 'use_no_conv_path', False)
+	conv_num_features = utils.get_dict_value(params, 'conv_num_features')
+	conv_widths = utils.get_dict_value(params, 'conv_widths')
+	conv_keep_probs = utils.get_dict_value(params, 'conv_keep_probs')
+	mlp_config = utils.get_dict_value(params, 'mlp_config')
+	bipass_conv = utils.get_dict_value(params, 'bipass_conv')
+	mlp_activations = utils.get_dict_value(params, 'mlp_activations')
+	mlp_dropout_keep_probs = utils.get_dict_value(params, 'mlp_keep_probs')
+	use_no_conv_path = utils.get_dict_value(params, 'use_no_conv_path')
 	if bipass_conv:
 		conv_group = [emb_sentence]
 	else:
@@ -36,23 +36,25 @@ def sentence_encoder(emb_sentence, params, name='encoded_sentence'):
 
 def inference(params):
 	embedding_size = params['embedding_size']
-	vocab_size = params['vocab_size']
-	sentence_len = params['num_words_before'] + params['num_words_after']
-	embedding_wd = utils.get_dict_value(params, 'embedding_wd', 0.0)
-	embedding_device = utils.get_dict_value(params, 'embedding_device', None)
-	embedding_initializer = utils.get_dict_value(params, 'embedding_initializer', None)
-	print("USING EMBEDDING DEVICE %s" %embedding_device)
+	sentence_len = params['num_before'] + params['num_after']
+	embedding_wd = utils.get_dict_value(params, 'embedding_wd')
+	embedding_device = utils.get_dict_value(params, 'embedding_device')
+	embedding_initializer = utils.get_dict_value(params, 'embedding_initializer')
+	embedding_keep_prob = utils.get_dict_value(params, 'embedding_keep_prob')
+	word_embedding_size = utils.get_dict_value(params, 'word_embedding_size', embedding_size)
+
 	if embedding_device is not None:
 		with tf.device(embedding_device):
-			embedding_matrix = nlp.variable_with_weight_decay('embedding_matrix',
-																												[vocab_size, embedding_size],
-																												initializer=embedding_initializer, wd=embedding_wd)
+			word_embedding_matrix = nlp.variable_with_weight_decay('word_embedding_matrix', [256, word_embedding_size],
+																														 initializer=embedding_initializer, wd=embedding_wd)
 	else:
-		embedding_matrix = nlp.variable_with_weight_decay('embedding_matrix', [vocab_size, embedding_size],
-																											initializer=embedding_initializer, wd=embedding_wd)
+		word_embedding_matrix = nlp.variable_with_weight_decay('word_embedding_matrix', [256, word_embedding_size],
+																													 initializer=embedding_initializer, wd=embedding_wd)
 
+	if embedding_keep_prob is not None and embedding_keep_prob < 1.0:
+		[word_embedding_matrix],_ = core.dropout([word_embedding_matrix], [embedding_keep_prob])
 	input_sentence = tf.placeholder(tf.int32, [None, sentence_len], 'sentence')
-	emb_sentence = tf.nn.embedding_lookup(embedding_matrix, input_sentence, 'emb_sentence')
-	enc_sentence, _ = sentence_encoder(emb_sentence, params)
+	emb_sentence = tf.nn.embedding_lookup(word_embedding_matrix, input_sentence, 'emb_word')
+	enc_sentence, _ = encoder(emb_sentence, params)
 
 	return enc_sentence, None
