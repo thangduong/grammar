@@ -116,6 +116,34 @@ def softmax_xentropy(network, params):
                           name='loss')
     return [loss]
 
+def weighted_softmax_xentropy(network, params):
+    """
+    cross entropy softmax.
+    this creates a new placeholder called y, which is an integer.
+    @param network:
+    @param params:
+    @return:
+    """
+    num_classes = params['num_classes']
+    labels = tf.placeholder(tf.int32, [None], name='y')
+    network_answers, _ = mlp.fully_connected_layer(network[0], num_classes, activation=None, name='decision')
+
+    sm_network_answer = tf.nn.softmax(network_answers[0], name='sm_decision')
+
+    [accuracy, prediction], _ = class_accuracy_max([sm_network_answer], labels)
+#    tf.identity(prediction, name='prediction')
+
+    # debug
+    count_class([prediction], 0, 'num_zero')
+    count_class([prediction], 1, 'num_one')
+    tf.reduce_max(network_answers[0], name='max_answer')
+    tf.reduce_min(network_answers[0], name='min_answer')
+
+    network_answer = network_answers[0]
+    labels_one_hot = tf.one_hot(labels, num_classes, on_value=1.0, name='onehot_label')
+    loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=labels_one_hot, logits=network_answer),
+                          name='loss')
+    return [loss]
 #def hinge(network, params)
 
 def l2_loss(network, params):

@@ -143,3 +143,6 @@ def conv1d(input, sizes, widths, keep_probs=None, w_wds=0.005, b_wds=0.000,
           [out],_ = core.dropout([out], keep_prob)
         out.append(out)
   return out
+
+def gated_linear_unit(input):
+	None
