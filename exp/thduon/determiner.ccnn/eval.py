@@ -5,7 +5,7 @@ import os
 import numpy as np
 run_server = False
 
-params = utils.load_param_file('params.py')
+params = utils.load_param_file('output/determinerCCNNV3/params.py')
 
 vocab_file = os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl')
 ckpt = os.path.join(utils.get_dict_value(params,'output_location'),

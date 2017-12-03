@@ -1,19 +1,20 @@
 import os
 
 
-model_name = 'commaV4_10_10'
+model_name = 'commaV9'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
-					 'num_words_before': 10,
-					 'num_words_after': 10,
-					 'embedding_size': 500,
-					 'conv_num_features': [[500, 500, 500, 500, 500]],
-					 'conv_widths': [[2,2,2,2,2]],
+					 'num_words_before': 5,
+					 'num_words_after': 5,
+					 'embedding_size': 32,
+					 'conv_num_features': [[256, 128]],
+					 'conv_widths': [[2,2]],
 					 'conv_keep_probs': None,
-					 'use_no_conv_path': True,                       # enable embedding pass through to second stage
-					 'mlp_config': [512],
+					 'use_no_conv_path': False,                       # enable embedding pass through to second stage
+					 'mlp_config': [64],
 					 'bipass_conv': False,
+					 'max_vocab_size': 20000,
 					 'mlp_activations': 'sigmoid',
 					 'mlp_keep_probs': 0.9,
 					 'embedding_device': '/cpu:0',
