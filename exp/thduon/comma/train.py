@@ -11,9 +11,12 @@ import shutil
 param_file = 'params.py'
 params = utils.load_param_file(param_file)
 params['num_classes'] = len(params['keywords'])+1
-indexer = TextIndexer.from_txt_file(utils.get_dict_value(params, 'vocab_file'), max_size=utils.get_dict_value(params, 'max_vocab_size'))
+indexer = TextIndexer.from_txt_file(utils.get_dict_value(params, 'vocab_file'),
+																		max_size=utils.get_dict_value(params, 'max_vocab_size', 0),
+																		min_freq=utils.get_dict_value(params, 'min_vocab_freq', 0))
 indexer.add_token('<pad>')
 indexer.add_token('unk')
+print("VOCAB SIZE %s" % indexer.vocab_size())
 os.makedirs(utils.get_dict_value(params,'output_location'), exist_ok=True)
 indexer.save_vocab_as_pkl(os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl'))
 shutil.copyfile(param_file,os.path.join(utils.get_dict_value(params,'output_location'), param_file))

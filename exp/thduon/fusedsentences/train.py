@@ -15,6 +15,7 @@ params['num_classes'] = len(params['keywords'])+1
 indexer = TextIndexer.from_txt_file(utils.get_dict_value(params, 'vocab_file'))
 indexer.add_token('<pad>')
 indexer.add_token('unk')
+print("VOCAB SIZE=%s"%indexer.vocab_size())
 os.makedirs(utils.get_dict_value(params,'output_location'), exist_ok=True)
 indexer.save_vocab_as_pkl(os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl'))
 shutil.copyfile(param_file,os.path.join(utils.get_dict_value(params,'output_location'), param_file))
