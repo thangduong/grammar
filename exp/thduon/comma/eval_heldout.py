@@ -6,7 +6,7 @@ from time import time
 import numpy as np
 import os
 
-params = utils.load_param_file('output/commaV9/params.py')
+params = utils.load_param_file('output/commaV13/params.py')
 
 vocab_file = os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl')
 ckpt = os.path.join(utils.get_dict_value(params,'output_location'),
