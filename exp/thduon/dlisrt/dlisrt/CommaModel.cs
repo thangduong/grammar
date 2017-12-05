@@ -30,7 +30,7 @@ namespace OXOGrammarModels
         }
 
         public int[] IndexText(string strSentence)
-        {  
+        {
             string[] sentencePieces = strSentence.Split(' ');
             int[] indexedPieces = new int[sentencePieces.Length];
             for (var i = 0; i < sentencePieces.Length; i++)
@@ -49,7 +49,6 @@ namespace OXOGrammarModels
             float conf = -1.0f;
             string strSentence = inputdict["sentence"];
             
-            // for now, just tokenize like this!
             var sentence_node = _graph[_prefix + "/" + "sentence"];
             var is_training_node = _graph[_prefix + "/" + "is_training"];
             var sm_decision_node = _graph[_prefix + "/" + "sm_decision"];
