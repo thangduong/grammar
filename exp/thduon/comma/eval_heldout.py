@@ -6,13 +6,16 @@ from time import time
 import numpy as np
 import os
 
-params = utils.load_param_file('output/commaV3_10_10/params.py')
+params = utils.load_param_file('output/commaV13/params.py')
 
 vocab_file = os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl')
 ckpt = os.path.join(utils.get_dict_value(params,'output_location'),
 										utils.get_dict_value(params, 'model_name') + '.ckpt')
 
+#e = Evaluator.load_graphdef('commaV10.graphdef')
 e = Evaluator.load2(ckpt)
+
+#e.dump_variable_sizes()
 i = TextIndexer.from_file(vocab_file)
 
 test_data = ClassifierData.get_monolingual_test(params=params)
@@ -37,7 +40,7 @@ f.close()
 
 f = open(os.path.join(utils.get_dict_value(params,'output_location'),
 											timestr + ".txt"), 'w')
-for thres in np.linspace(0,1,100):
+for thres in np.linspace(0,1,20):
 	tp = 0
 	fp = 0
 	tn = 0
@@ -70,3 +73,4 @@ for thres in np.linspace(0,1,100):
 	print(msg)
 
 f.close()
+print("DONE EVAL  ON %s" % params['model_name'])

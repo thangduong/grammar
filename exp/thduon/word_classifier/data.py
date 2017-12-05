@@ -102,10 +102,13 @@ def _gen_data_from_file(filename, keywords=[','], num_before=5, num_after=5,
 											 add_redundant_keyword_data=True,
 											 start_token=None,
 											 ignore_negative_data=False,
+											 all_lowercase=False,
 											 gen_data_fcn = _gen_data):
 	with open(filename) as f:
 		for line in f:
 			line = line.rstrip().lstrip()
+			if all_lowercase:
+				line = line.lower()
 			tokens = line.split()
 			if start_token is not None and len(start_token)>0:
 				tokens = [start_token] + tokens
@@ -135,19 +138,27 @@ class ClassifierData:
 		self._add_redundant_keyword_data = utils.get_dict_value(params, 'add_redundant_keyword_data', True)
 		self._start_token = utils.get_dict_value(params, 'start_token', None)
 		self._use_char_cnn = utils.get_dict_value(params, 'use_char_cnn', False)
+		self._all_lowercase = utils.get_dict_value(params, 'all_lowercase', False)
+		self._ccnn_num_words = utils.get_dict_value(params, 'ccnn_num_words', 0)  # 0 = 1st or 2nd word after, otherwise the # of words after delimited by 0
 		self._ccnn_word_len = utils.get_dict_value(params, 'word_len')
+		self._mimibatch_dump_dir = utils.get_dict_value(params, 'output_location', '.')
+		self._y_count = [0]*utils.get_dict_value(params,'num_classes',2)
+		if self._all_lowercase:
+			if self._start_token is not None:
+				self._start_token = self._start_token.lower()
+		self._num_files_processed = -1
 		self.load_next_file()
 		self._indexer = indexer
 		self._current_epoch = 0
 		self._current_index = 0
 		self._num_minibatches = 0
 		self._dump_num_batches = 10
-		self._mimibatch_dump_dir = utils.get_dict_value(params, 'output_location', '.')
-		self._y_count = [0]*utils.get_dict_value(params,'num_classes',2)
+		self._verbose = False
 		self._count_y = True
 
 	def load_next_file(self):
 		print(self._file_list[self._next_file])
+		self._num_files_processed += 1
 		self._cur_list = self._gen_data_from_file_fcn(self._file_list[self._next_file],
 																				keywords=self._keywords,
 																				num_before=self._num_before,
@@ -157,10 +168,12 @@ class ClassifierData:
 																				add_redundant_keyword_data=self._add_redundant_keyword_data,
 																				use_negative_only_data=self._use_negative_only_data,
 																				start_token=self._start_token,
+																			  all_lowercase=self._all_lowercase,
 																				gen_data_fcn=self._gen_data_fcn)
 		self._next_file += 1
 		self._next_file %= len(self._file_list)
-		if self._next_file == 0:
+		if self._num_files_processed == len(self._file_list):
+			self._num_files_processed = 0
 			self._current_epoch += 1
 
 	def next_batch(self, batch_size=2, params=None):
@@ -176,20 +189,30 @@ class ClassifierData:
 		else:
 			mb_dump_file = None
 
+		total_unk = 0
+		all_unk = []
+		total_indexed = 0
 		while (len(batch_y) < batch_size):
 			try:
 				rec = next(self._cur_list)
 				if mb_dump_file is not None:
 					mb_dump_file.write('%03d %s\n'%(rec[1], rec[0]))
 				tok0 = rec[0][int(len(rec[0]) / 2)]
-				tok1 = rec[0][int(len(rec[0]) / 2) + 1]
-				if len(tok0) == 1:
-					tok0 = tok1
+				# 0 = 1st or 2nd word after, otherwise the # of words after delimited by 0
+				if self._ccnn_num_words == 0:
+					if len(tok0) == 1:
+						tok0 = rec[0][int(len(rec[0]) / 2) + 1]
+				else:
+					for i in range(self._ccnn_num_words-1):
+						tok0 += [0] + rec[0][int(len(rec[0]) / 2) + 1 + i]
 				if self._indexer is None:
 					batch_x.append(rec[0])
 #						batch_ccnn.append(tok0)
 				else:
-					_, rec_indexed, _, _ = self._indexer.index_wordlist(rec[0])
+					num_indexed, rec_indexed, unk_count, unk_list = self._indexer.index_wordlist(rec[0])
+					total_indexed += num_indexed
+					total_unk += unk_count
+					all_unk += unk_list
 					batch_x.append(rec_indexed)
 
 				# add the word input if use it
@@ -217,7 +240,8 @@ class ClassifierData:
 		else:
 			result = {'sentence':batch_x, 'y': batch_y}
 
-
+		if self._verbose:
+			print("NUMBER OF UNK: %d (%0.2f)"%(total_unk, 100*total_unk / max(total_indexed,1)))
 		if mb_dump_file is not None:
 			mb_dump_file.close()
 #		if self._dump_num_batches > 0:
@@ -254,6 +278,18 @@ class ClassifierData:
 		sub_path = 'heldout-monolingual.tokenized.shuffled'
 		data_files = os.listdir(os.path.join(base_dir, sub_path))
 		data_files = [os.path.join(base_dir, sub_path, x) for x in data_files]
+		return ClassifierData(file_list = data_files, indexer=indexer, params=params,
+							 gen_data_from_file_fcn = gen_data_from_file_fcn,
+							 gen_data_fcn = gen_data_fcn)
+
+	@staticmethod
+	def get_wiki_test(base_dir = '/mnt/work/1-billion-word-language-modeling-benchmark', indexer=None, params=None,
+							 gen_data_from_file_fcn = _gen_data_from_file,
+							 gen_data_fcn = _gen_data):
+		sub_path = 'wiki'
+		data_files = os.listdir(os.path.join(base_dir, sub_path))
+		data_files = [os.path.join(base_dir, sub_path, x) for x in data_files]
+		print(data_files)
 		return ClassifierData(file_list = data_files, indexer=indexer, params=params,
 							 gen_data_from_file_fcn = gen_data_from_file_fcn,
 							 gen_data_fcn = gen_data_fcn)

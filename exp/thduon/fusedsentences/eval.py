@@ -2,10 +2,10 @@ from framework.utils.data.text_indexer import TextIndexer
 from framework.evaluator import Evaluator
 import framework.utils.common as utils
 import os
-import numpy as np
+os.environ['TF_CPP_MIN_VLOG_LEVEL'] = '2'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import sys
 run_server = False
-
 
 def generate_model_input_sentences(tokens, params):
 	pad_tok = '<pad>'
@@ -22,7 +22,7 @@ def generate_model_input_sentences(tokens, params):
 	return result
 
 
-params = utils.load_param_file('output/fusedsentencesV1/params.py')
+params = utils.load_param_file('params.py')
 
 vocab_file = os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl')
 ckpt = os.path.join(utils.get_dict_value(params,'output_location'),

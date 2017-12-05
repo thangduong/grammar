@@ -15,8 +15,9 @@ class Evaluator(object):
 
     """
 
-    def __init__(self, tf_session):
+    def __init__(self, tf_session, graph_prefix =""):
         self._tf_session = tf_session
+        self._graph_prefix = graph_prefix
 
     @classmethod
     def load2(cls, ckpt_filepath):
@@ -27,7 +28,20 @@ class Evaluator(object):
                 saver = tf.train.import_meta_graph(ckpt_filepath + '.meta')
                 saver.restore(tf_session, ckpt_filepath)
         return cls(tf_session)
- 
+
+    @classmethod
+    def load_graphdef(cls, graphdef_filename):
+        tf_graph = tf.Graph()
+        tf_session = tf.Session(graph=tf_graph)
+        model_name = graphdef_filename.split(".")[0]
+        with tf_graph.as_default():
+            with tf_session.as_default():
+                with tf.gfile.GFile(graphdef_filename, 'rb') as f:
+                    graph_def = tf.GraphDef()
+                    graph_def.ParseFromString(f.read())
+                    tf.import_graph_def(graph_def, name=model_name)
+        return cls(tf_session, graph_prefix="%s/"%model_name)
+
     @classmethod
     def load(cls, pb_filename, ckpt_filename=None, model_dir=None):
         """
@@ -184,15 +198,15 @@ class Evaluator(object):
             output_names = [output_names]
 
         # find the input placeholder nodes and build feed_dict
-        feed_dict = {self._tf_session.graph.get_tensor_by_name('is_training:0'):False}
+        feed_dict = {self._tf_session.graph.get_tensor_by_name(self._graph_prefix+'is_training:0'):False}
         for input_name, input_value in inputs.items():
-            cur_input = self._tf_session.graph.get_tensor_by_name(input_name + ':0')
+            cur_input = self._tf_session.graph.get_tensor_by_name(self._graph_prefix + input_name + ':0')
             feed_dict[cur_input] = input_value
 
         # find the output nodes
         output_tensors = []
         for name in output_names:
-            output_tensor = self._tf_session.graph.get_tensor_by_name(name+':0')
+            output_tensor = self._tf_session.graph.get_tensor_by_name(self._graph_prefix + name+':0')
             output_tensors.append(output_tensor)
 
 #        print(output_tensors)
