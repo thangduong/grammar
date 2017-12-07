@@ -129,7 +129,14 @@ class ClassifierData:
 		self._cur_list = []
 		self._next_file = 0
 		self._params = params
-		self._keywords = utils.get_dict_value(params, 'keywords', [])
+		_keywords = utils.get_dict_value(params, 'keywords', [])
+		if utils.get_dict_value(params, 'keywords_as_map', False):
+			self._keywords = {}
+			for i, k in enumerate(_keywords):
+				self._keywords[k] = i
+		else:
+			self._keywords = _keywords
+
 		self._num_before = utils.get_dict_value(params, 'num_words_before', 5)
 		self._num_after = utils.get_dict_value(params, 'num_words_after', 5)
 		self._null_sample_factor = utils.get_dict_value(params, 'null_sample_factor', 0)
@@ -205,6 +212,7 @@ class ClassifierData:
 				else:
 					for i in range(self._ccnn_num_words-1):
 						tok0 += [0] + rec[0][int(len(rec[0]) / 2) + 1 + i]
+						#tok0 += chr(0) + rec[0][int(len(rec[0]) / 2) + 1 + i]
 				if self._indexer is None:
 					batch_x.append(rec[0])
 #						batch_ccnn.append(tok0)
@@ -267,7 +275,7 @@ class ClassifierData:
 							 gen_data_from_file_fcn = _gen_data_from_file,
 							 gen_data_fcn = _gen_data):
 		sub_path = 'training-monolingual.tokenized.shuffled'
-		sub_path = 'alltrain'
+#		sub_path = 'alltrain'
 		data_files = os.listdir(os.path.join(base_dir, sub_path))
 		data_files = [os.path.join(base_dir, sub_path, x) for x in data_files]
 		return ClassifierData(file_list = data_files, indexer=indexer, params=params,
