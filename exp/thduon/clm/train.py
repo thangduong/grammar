@@ -20,7 +20,7 @@ params['keywords'] = keywords
 params['num_classes'] = len(params['keywords'])+1
 indexer = TextIndexer.from_txt_file(utils.get_dict_value(params, 'vocab_file'))
 indexer.add_token('<pad>')
-indexer.add_token('unk')
+#indexer.add_token('unk')
 output_indexer = copy.deepcopy(indexer)
 output_indexer.add_token('<blank>')
 os.makedirs(utils.get_dict_value(params,'output_location'), exist_ok=True)

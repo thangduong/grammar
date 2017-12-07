@@ -6,7 +6,7 @@ os.environ['TF_CPP_MIN_VLOG_LEVEL'] = '2'
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import sys
 
-paramsfile = "output/commaV13/params.py"
+paramsfile = "output/commaV5/params.py"
 
 def generate_model_input_sentences(tokens, params):
 	pad_tok = '<pad>'
@@ -29,7 +29,12 @@ vocab_file = os.path.join(utils.get_dict_value(params,'output_location'), 'vocab
 ckpt = os.path.join(utils.get_dict_value(params,'output_location'),
 										utils.get_dict_value(params, 'model_name') + '.ckpt')
 
-e = Evaluator.load2(ckpt)
+gdfile = os.path.join(utils.get_dict_value(params,'output_location'),
+		"release",
+		utils.get_dict_value(params, 'model_name') + '.graphdef')
+
+#e = Evaluator.load2(ckpt)
+e = Evaluator.load_graphdef(gdfile)
 i = TextIndexer.from_file(vocab_file)
 
 sentence = "Linda owns a catering business in New Orleans She enjoys cooking for special events such as weddings , parties , and holidays "
@@ -38,7 +43,14 @@ sentence = "Driving home from school , Brett vowed to protect the fragile ecosys
 sentence = sys.argv[1]
 tokens = sentence.lower().split()
 mi = generate_model_input_sentences(tokens, params)
-imi = [i.index_wordlist(s)[1] for s in mi]
+imi = []
+for s in mi:
+	a,indexed,b,c = i.index_wordlist(s)
+	print(indexed)
+	imi.append(indexed)
+#	print(a)
+#	print(b)
+#	print(c)
 r = e.eval({'sentence': imi}, {'sm_decision'})
 for pr, tok in zip(r[0],tokens):
 	print("%s - %0.4f"%(tok,pr[1]))

@@ -6,6 +6,8 @@ import tensorflow as tf
 import framework.utils.common as common_utils
 import framework.subgraph.mlp as mlp
 import numpy as np
+from framework.utils.graph import initializations
+from framework.utils.graph import variables
 
 def contrastive(network, name='contrastive_loss', params=None):
     """
@@ -114,6 +116,69 @@ def softmax_xentropy(network, params):
     labels_one_hot = tf.one_hot(labels, num_classes, on_value=1.0, name='onehot_label')
     loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=labels_one_hot, logits=network_answer),
                           name='loss')
+    return [loss]
+
+def sampled_softmax_xentropy(network, params):
+    """
+    cross entropy softmax.
+    this creates a new placeholder called y, which is an integer.
+    @param network:
+    @param params:
+    @return:
+    """
+    truncated_normal = 'truncated_normal'
+    num_classes = params['num_classes']
+    labels = tf.placeholder(tf.int32, [None], name='y')
+
+    in_node = network[0][0]
+    input_shape = in_node.get_shape().as_list()
+
+    n_inputs = int(np.prod(input_shape[1:]))
+    if len(input_shape) > 2:
+        in_node = tf.reshape(in_node, [-1, n_inputs])
+        # TODO: log when mismatch
+
+    # w * x + b
+    # this is the w part
+    W_shape = [n_inputs, num_classes]
+    W_init = initializations.get(truncated_normal)(W_shape, stddev=0.35)
+    W_regul = None
+    W_name = 'W_sm'
+    W = variables.variable(W_name, shape=W_shape, regularizer=W_regul,
+                           initializer=W_init, trainable=True,
+                           restore=True)
+
+    # this is the b part
+    b_shape = [num_classes]
+    bias_init = initializations.get(truncated_normal)(b_shape, stddev=0.35)
+    b = variables.variable('b', shape=b_shape, initializer=bias_init,
+                               trainable=True, restore=True)
+
+    out_node = tf.matmul(in_node, W)
+    network_answer = tf.nn.bias_add(out_node, b, name='decision')
+    sm_network_answer = tf.nn.softmax(network_answer, name='sm_decision')
+
+    #    network_answers, _ = mlp.fully_connected_layer(network[0], num_classes, activation=None, name='decision')
+    labels = tf.reshape(labels, [-1,1])
+#    print(labels.get_shape().as_list())
+#    logits = tf.matmul(inputs, tf.transpose(weights))
+#    logits = tf.nn.bias_add(logits, biases)
+#    labels_one_hot = tf.one_hot(labels, n_classes)
+#    loss = tf.nn.softmax_cross_entropy_with_logits(
+#        labels=labels_one_hot,
+#        logits=logits)
+
+#    labels_one_hot = tf.one_hot(labels, num_classes, on_value=1.0, name='onehot_label')
+#    loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(labels=labels_one_hot, logits=network_answer),
+#                          name='loss')
+    loss = tf.reduce_mean(tf.nn.sampled_softmax_loss(
+        weights=tf.transpose(W),
+        biases=b,
+        labels=labels,
+        inputs=in_node,
+        num_sampled=100,
+        num_classes=num_classes,
+        partition_strategy="div"),name='loss')
     return [loss]
 
 def weighted_softmax_xentropy(network, params):
