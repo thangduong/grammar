@@ -5,8 +5,9 @@ import framework.utils.common as utils
 from time import time
 import numpy as np
 import os
+import sys
 
-params = utils.load_param_file('output/commaV13/params.py')
+params = utils.load_param_file(sys.argv[1])
 
 vocab_file = os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl')
 ckpt = os.path.join(utils.get_dict_value(params,'output_location'),
