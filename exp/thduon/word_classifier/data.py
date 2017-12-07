@@ -23,7 +23,7 @@ def merge_tokens_for_text(tokens):
 				in_quote = False
 		if len(text) > 0 \
 				and (not tok in punctuation) \
-				and (not no_space_afdataobj, ter) \
+				and (not no_space_after) \
 				:
 			text += ' '
 		if tok in no_space_after_toks:
