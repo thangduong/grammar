@@ -25,6 +25,7 @@ indexer.add_token('<pad>')
 indexer.add_token('unk')
 indexer.save_vocab_as_pkl('vocab.pkl')
 params['vocab_size'] = indexer.vocab_size()
+print("vocab_size = %s" % indexer.vocab_size())
 training_data = ClassifierData.get_monolingual_training(base_dir=params['monolingual_dir'],
 																												indexer=indexer,
 																												params=params)
@@ -38,7 +39,6 @@ def on_checkpoint_saved(trainer, params, save_path):
 def train_iteration_done(trainer, epoch, index, iteration_count, loss_value, training_done, run_results, params):
 	if iteration_count == 1:
 		trainer._out_file = open('output.txt', 'w')
-
 	msg = ("%s, %s"%(time(), loss_value))
 	print('%s: %s' % (iteration_count, msg))
 	trainer._out_file.write('%s\n'%msg)
