@@ -1,12 +1,15 @@
 #pragma once
 #include <Windows.h>
 #include <stdint.h>
+#include "AuxiliaryProofingEngine.h"
 
 #ifdef DLL_BUILD
 #define	DLL_FUNCTION __declspec(dllexport)
 #else
 #define	DLL_FUNCTION __declspec(dllimport)
 #endif
+
+/*
 
 #pragma pack(push,1)
 struct ReplacementCritique {
@@ -18,8 +21,6 @@ struct ReplacementCritique {
 #pragma pack(pop)
 
 extern "C" {
-	DLL_FUNCTION int __stdcall Init();
-	DLL_FUNCTION int __stdcall Release();
 	DLL_FUNCTION int __stdcall GenerateReplacementCritiques(wchar_t* sentence,
 		ReplacementCritique* critiquesOutBuffer,
 		int bufferSize);
@@ -30,3 +31,4 @@ extern "C" {
 		int numChoices,
 		float* outBuffer);
 }
+*/
