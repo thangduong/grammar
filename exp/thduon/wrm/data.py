@@ -3,13 +3,17 @@ import math
 import numpy as np
 from time import time
 
-def gen_data(tokens, keywords,
+def gen_data(dataobj, tokens, keywords,
 						 num_before=5, num_after=5,
 						 pad_tok="<pad>", null_sample_factor=0,
 						 add_redundant_keyword_data=True,
 						 use_negative_only_data=True,
 						 ignore_negative_data=False,
 						 add_keyword_removal_data=False):
+	dataobj._mean = np.mean(dataobj._y_count[1:])
+	dataobj._std = np.std(dataobj._y_count[1:])
+	dataobj._max = np.max(dataobj._y_count[1:])
+	dataobj._min = np.min(dataobj._y_count[1:])
 	tokens = [pad_tok] * num_before + tokens + [pad_tok]*(num_after+5)
 	class_offset = 1
 	if ignore_negative_data:
@@ -39,15 +43,19 @@ def gen_data(tokens, keywords,
 			None
 		else:
 			ki = bucket[0]
-			for bad_word in bucket[1:]:
-				if type(bad_word) is tuple:
-					bad_word = list(bad_word)
-				else:
-					bad_word = [bad_word]
-				test_sentence = tokens[(toki - num_before):toki] + bad_word + tokens[(toki + sl):(toki + num_after+5)]
-				test_sentence = test_sentence[:(num_before+num_after)]
-				replaced_list.append((test_sentence,ki + class_offset))
-			replaced_list.append((tokens[(toki-num_before):(toki+num_after)], 0))
+			bucketid = [keywords[x][0] for x in bucket[1:]]
+			bucketfreq = [dataobj._y_count[x+class_offset] for x in bucketid]
+			max_bucket_freq = np.min(bucketfreq)
+			if dataobj._y_count[ki+class_offset] < min(dataobj._mean + 5 + dataobj._std * 1.5,max_bucket_freq+2):
+				for bad_word in bucket[1:]:
+					if type(bad_word) is tuple:
+						bad_word = list(bad_word)
+					else:
+						bad_word = [bad_word]
+					test_sentence = tokens[(toki - num_before):toki] + bad_word + tokens[(toki + sl):(toki + num_after+5)]
+					test_sentence = test_sentence[:(num_before+num_after)]
+					replaced_list.append((test_sentence,ki + class_offset))
+				replaced_list.append((tokens[(toki-num_before):(toki+num_after)], 0))
 		original.append((tokens[(toki-num_before):(toki+num_after)], 0))
 #	random.shuffle(original)
 	results = replaced_list # + original[:len(replaced_list)]

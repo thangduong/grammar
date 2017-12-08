@@ -144,3 +144,6 @@ class TextIndexer(object):
 
     def vocab_size(self):
         return len(self._vocab)
+
+    def vocab_map(self):
+        return self._vocab

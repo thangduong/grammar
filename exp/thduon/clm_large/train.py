@@ -14,18 +14,25 @@ import numpy as np
 
 param_file = 'params.py'
 params = utils.load_param_file(param_file)
-with open('keywords.pkl', 'rb') as f:
-	keywords = pickle.load(f)
-params['keywords'] = keywords
-params['num_classes'] = len(params['keywords'])+1
 indexer = TextIndexer.from_txt_file(utils.get_dict_value(params, 'vocab_file'))
 indexer.add_token('<pad>')
 #indexer.add_token('unk')
-output_indexer = copy.deepcopy(indexer)
-output_indexer.add_token('<blank>')
+#params['keywords'] = indexer.vocab_map()
+keywords = []
+with open('/mnt/work/1-billion-word-language-modeling-benchmark/lc_vocab_alpha.txt', 'r') as f:
+	for line in f:
+		line = line.rstrip().lstrip()
+		pieces = line.split()
+		word = pieces[0]
+		if word.isalpha():
+			keywords.append(word)
+params['keywords'] = keywords
+params['num_classes'] = len(params['keywords'])
 os.makedirs(utils.get_dict_value(params,'output_location'), exist_ok=True)
 indexer.save_vocab_as_pkl(os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl'))
 
+with open('keywords.pkl','wb') as f:
+	pickle.dump(keywords, f)
 files_to_copy = ['keywords.pkl', param_file]
 for file in files_to_copy:
 	shutil.copyfile(file,os.path.join(utils.get_dict_value(params,'output_location'), file))
@@ -47,10 +54,7 @@ def save_y_count(trainer, filename = 'replacement_counts.txt'):
 	with open(filename, 'w') as f:
 		total = np.sum(trainer._training_data._y_count)
 		for i, j in enumerate(trainer._training_data._y_count):
-			if i > 0:
-				f.write("%02d %05d %0.5f %s\n" % (i, j, j/total, params['keywords'][i - 1]))
-			else:
-				f.write("%02d %05d %0.5f %s\n" % (i, j, j/total, ''))
+			f.write("%02d %05d %0.5f %s\n" % (i, j, j/total, params['keywords'][i]))
 
 
 def train_iteration_done(trainer, epoch, index, iteration_count, loss_value, training_done, run_results, params):
@@ -60,7 +64,7 @@ def train_iteration_done(trainer, epoch, index, iteration_count, loss_value, tra
 
 #print(training_data.next_batch(10))
 trainer = Trainer(inference=model.inference, batch_size=utils.get_dict_value(params, 'batch_size', 128),
-                  loss=losses.softmax_xentropy
+                  loss=utils.get_dict_value(params,'loss_function', losses.sampled_softmax_xentropy)
 									, model_output_location=utils.get_dict_value(params, 'output_location')
 									, name=utils.get_dict_value(params, 'model_name')
 									, training_data=training_data, train_iteration_done=train_iteration_done,

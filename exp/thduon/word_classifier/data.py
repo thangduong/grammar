@@ -34,7 +34,7 @@ def merge_tokens_for_text(tokens):
 		text += tok
 	return text, loc
 
-def _gen_data(tokens, keywords,
+def _gen_data(dataobj, tokens, keywords,
 						 num_before=5, num_after=5,
 						 pad_tok="<pad>", null_sample_factor=0,
 						 add_redundant_keyword_data=True,
@@ -96,7 +96,7 @@ def _gen_data(tokens, keywords,
 			yield x
 
 
-def _gen_data_from_file(filename, keywords=[','], num_before=5, num_after=5,
+def _gen_data_from_file(dataobj, filename, keywords=[','], num_before=5, num_after=5,
 											 pad_tok="<pad>", null_sample_factor=0,
 											 use_negative_only_data=True,
 											 add_redundant_keyword_data=True,
@@ -112,7 +112,7 @@ def _gen_data_from_file(filename, keywords=[','], num_before=5, num_after=5,
 			tokens = line.split()
 			if start_token is not None and len(start_token)>0:
 				tokens = [start_token] + tokens
-			yield from gen_data_fcn(tokens, keywords=keywords,
+			yield from gen_data_fcn(dataobj, tokens, keywords=keywords,
 													num_before=num_before, num_after=num_after,
 													pad_tok=pad_tok, null_sample_factor=null_sample_factor,
 													add_redundant_keyword_data=add_redundant_keyword_data,
@@ -129,7 +129,14 @@ class ClassifierData:
 		self._cur_list = []
 		self._next_file = 0
 		self._params = params
-		self._keywords = utils.get_dict_value(params, 'keywords', [])
+		_keywords = utils.get_dict_value(params, 'keywords', [])
+		if utils.get_dict_value(params, 'keywords_as_map', False):
+			self._keywords = {}
+			for i, k in enumerate(_keywords):
+				self._keywords[k] = i
+		else:
+			self._keywords = _keywords
+
 		self._num_before = utils.get_dict_value(params, 'num_words_before', 5)
 		self._num_after = utils.get_dict_value(params, 'num_words_after', 5)
 		self._null_sample_factor = utils.get_dict_value(params, 'null_sample_factor', 0)
@@ -159,7 +166,7 @@ class ClassifierData:
 	def load_next_file(self):
 		print(self._file_list[self._next_file])
 		self._num_files_processed += 1
-		self._cur_list = self._gen_data_from_file_fcn(self._file_list[self._next_file],
+		self._cur_list = self._gen_data_from_file_fcn(self, self._file_list[self._next_file],
 																				keywords=self._keywords,
 																				num_before=self._num_before,
 																				num_after=self._num_after,
@@ -205,6 +212,7 @@ class ClassifierData:
 				else:
 					for i in range(self._ccnn_num_words-1):
 						tok0 += [0] + rec[0][int(len(rec[0]) / 2) + 1 + i]
+						#tok0 += chr(0) + rec[0][int(len(rec[0]) / 2) + 1 + i]
 				if self._indexer is None:
 					batch_x.append(rec[0])
 #						batch_ccnn.append(tok0)
@@ -228,6 +236,8 @@ class ClassifierData:
 					cinput += [0] * (self._ccnn_word_len - len(cinput))
 					batch_ccnn.append(cinput)
 				batch_y.append(rec[1])
+				if self._count_y:
+					self._y_count[rec[1]] += 1
 				self._current_index += 1
 			except StopIteration:
 				self.load_next_file()
@@ -249,9 +259,9 @@ class ClassifierData:
 #				for (x,y) in zip(result['sentence'], result['y']):
 #					f.write('%02d: %s\n'%(y,x))
 #			self._dump_num_batches -= 1
-		if self._count_y:
-			for classi in range(len(self._y_count)):
-				self._y_count[classi] += batch_y.count(classi)
+#		if self._count_y:
+#			for classi in range(len(self._y_count)):
+#				self._y_count[classi] += batch_y.count(classi)
 		return result
 
 	def current_epoch(self):
@@ -265,6 +275,7 @@ class ClassifierData:
 							 gen_data_from_file_fcn = _gen_data_from_file,
 							 gen_data_fcn = _gen_data):
 		sub_path = 'training-monolingual.tokenized.shuffled'
+#		sub_path = 'alltrain'
 		data_files = os.listdir(os.path.join(base_dir, sub_path))
 		data_files = [os.path.join(base_dir, sub_path, x) for x in data_files]
 		return ClassifierData(file_list = data_files, indexer=indexer, params=params,

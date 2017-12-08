@@ -1,6 +1,7 @@
 import tensorflow as tf
 import numpy as np
 from tensorflow.python.platform import gfile
+import os
 
 class Evaluator(object):
     """
@@ -33,7 +34,7 @@ class Evaluator(object):
     def load_graphdef(cls, graphdef_filename):
         tf_graph = tf.Graph()
         tf_session = tf.Session(graph=tf_graph)
-        model_name = graphdef_filename.split(".")[0]
+        model_name = os.path.splitext(os.path.basename(graphdef_filename))[0]
         with tf_graph.as_default():
             with tf_session.as_default():
                 with tf.gfile.GFile(graphdef_filename, 'rb') as f:

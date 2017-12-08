@@ -3,7 +3,7 @@ from word_classifier.data import ClassifierData
 import framework.subgraph.losses as losses
 import framework.utils.common as utils
 from framework.trainer import Trainer, _default_train_iteration_done
-from data import _gen_data_from_file
+from data import _gen_data_from_file, _gen_data
 from time import time
 import model
 import os
@@ -24,7 +24,8 @@ params['vocab_size'] = indexer.vocab_size()
 training_data = ClassifierData.get_monolingual_training(base_dir=params['monolingual_dir'],
 																												indexer=indexer,
 																												params=params,
-																												gen_data_from_file_fcn=_gen_data_from_file)
+																												gen_data_from_file_fcn=_gen_data_from_file,
+																												gen_data_fcn=_gen_data)
 def on_checkpoint_saved(trainer, params, save_path):
     msg = 'saved checkpoint: ' + save_path
     print(msg)

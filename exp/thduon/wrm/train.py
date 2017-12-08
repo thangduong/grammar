@@ -42,7 +42,12 @@ def on_checkpoint_saved(trainer, params, save_path):
 
 def save_y_count(trainer, filename = 'replacement_counts.txt'):
 	with open(filename, 'w') as f:
-		total = np.sum(trainer._training_data._y_count)
+		f.write("mean: %s\n" % trainer._training_data._mean)
+		f.write("std: %s\n" % trainer._training_data._std)
+		f.write("max: %s\n" % trainer._training_data._max)
+		f.write("min: %s\n" % trainer._training_data._min)
+		f.write("cap: %s\n" % (trainer._training_data._mean+2*trainer._training_data._std+100))
+		total = np.sum(trainer._training_data._y_count[1:])
 		for i, j in enumerate(trainer._training_data._y_count):
 			if i > 0:
 				f.write("%02d %05d %0.5f %s\n" % (i, j, j/total, params['id_to_keyword'][i - 1]))
@@ -63,7 +68,7 @@ trainer = Trainer(inference=model.inference, batch_size=utils.get_dict_value(par
 									, training_data=training_data, train_iteration_done=train_iteration_done,
                   params=params)
 
-trainer.run(restore_latest_ckpt=False, save_network=True,
+trainer.run(restore_latest_ckpt=True, save_network=True,
             save_ckpt=True, mini_batches_between_checkpoint=utils.get_dict_value(params, 'mini_batches_between_checkpoint', 1000),
             additional_nodes_to_evaluate=['encoded_sentence']
             ,on_checkpoint_saved=on_checkpoint_saved)

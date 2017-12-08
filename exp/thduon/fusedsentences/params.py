@@ -1,7 +1,7 @@
 import os
 
 
-model_name = 'fusedsentencesV2'
+model_name = 'fusedsentencesV3'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
@@ -10,8 +10,9 @@ params = { 'model_name': model_name,
 					 'embedding_size': 300,
 					 'conv_num_features': [[300,300,300,300,300,300,300]],
 					 'conv_widths': [[2,2,2,2,2,2,2]],
+					 'all_lowercase': True,
 					 'conv_keep_probs': None,
-					 'use_no_conv_path': True,                       # enable embedding pass through to second stage
+					 'use_no_conv_path': False,                       # enable embedding pass through to second stage
 					 'mlp_config': [512],
 					 'bipass_conv': False,
 					 'mlp_activations': 'sigmoid',
