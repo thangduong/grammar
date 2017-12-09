@@ -17,4 +17,5 @@ release_cmd2 = 'cp -rvf %s %s %s' % (
 
 cmds = [freeze_cmd, vocab_cmd, params_cmd, release_cmd, release_cmd2]
 for c in cmds:
+	print("EXECUTING: %s"%c)
 	shell_call(c)

@@ -16,10 +16,10 @@ param_file = 'params.py'
 params = utils.load_param_file(param_file)
 indexer = TextIndexer.from_txt_file(utils.get_dict_value(params, 'vocab_file'))
 indexer.add_token('<pad>')
-#indexer.add_token('unk')
+indexer.add_token('unk')
 #params['keywords'] = indexer.vocab_map()
 keywords = []
-with open('/mnt/work/1-billion-word-language-modeling-benchmark/lc_vocab_alpha.txt', 'r') as f:
+with open('lc_vocab_alpha.txt', 'r') as f:
 	for line in f:
 		line = line.rstrip().lstrip()
 		pieces = line.split()

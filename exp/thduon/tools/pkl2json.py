@@ -5,7 +5,8 @@ import sys, os
 def pkl2json(pkl_filename, json_filename):
 	with open(pkl_filename, "rb") as fi:
 		with open(json_filename, 'w') as fo:
-			json.dump(pickle.load(fi), fo)
+			data = pickle.load(fi)
+			json.dump(data, fo)
 
 
 if __name__ == "__main__":

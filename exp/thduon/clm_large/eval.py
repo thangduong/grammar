@@ -9,7 +9,7 @@ import gflags
 import os
 import sys
 
-gflags.DEFINE_string('paramsfile', 'output/clmV0/params.py', 'parameter files')
+gflags.DEFINE_string('paramsfile', 'output/clmV1/params.py', 'parameter files')
 FLAGS = gflags.FLAGS
 
 
@@ -61,6 +61,7 @@ def eval(params,
 #	test_sentence = "<S> nothing can be ___ from the truth"
 #	test_sentence = "<S> the ___ knot will unwind"
 #	test_sentence = "<S> if you keep playing, you will ___ ."
+	test_sentence = test_sentence.lower()
 	split_sentence = list(split_sentence_for_eval(test_sentence.split(), ["___"], num_before, num_after))
 #	print(split_sentence[0][0])
 	print(split_sentence[0][0])
@@ -81,6 +82,8 @@ def eval(params,
 	k = [''] + k
 	sm, k = zip(*sorted(zip(sm, k), reverse=True))
 #	print(k)
+	print(sm[k.index('pear')])
+	print(sm[k.index('pair')])
 	for i,(x,y) in enumerate(zip(sm,k)):
 		if i>20:
 			exit(0)
