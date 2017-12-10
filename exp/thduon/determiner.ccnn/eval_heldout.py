@@ -6,9 +6,9 @@ from time import time
 import numpy as np
 import os
 
-params = utils.load_param_file('output/determinerCCNNV2/params.py')
+params = utils.load_param_file('output/determinerCCNNV5/params.py')
 #params = utils.load_param_file('params.py')
-
+params['num_classes'] = len(params['keywords'])+1
 vocab_file = os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl')
 ckpt = os.path.join(utils.get_dict_value(params,'output_location'),
 										utils.get_dict_value(params, 'model_name') + '.ckpt')

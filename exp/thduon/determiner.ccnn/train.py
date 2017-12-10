@@ -8,8 +8,6 @@ import model
 import os
 import shutil
 
-
-
 param_file = 'params.py'
 params = utils.load_param_file(param_file)
 params['num_classes'] = len(params['keywords'])+1
@@ -21,9 +19,13 @@ indexer.save_vocab_as_pkl(os.path.join(utils.get_dict_value(params,'output_locat
 shutil.copyfile(param_file,os.path.join(utils.get_dict_value(params,'output_location'), param_file))
 
 params['vocab_size'] = indexer.vocab_size()
-training_data = ClassifierData.get_monolingual_training(base_dir=params['monolingual_dir'],
-																												indexer=indexer,
-																												params=params)
+
+if 'training_data_dir' in params:
+	training_data = ClassifierData.get_training_data(base_dir=params['training_data_dir'], indexer=indexer, params=params)
+else:
+	training_data = ClassifierData.get_monolingual_training(base_dir=params['monolingual_dir'],
+																													indexer=indexer,
+																													params=params)
 def on_checkpoint_saved(trainer, params, save_path):
     msg = 'saved checkpoint: ' + save_path
     print(msg)

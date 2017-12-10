@@ -1,7 +1,7 @@
 import os
 import framework.subgraph.losses as losses
 
-model_name = 'clmV2'
+model_name = 'clmV3'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
@@ -18,7 +18,7 @@ params = { 'model_name': model_name,
 					 'mlp_activations': 'sigmoid',
 					 'mlp_keep_probs': 0.9,
 					 'embedding_device': '/cpu:0',
-					 'batch_size': 128,
+					 'batch_size': 1024*8,
 					 'learning_rate': 0.001,
 					 'loss_function': losses.softmax_xentropy,
 					 'ignore_negative_data': True,

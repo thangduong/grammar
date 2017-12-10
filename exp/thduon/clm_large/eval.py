@@ -9,7 +9,7 @@ import gflags
 import os
 import sys
 
-gflags.DEFINE_string('paramsfile', 'output/clmV1/params.py', 'parameter files')
+gflags.DEFINE_string('paramsfile', 'output/clmV3/params.py', 'parameter files')
 FLAGS = gflags.FLAGS
 
 
@@ -55,7 +55,7 @@ def eval(params,
 #	test_sentence = "<S> ___ is no place like home"
 	#test_sentence = "I have ___ of money"
 	#test_sentence = "<S> I think I ___ have it"
-	test_sentence = "<S> don 't forget to get orange , banana, and ___ ."
+	test_sentence = "<S> don 't forget to get orange , banana , and ___ ."
 #	test_sentence = "<S> in the heat ___ the night"
 #	test_sentence = "<S> in the river , ___ the boat"
 #	test_sentence = "<S> nothing can be ___ from the truth"
@@ -79,7 +79,7 @@ def eval(params,
 #		print("DO NOTHING")
 #	else:
 #		print(k[am - 1])
-	k = [''] + k
+	k = k
 	sm, k = zip(*sorted(zip(sm, k), reverse=True))
 #	print(k)
 	print(sm[k.index('pear')])
@@ -87,7 +87,7 @@ def eval(params,
 	for i,(x,y) in enumerate(zip(sm,k)):
 		if i>20:
 			exit(0)
-		print("%f %s" %(x,y))
+		print("%d %f %s" %(i, x,y))
 	print(test_sentence)
 	print("EVAL TIME = %s"%(aft-bef))
 def main(argv):
