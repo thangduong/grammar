@@ -16,26 +16,11 @@
 using namespace std;
 using namespace tensorflow;
 
-const string lm_graph_def_filename = "commaV5.graphdef";
+const string lm_graph_def_filename = ".graphdef";
 std::shared_ptr<Session> lm_session;
+std::shared_ptr<Session> wrm_session;
 
-BOOL WINAPI DllMain(_In_ HINSTANCE hinstDLL, _In_ DWORD     fdwReason, _In_ LPVOID    lpvReserved) {
-	switch (fdwReason)
-	{
-	case DLL_THREAD_DETACH:
-		// A thread exits normally.
-		break;
-
-	case DLL_PROCESS_DETACH:
-		// A process unloads the DLL.
-		break;
-	}
-	return TRUE;
-}
-
-
-extern "C"{ 
-DLL_FUNCTION int __stdcall Init() {
+int __stdcall Init() {
 	GraphDef graph_def;
 	SessionOptions options;
 
@@ -50,23 +35,37 @@ DLL_FUNCTION int __stdcall Init() {
 	return 0;
 }
 
-DLL_FUNCTION int __stdcall Release() {
+int __stdcall Release() {
 	lm_session->Close();
 	return 0;
 }
 
-DLL_FUNCTION int __stdcall GenerateReplacementCritiques(wchar_t* sentence,
-	ReplacementCritique* critiquesOutBuffer,
-	int bufferSize) {
-	return 0;
+BOOL WINAPI DllMain(_In_ HINSTANCE hinstDLL, _In_ DWORD     fdwReason, _In_ LPVOID    lpvReserved) {
+	switch (fdwReason)
+	{
+	case DLL_PROCESS_ATTACH:
+		Init();
+		break;
+
+	case DLL_PROCESS_DETACH:
+		Release();
+		break;
+	}
+	return TRUE;
 }
 
-DLL_FUNCTION int __stdcall GetFIBProbabilities(wchar_t* sentence,
-	int blankStartIndex,
-	int blankLen,
-	wchar_t** choices,
-	int numChoices,
-	float* outBuffer) {
+
+extern "C"{ 
+
+uint32_t __stdcall GenerateCritiques(__in_z const wchar_t* wzInput,
+	__out_ecount(cCritiquesOut) AuxProofingCritique* rgCritiquesOut,
+	uint32_t cCritiquesOut) {
+
+}
+
+uint32_t __stdcall GetFillInBlankProbs(__in_z const wchar_t* wzInput,
+	__out_ecount(cCritiquesOut) AuxProofingCritique* rgCritiquesOut,
+	uint32_t cCritiquesOut) {
 	return 0;
 }
 
