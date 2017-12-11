@@ -28,8 +28,9 @@ def gen_data(dataobj, tokens, keywords,
 		if tok0 in keywords:
 			ki = keywords[tok0]
 			if (sampling=='freeform') \
-				or ((sampling == 'uniform') and (dataobj._y_count[ki+class_offset] < dataobj._min + 5) \
-				:#dataobj._y_count[ki+class_offset] < dataobj._min + 5:# + dataobj._std * 1.0:
+				or ((sampling == 'uniform') and (dataobj._y_count[ki+class_offset] < dataobj._min + 5)) \
+				:
+				#dataobj._y_count[ki+class_offset] < dataobj._min + 5:# + dataobj._std * 1.0:
 				results.append( \
 					(tokens[(toki - num_before):toki] + tokens[(toki + 1):(toki + num_after + 1)], \
 					 ki + class_offset))
