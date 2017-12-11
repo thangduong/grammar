@@ -24,7 +24,7 @@ def gen_data(dataobj, tokens, keywords,
 	for toki in range(num_before, len(tokens)-num_before-5):
 #		tok0 = tokens[toki].lower()
 #		tok1 = tuple([x.lower() for x in tokens[toki:toki+2]])
-#		tok2 = tuple([x.lower() for x in tokens[toki:toki+3]])
+#		tok2 = tuple([x.lower() for x in tokens[toki:toki+3]], an)
 		tok0 = tokens[toki]
 		tok1 = tuple([x for x in tokens[toki:toki+2]])
 		tok2 = tuple([x for x in tokens[toki:toki+3]])

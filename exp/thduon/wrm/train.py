@@ -28,10 +28,15 @@ for file in files_to_copy:
 	shutil.copyfile(file,os.path.join(utils.get_dict_value(params,'output_location'), file))
 
 params['vocab_size'] = indexer.vocab_size()
-training_data = ClassifierData.get_monolingual_training(base_dir=params['monolingual_dir'],
-																												indexer=indexer,
-																												params=params,
-																												gen_data_fcn=data.gen_data)
+
+if 'training_data_dir' in params:
+	training_data = ClassifierData.get_training_data(base_dir=params['training_data_dir'], indexer=indexer, params=params,
+																													gen_data_fcn = data.gen_data)
+else:
+	training_data = ClassifierData.get_monolingual_training(base_dir=params['monolingual_dir'],
+																													indexer=indexer,
+																													params=params,
+																													gen_data_fcn = data.gen_data)
 live_replacement_count_filename = os.path.join(utils.get_dict_value(params,'output_location'), 'live_replacement_count.txt')
 saved_replacement_count_filename = os.path.join(utils.get_dict_value(params,'output_location'), 'saved_replacement_count.txt')
 
