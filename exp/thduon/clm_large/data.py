@@ -1,6 +1,7 @@
 import random
 import math
 import numpy as np
+import framework.utils.common as utils
 
 def gen_data(dataobj, tokens, keywords,
 						 num_before=5, num_after=5,
