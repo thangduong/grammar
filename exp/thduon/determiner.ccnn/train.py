@@ -13,6 +13,10 @@ params = utils.load_param_file(param_file)
 params['num_classes'] = len(params['keywords'])+1
 indexer = TextIndexer.from_txt_file(utils.get_dict_value(params, 'vocab_file'), max_size=utils.get_dict_value(params,'max_vocab_size',-1))
 indexer.add_token('<pad>')
+if utils.get_dict_value(params, 'all_lowercase', False):
+	indexer.add_token('<s>')
+else:
+	indexer.add_token('<S>')
 indexer.add_token('unk')
 os.makedirs(utils.get_dict_value(params,'output_location'), exist_ok=True)
 indexer.save_vocab_as_pkl(os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl'))

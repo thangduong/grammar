@@ -13,6 +13,8 @@ def gen_data(dataobj, tokens, keywords,
 	dataobj._std = np.std(dataobj._y_count)
 	dataobj._max = np.max(dataobj._y_count)
 	dataobj._min = np.min(dataobj._y_count)
+	params = dataobj._params
+	sampling = utils.get_dict_value(params, 'data_sampling', 'freeform')
 
 	tokens = [pad_tok] * num_before + tokens + [pad_tok]*(num_after+5)
 	class_offset = 1
@@ -25,7 +27,9 @@ def gen_data(dataobj, tokens, keywords,
 		tok0 = tokens[toki]
 		if tok0 in keywords:
 			ki = keywords[tok0]
-			if True:#dataobj._y_count[ki+class_offset] < dataobj._min + 5:# + dataobj._std * 1.0:
+			if (sampling=='freeform') \
+				or ((sampling == 'uniform') and (dataobj._y_count[ki+class_offset] < dataobj._min + 5) \
+				:#dataobj._y_count[ki+class_offset] < dataobj._min + 5:# + dataobj._std * 1.0:
 				results.append( \
 					(tokens[(toki - num_before):toki] + tokens[(toki + 1):(toki + num_after + 1)], \
 					 ki + class_offset))

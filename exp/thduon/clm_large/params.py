@@ -1,7 +1,7 @@
 import os
 import framework.subgraph.losses as losses
 
-model_name = 'clmV3'
+model_name = 'clmV4'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
@@ -20,7 +20,8 @@ params = { 'model_name': model_name,
 					 'embedding_device': '/cpu:0',
 					 'batch_size': 1024*8,
 					 'learning_rate': 0.001,
-					 'loss_function': losses.softmax_xentropy,
+					 'data_sampling': 'freeform',
+					 'loss_function': losses.sampled_softmax_xentropy,
 					 'ignore_negative_data': True,
 					 'start_token': '<s>',
 					 'unk_token': 'unk',
@@ -30,30 +31,5 @@ params = { 'model_name': model_name,
 					 'enable_regularization': True,
 						'keywords_as_map': True,
 					 'monolingual_dir': '/mnt/work/1-billion-word-language-modeling-benchmark',
-					 'vocab_file': 'lc_vocab_alpha.txt'
-												 #/mnt/work/1-billion-word-language-modeling-benchmark/lc_vocab.txt'
+					 'vocab_file': '../data/filtered_lowercase_vocab.txt'
 					 }
-"""
-'than','then','their','there', \
-												['they', "'re"], 'pair','pear',
-												'accept', 'except', 'effect', 'affect', ['a', 'lot'], 'alot',
-												'allusion', 'illusion', 'illicit', 'elicit', \
-												'bad', 'badly', 'awhile', ['a', 'while'], \
-												'breath', 'breathe', \
-												'cache', 'cash', \
-												'complement', 'compliment', \
-												'desert', 'dessert', \
-												'deer', 'dear', \
-												'hone', 'home', \
-												'its', ['it', "'s"], \
-												'lead', 'led', \
-												'lose', 'loose', \
-												'precede', 'proceed', \
-												'passed', 'past', \
-												'principal', 'principle', \
-												'sell', 'sale',
-												'site', 'sight', \
-												'stationary', 'stationery', \
-												'a','an','the', \
-												'unk'
-"""

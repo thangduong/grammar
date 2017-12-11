@@ -9,7 +9,7 @@ import gflags
 import os
 import sys
 
-gflags.DEFINE_string('paramsfile', 'output/clmV3/params.py', 'parameter files')
+gflags.DEFINE_string('paramsfile', 'output/clmV0/params.py', 'parameter files')
 FLAGS = gflags.FLAGS
 
 
