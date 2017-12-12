@@ -64,6 +64,7 @@ def eval(params,
 #	test_sentence = "<s> I ate a ___ of oranges ."
 	test_sentence = "<s> I ate a ___ and oranges ."
 	test_sentence = "<s> I live in a ___ ."
+	test_sentence = "<s> I have seen it on him , and could ___ to it ."
 	test_sentence = test_sentence.lower()
 	split_sentence = list(split_sentence_for_eval(test_sentence.split(), ["___"], num_before, num_after))
 #	print(split_sentence[0][0])
@@ -85,8 +86,9 @@ def eval(params,
 	k = k
 	sm, k = zip(*sorted(zip(sm, k), reverse=True))
 #	print(k)
-	print(sm[k.index('pear')])
-	print(sm[k.index('pair')])
+	wlist = ['migrate','contribute','swear','write','climb']
+	for x in wlist:
+		print("%s %s"%(x,sm[k.index(x)]))
 	for i,(x,y) in enumerate(zip(sm,k)):
 		if i>20:
 			exit(0)
