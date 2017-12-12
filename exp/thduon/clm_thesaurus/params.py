@@ -29,8 +29,8 @@ params = { 'model_name': model_name,
 					 'mini_batches_between_checkpoint': 100,
 					 'embedding_wd': 0.0001,                           # L2 WD regularization constant
 					 'enable_regularization': True,
-						'keywords_as_map': True,
-					 'monolingual_dir': '/mnt/work/1-billion-word-language-modeling-benchmark',
+					 'keywords_as_map': True,
+					 'training_data_dir': '/mnt/work/tokenized_training_data',
 					 'vocab_file': '../data/filtered_lowercase_vocab.txt',
 					 'out_vocab_file': '../data/thesaurus_vocab.txt'
 					 }
