@@ -32,4 +32,5 @@ params = { 'model_name': model_name,
 						'keywords_as_map': True,
 					 'monolingual_dir': '/mnt/work/1-billion-word-language-modeling-benchmark',
 					 'vocab_file': '../data/filtered_lowercase_vocab.txt'
+					 'out_vocab_file': ''
 					 }

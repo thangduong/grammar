@@ -5,6 +5,9 @@ import framework.subgraph.mlp as mlp
 import framework.subgraph.misc as misc
 import framework.subgraph.core as core
 
+#def word_encoder(word_emb, params, name='encoded_word'):
+
+
 def sentence_encoder(emb_sentence, word_emb, params, name='encoded_sentence'):
 	"""
 	@param emb_sentence:

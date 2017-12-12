@@ -61,6 +61,9 @@ def eval(params,
 #	test_sentence = "<S> nothing can be ___ from the truth"
 #	test_sentence = "<S> the ___ knot will unwind"
 #	test_sentence = "<S> if you keep playing, you will ___ ."
+#	test_sentence = "<s> I ate a ___ of oranges ."
+	test_sentence = "<s> I ate a ___ and oranges ."
+	test_sentence = "<s> I live in a ___ ."
 	test_sentence = test_sentence.lower()
 	split_sentence = list(split_sentence_for_eval(test_sentence.split(), ["___"], num_before, num_after))
 #	print(split_sentence[0][0])

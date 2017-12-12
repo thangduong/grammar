@@ -5,8 +5,9 @@ import framework.utils.common as utils
 from time import time
 import numpy as np
 import os
+import sys
 
-params = utils.load_param_file('output/determinerCCNNV6/params.py')
+params = utils.load_param_file(sys.argv[1])#'output/determinerCCNNV7/params.py')
 #params = utils.load_param_file('params.py')
 params['num_classes'] = len(params['keywords'])+1
 vocab_file = os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl')
