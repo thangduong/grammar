@@ -15,7 +15,7 @@ class Tokenizer
 	unordered_map<string, string> _translit_map;
 	int _min_translit_len;
 	int _max_translit_len;
-	vector<pair<regex,string>> _exception_token_group_regex;
+	vector<tuple<regex, string, bool>> _exception_token_group_regex;
 
 	inline size_t ExactStringMatch(const list<string>& candidates, const string& input_string, int start)
 	{
@@ -29,13 +29,13 @@ class Tokenizer
 		}
 		return 0;
 	}
-	inline size_t RegexStringMatch(vector<pair<regex,string>>& candidates, const string& input_string, int start, int* pattern_matched)
+	inline size_t RegexStringMatch(vector<tuple<regex,string,bool>>& candidates, const string& input_string, int start, int* pattern_matched)
 	{
 		int idx = 0;
 		for (auto candidate_itr = candidates.begin();
 			candidate_itr != candidates.end(); candidate_itr++, idx++) {
 			smatch sm;
-			regex_search(next(input_string.begin(), start), input_string.end(), sm, candidate_itr->first);
+			regex_search(next(input_string.begin(), start), input_string.end(), sm, get<0>(*candidate_itr));
 			if (sm.length()) {
 				if (pattern_matched)
 					(*pattern_matched) = idx;// candidate_itr->second;
