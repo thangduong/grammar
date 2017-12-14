@@ -16,7 +16,7 @@ struct AuxProofingCritique
 {
     // The span within the input text that is being critiqued.
     // The length may be 0 in cases of pure insertions.
-    uint32_t  iStartInputSpanToReplace;
+    uint32_t iStartInputSpanToReplace;
     uint32_t cchInputSpanToReplace;
 
     // The single suggested replacement. May be the empty
@@ -29,6 +29,7 @@ struct AuxProofingCritique
     wchar_t  wzCritiqueTypeName[128];
 };
 
+using PFN_Init = uint32_t(__stdcall *)();
 
 // This is the DLL export that analyzes an input to generate AuxProofingCritiques:
 //

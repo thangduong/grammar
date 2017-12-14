@@ -32,7 +32,7 @@ list<float> TensorflowConvFIBLM::Eval(const string& before, const string& after,
 
 	// convert to tensors
 //	vector<int32_t> sentence(indexed_before_tokens.size() + indexed_after_tokens.size());
-	Tensor sentence_tensor(DT_INT32, TensorShape({ 1, sentence_len }));
+	Tensor sentence_tensor(DT_INT32, TensorShape({ sentence_len, 1 }));
 	auto sentence_data = sentence_tensor.tensor<int32_t, 2>();
 	uint32_t* sentence = (uint32_t*)sentence_data.data();
 	//	memcpy(sentence_data.data(), &sentence[0], sentence.size() * sizeof(sentence[0]));
@@ -52,7 +52,8 @@ list<float> TensorflowConvFIBLM::Eval(const string& before, const string& after,
 
 	vector<Tensor> outputs;
 	vector<pair<string, Tensor>> inputs = {
-		{ "sentence", sentence_tensor } };
+		{ "sentence", sentence_tensor },
+		{ "is_training", is_training }  };
 
 	DWORD before_time = timeGetTime();
 	Status status = _tf_session->Run(inputs, { "sm_decision" }, {}, &outputs);

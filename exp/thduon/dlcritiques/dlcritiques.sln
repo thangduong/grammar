@@ -6,8 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dlcritiques", "dlcritiques\dlcritiques.vcxproj", "{15EED18F-D5D4-4D47-9E04-AA68B6FF8ED7}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{69819F02-39E0-4A86-93FF-DA809568F7FC}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "strlib", "strlib\strlib.vcxproj", "{407F7179-8837-426D-9CEF-327AE109961F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{15EED18F-D5D4-4D47-9E04-AA68B6FF8ED7} = {15EED18F-D5D4-4D47-9E04-AA68B6FF8ED7}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,14 +34,6 @@ Global
 		{69819F02-39E0-4A86-93FF-DA809568F7FC}.Release|x64.Build.0 = Release|x64
 		{69819F02-39E0-4A86-93FF-DA809568F7FC}.Release|x86.ActiveCfg = Release|Win32
 		{69819F02-39E0-4A86-93FF-DA809568F7FC}.Release|x86.Build.0 = Release|Win32
-		{407F7179-8837-426D-9CEF-327AE109961F}.Debug|x64.ActiveCfg = Debug|x64
-		{407F7179-8837-426D-9CEF-327AE109961F}.Debug|x64.Build.0 = Debug|x64
-		{407F7179-8837-426D-9CEF-327AE109961F}.Debug|x86.ActiveCfg = Debug|Win32
-		{407F7179-8837-426D-9CEF-327AE109961F}.Debug|x86.Build.0 = Debug|Win32
-		{407F7179-8837-426D-9CEF-327AE109961F}.Release|x64.ActiveCfg = Release|x64
-		{407F7179-8837-426D-9CEF-327AE109961F}.Release|x64.Build.0 = Release|x64
-		{407F7179-8837-426D-9CEF-327AE109961F}.Release|x86.ActiveCfg = Release|Win32
-		{407F7179-8837-426D-9CEF-327AE109961F}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

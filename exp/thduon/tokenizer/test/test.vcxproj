@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{69819F02-39E0-4A86-93FF-DA809568F7FC}</ProjectGuid>
+    <ProjectGuid>{3ABABEF4-6950-4D02-AEE0-41570C03358C}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>test</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
@@ -71,19 +71,15 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>E:\tensorflow-1.4.0;E:\tensorflow-1.4.0\tensorflow\contrib\cmake\build;E:\tensorflow-1.4.0\tensorflow\contrib\cmake\build\external\eigen_archive;E:\tensorflow-1.4.0\third_party\eigen3;E:\tensorflow-1.4.0\tensorflow\contrib\cmake\build\protobuf\src\protobuf\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>E:\tensorflow-1.4.0;E:\tensorflow-1.4.0\tensorflow\contrib\cmake\build;E:\tensorflow-1.4.0\tensorflow\contrib\cmake\build\external\eigen_archive;E:\tensorflow-1.4.0\third_party\eigen3;E:\tensorflow-1.4.0\tensorflow\contrib\cmake\build\protobuf\src\protobuf\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>E:\tensorflow-1.4.0;E:\tensorflow-1.4.0\tensorflow\contrib\cmake\build;E:\tensorflow-1.4.0\tensorflow\contrib\cmake\build\external\eigen_archive;E:\tensorflow-1.4.0\third_party\eigen3;E:\tensorflow-1.4.0\tensorflow\contrib\cmake\build\protobuf\src\protobuf\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>E:\tensorflow-1.4.0;E:\tensorflow-1.4.0\tensorflow\contrib\cmake\build;E:\tensorflow-1.4.0\tensorflow\contrib\cmake\build\external\eigen_archive;E:\tensorflow-1.4.0\third_party\eigen3;E:\tensorflow-1.4.0\tensorflow\contrib\cmake\build\protobuf\src\protobuf\src;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -92,8 +88,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../dlcritiques;../strlib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../libtokenizer</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -108,8 +103,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../dlcritiques;../strlib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../libtokenizer</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -126,8 +120,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../dlcritiques;../strlib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../libtokenizer</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -146,8 +139,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../dlcritiques;../strlib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../libtokenizer</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -159,6 +151,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="test.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\libtokenizer\libtokenizer.vcxproj">
+      <Project>{1a4b454d-6959-44ca-98f4-c48fc1e1acd2}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
