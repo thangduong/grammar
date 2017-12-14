@@ -5,6 +5,7 @@
 #include <regex>
 #include <iterator>
 #include <iostream>
+#include <list>
 using namespace std;
 
 class Tokenizer
@@ -59,7 +60,7 @@ class Tokenizer
 		bool translit,
 		list<string>* token_list);
 
-	string Tokenizer::Translit(const string& input_string, bool translit) {
+	string Translit(const string& input_string, bool translit) {
 		if (translit)
 			return Translit(input_string);
 		else
