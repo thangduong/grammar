@@ -7,7 +7,7 @@ import gflags
 import os
 import sys
 
-gflags.DEFINE_string('paramsfile', 'params.py', 'parameter files')
+gflags.DEFINE_string('paramsfile', 'output/tellmeV8/params.py', 'parameter files')
 FLAGS = gflags.FLAGS
 
 def eval(params,
@@ -79,8 +79,8 @@ def main(argv):
 	params = utils.load_param_file(FLAGS.paramsfile)
 	eval(params,
 				 save_accuracy_file=False,
-				 batch_size=10000,
-				 num_batches=20,
+				 batch_size=1,
+				 num_batches=200,
 				 topn=5)
 
 

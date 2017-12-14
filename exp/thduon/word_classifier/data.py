@@ -211,8 +211,8 @@ class ClassifierData:
 						tok0 = rec[0][int(len(rec[0]) / 2) + 1]
 				else:
 					for i in range(self._ccnn_num_words-1):
-						tok0 += [0] + rec[0][int(len(rec[0]) / 2) + 1 + i]
-						#tok0 += chr(0) + rec[0][int(len(rec[0]) / 2) + 1 + i]
+						#tok0 += [0] + rec[0][int(len(rec[0]) / 2) + 1 + i]
+						tok0 += chr(0) + rec[0][int(len(rec[0]) / 2) + 1 + i]
 				if self._indexer is None:
 					batch_x.append(rec[0])
 #						batch_ccnn.append(tok0)
@@ -269,6 +269,18 @@ class ClassifierData:
 
 	def current_index(self):
 		return self._current_index
+
+	@staticmethod
+	def get_training_data(base_dir='/mnt/work/toenized_training_data', indexer=None,
+															 params=None,
+															 gen_data_from_file_fcn=_gen_data_from_file,
+															 gen_data_fcn=_gen_data):
+		#		sub_path = 'alltrain'
+		data_files = os.listdir(base_dir)
+		data_files = [os.path.join(base_dir, x) for x in data_files]
+		return ClassifierData(file_list=data_files, indexer=indexer, params=params,
+													gen_data_from_file_fcn=gen_data_from_file_fcn,
+													gen_data_fcn=gen_data_fcn)
 
 	@staticmethod
 	def get_monolingual_training(base_dir = '/mnt/work/1-billion-word-language-modeling-benchmark', indexer=None, params=None,

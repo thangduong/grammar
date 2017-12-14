@@ -84,6 +84,12 @@ class ClassifierData:
 		return self._current_index
 
 	@staticmethod
+	def get_training_data(data_dir, indexer=None, params=None):
+		data_files = os.listdir(data_dir)
+		data_files = [os.path.join(data_dir, x) for x in data_files]
+		return ClassifierData(file_list=data_files, indexer=indexer, params=params)
+
+	@staticmethod
 	def get_monolingual_training(base_dir = '/mnt/work/1-billion-word-language-modeling-benchmark', indexer=None, params=None):
 		sub_path = 'training-monolingual.tokenized.shuffled'
 		data_files = os.listdir(os.path.join(base_dir, sub_path))

@@ -1,13 +1,13 @@
 import os
 import copy
 
-model_name = 'wrmV14'
+model_name = 'wrmV15'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
 					 'num_words_before': 10,
 					 'num_words_after': 10,
-					 'embedding_size': 200,
+					 'embedding_size': 300,
 					 'conv_num_features': [[200, 200, 200]],
 					 'conv_widths': [[2,2,2]],
 					 'conv_keep_probs': None,
@@ -438,8 +438,8 @@ params = { 'model_name': model_name,
 					 'mini_batches_between_checkpoint': 100,
 					 'embedding_wd': 0.0001,                           # L2 WD regularization constant
 					 'enable_regularization': True,
-					 'monolingual_dir': '/mnt/work/1-billion-word-language-modeling-benchmark',
-					 'vocab_file': '/mnt/work/1-billion-word-language-modeling-benchmark/lc_vocab.txt'
+					 'training_data_dir': '/mnt/work/tokenized_training_data/',
+					 'vocab_file': 'vocab_lcase.txt'
 					 }
 
 def gen_keywords(params):
