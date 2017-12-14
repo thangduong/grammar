@@ -1,4 +1,4 @@
-#include "Tokenizer.h"
+ï»¿#include "Tokenizer.h"
 #include <iostream>
 
 Tokenizer::Tokenizer()
@@ -8,6 +8,7 @@ Tokenizer::Tokenizer()
 	_discard_delimiters.push_back("\t");
 	_discard_delimiters.push_back("\r");
 	_discard_delimiters.push_back("\n");
+	_discard_delimiters.push_back(u8"Â¬");	// not sure what this is.  probably just noise!
 
 	_retain_delimiters.push_back("''");
 	_retain_delimiters.push_back(u8"$");
@@ -31,46 +32,48 @@ Tokenizer::Tokenizer()
 	_retain_delimiters.push_back(u8"'");
 	_retain_delimiters.push_back(u8";");
 	_retain_delimiters.push_back(u8",");
-	_retain_delimiters.push_back(u8"™");
-	_retain_delimiters.push_back(u8"€");
-	_retain_delimiters.push_back(u8"°");
+	_retain_delimiters.push_back(u8"â„¢");
+	_retain_delimiters.push_back(u8"â‚¬");
+	_retain_delimiters.push_back(u8"Â°");
 	_retain_delimiters.push_back(u8"?");
 	_retain_delimiters.push_back(u8"*");
 	_retain_delimiters.push_back(u8"|");
-	_retain_delimiters.push_back(u8"…");
+	_retain_delimiters.push_back(u8"â€¦");
 	_retain_delimiters.push_back(u8"=");
 	_retain_delimiters.push_back(u8"+");
 	_retain_delimiters.push_back(u8"&");
 	_retain_delimiters.push_back(u8"/");
 	_retain_delimiters.push_back(u8"\\");
-	_retain_delimiters.push_back(u8"—");
-	_retain_delimiters.push_back(u8"’");
-	_retain_delimiters.push_back(u8"“");
-	_retain_delimiters.push_back(u8"”");
-	_retain_delimiters.push_back(u8"‘");
+	_retain_delimiters.push_back(u8"â€”");
+	_retain_delimiters.push_back(u8"â€™");
+	_retain_delimiters.push_back(u8"â€œ");
+	_retain_delimiters.push_back(u8"â€");
+	_retain_delimiters.push_back(u8"â€˜");
+	_retain_delimiters.push_back(u8"â€²");
+	_retain_delimiters.push_back(u8"Â¶");
 
 	_exception_tokens.push_back("...");
 	_exception_tokens.push_back("....");
 	_exception_tokens.push_back(u8"can't");
-	_exception_tokens.push_back(u8"can’t");
+	_exception_tokens.push_back(u8"canâ€™t");
 	_exception_tokens.push_back(u8"Can't");
-	_exception_tokens.push_back(u8"Can’t");
+	_exception_tokens.push_back(u8"Canâ€™t");
 	_exception_tokens.push_back(u8"'s");
 	_exception_tokens.push_back(u8"'S");
 	_exception_tokens.push_back(u8"n't");
 	_exception_tokens.push_back(u8"N't");
 	_exception_tokens.push_back(u8"n'T");
 	_exception_tokens.push_back(u8"N'T");
-	_exception_tokens.push_back(u8"’s");
-	_exception_tokens.push_back(u8"’S");
-	_exception_tokens.push_back(u8"n’t");
-	_exception_tokens.push_back(u8"N’t");
-	_exception_tokens.push_back(u8"n’T");
-	_exception_tokens.push_back(u8"N’T");
+	_exception_tokens.push_back(u8"â€™s");
+	_exception_tokens.push_back(u8"â€™S");
+	_exception_tokens.push_back(u8"nâ€™t");
+	_exception_tokens.push_back(u8"Nâ€™t");
+	_exception_tokens.push_back(u8"nâ€™T");
+	_exception_tokens.push_back(u8"Nâ€™T");
 	_exception_tokens.push_back(u8"'m");
 	_exception_tokens.push_back(u8"'M");
-	_exception_tokens.push_back(u8"’m");
-	_exception_tokens.push_back(u8"’M");
+	_exception_tokens.push_back(u8"â€™m");
+	_exception_tokens.push_back(u8"â€™M");
 	_exception_tokens.push_back("dr.");
 	_exception_tokens.push_back("Dr.");
 	_exception_tokens.push_back("no.");
@@ -83,44 +86,44 @@ Tokenizer::Tokenizer()
 	_exception_tokens.push_back("mrs.");
 	_exception_tokens.push_back(u8"s'");
 	_exception_tokens.push_back(u8"S'");
-	_exception_tokens.push_back(u8"s’");
-	_exception_tokens.push_back(u8"S’");
+	_exception_tokens.push_back(u8"sâ€™");
+	_exception_tokens.push_back(u8"Sâ€™");
 	_exception_tokens.push_back(u8"i.e.");
 	_exception_tokens.push_back(u8"e.g.");
 	_exception_tokens.push_back("m.p.h.");
 	_exception_tokens.push_back("M.P.H.");
 	_exception_tokens.push_back("M.p.h.");
 
-	_exception_tokens.push_back(u8"gov’t");
-	_exception_tokens.push_back(u8"Gov’t");
-	_exception_tokens.push_back(u8"GOV’T");
+	_exception_tokens.push_back(u8"govâ€™t");
+	_exception_tokens.push_back(u8"Govâ€™t");
+	_exception_tokens.push_back(u8"GOVâ€™T");
 
 	_exception_tokens.push_back(u8"'ve");
-	_exception_tokens.push_back(u8"’ve");
+	_exception_tokens.push_back(u8"â€™ve");
 	_exception_tokens.push_back(u8"'Ve");
-	_exception_tokens.push_back(u8"’Ve");
+	_exception_tokens.push_back(u8"â€™Ve");
 	_exception_tokens.push_back(u8"'vE");
-	_exception_tokens.push_back(u8"’vE");
+	_exception_tokens.push_back(u8"â€™vE");
 	_exception_tokens.push_back(u8"'VE");
-	_exception_tokens.push_back(u8"’VE");
+	_exception_tokens.push_back(u8"â€™VE");
 
 	_exception_tokens.push_back(u8"'re");
-	_exception_tokens.push_back(u8"’re");
+	_exception_tokens.push_back(u8"â€™re");
 	_exception_tokens.push_back(u8"'Re");
-	_exception_tokens.push_back(u8"’Re");
+	_exception_tokens.push_back(u8"â€™Re");
 	_exception_tokens.push_back(u8"'rE");
-	_exception_tokens.push_back(u8"’rE");
+	_exception_tokens.push_back(u8"â€™rE");
 	_exception_tokens.push_back(u8"'RE");
-	_exception_tokens.push_back(u8"’RE");
+	_exception_tokens.push_back(u8"â€™RE");
 
 	_exception_tokens.push_back(u8"'ll");
-	_exception_tokens.push_back(u8"’ll");
+	_exception_tokens.push_back(u8"â€™ll");
 	_exception_tokens.push_back(u8"'Ll");
-	_exception_tokens.push_back(u8"’Ll");
+	_exception_tokens.push_back(u8"â€™Ll");
 	_exception_tokens.push_back(u8"'lL");
-	_exception_tokens.push_back(u8"’lL");
+	_exception_tokens.push_back(u8"â€™lL");
 	_exception_tokens.push_back(u8"'LL");
-	_exception_tokens.push_back(u8"’LL");
+	_exception_tokens.push_back(u8"â€™LL");
 
 	_exception_tokens.push_back("a.m.");
 	_exception_tokens.push_back("p.m");
@@ -141,32 +144,67 @@ Tokenizer::Tokenizer()
 	_exception_tokens.push_back("Rock'N'Roll");
 	_exception_tokens.push_back("rock'n'roll");
 	_exception_tokens.push_back("rock'N'roll");
+	_exception_tokens.push_back("'t");
+	_exception_tokens.push_back(u8"`t");
+//	_exception_tokens.push_back("t.v.");
+//	_exception_tokens.push_back("r.p.m.");
 
-	_translit_map[u8"™"] = "(tm)";
-	_translit_map[u8"“"] = "\"";
-	_translit_map[u8"”"] = "\"";
-	_translit_map[u8"…"] = "...";
-	_translit_map[u8"—"] = "--";
-	_translit_map[u8"’"] = "'";
-	_translit_map[u8"‘"] = "'";
-	_translit_map[u8"’ve"] = "'ve";
-	_translit_map[u8"’t"] = "'t";
-	_translit_map[u8"’s"] = "'s";
-	_translit_map[u8"’S"] = "'S";
-	_translit_map[u8"n’t"] = "n't";
-	_translit_map[u8"…"] = "...";
+
+	_translit_map[u8"â„¢"] = "(tm)";
+	_translit_map[u8"â€œ"] = "\"";
+	_translit_map[u8"â€"] = "\"";
+	_translit_map[u8"â€¦"] = "...";
+	_translit_map[u8"â€”"] = "--";
+	_translit_map[u8"â€²"] = "'";
+	_translit_map[u8"`"] = "'";
+	_translit_map[u8"â€™"] = "'";
+	_translit_map[u8"â€˜"] = "'";
+	_translit_map[u8"â€¦"] = "...";
+	_translit_map["''"] = "\"";		// this is questionable
+	_translit_map[u8"Ã€"] = "A";
+	_translit_map[u8"Ã"] = "A";
+	_translit_map[u8"Ã‚"] = "A";
+	_translit_map[u8"Ãƒ"] = "A";
+	_translit_map[u8"Ã„"] = "A";
+	_translit_map[u8"Ã…"] = "A";
+	_translit_map[u8"Ã¨"] = "e";
+	_translit_map[u8"Ã©"] = "e";
+	_translit_map[u8"Ãª"] = "e";
+	_translit_map[u8"Ã«"] = "e";
+
+
+	_max_translit_len = _min_translit_len = _translit_map.begin()->first.length();
+	for (auto translit_itr = _translit_map.begin(); translit_itr != _translit_map.end(); translit_itr++) {
+		if ((int)translit_itr->first.length() < _min_translit_len)
+			_min_translit_len = translit_itr->first.length();
+		else if ((int)translit_itr->first.length() > _max_translit_len)
+			_max_translit_len = translit_itr->first.length();
+	}
+
+	/*
+	_translit_map[u8"â„¢"] = "(tm)";
+	_translit_map[u8"â€œ"] = "\"";
+	_translit_map[u8"â€"] = "\"";
+	_translit_map[u8"â€¦"] = "...";
+	_translit_map[u8"â€”"] = "--";
+	_translit_map[u8"â€²"] = "'";
+	_translit_map[u8"â€™"] = "'";
+	_translit_map[u8"â€˜"] = "'";
+	_translit_map[u8"â€™ve"] = "'ve";
+	_translit_map[u8"â€™t"] = "'t";
+	_translit_map[u8"â€™s"] = "'s";
+	_translit_map[u8"â€™S"] = "'S";
+	_translit_map[u8"nâ€™t"] = "n't";
+	_translit_map[u8"â€¦"] = "...";
 	_translit_map["...."] = "...";
 	_translit_map["''"] = "\"";
-	_translit_map[u8"’m"] = "'m";
-	_translit_map[u8"’re"] = "'re";
-	_translit_map[u8"’M"] = "'M";
-	_translit_map[u8"s’"] = "s'";
-	_translit_map[u8"S’"] = "S'";
-	_translit_map[u8"can’t"] = "can't";
-
-
-	// special characters
-	_translit_map[u8"é"] = "e";
+	_translit_map[u8"â€™m"] = "'m";
+	_translit_map[u8"â€™re"] = "'re";
+	_translit_map[u8"â€™M"] = "'M";
+	_translit_map[u8"sâ€™"] = "s'";
+	_translit_map[u8"Sâ€™"] = "S'";
+	_translit_map[u8"canâ€™t"] = "can't";
+	*/
 
 	_exception_token_group_regex.push_back(pair<regex, string>(regex("^20[0-9]0s"), "<decade>"));
 	_exception_token_group_regex.push_back(pair<regex, string>(regex("^19[0-9]0s"), "<decade>"));
@@ -191,6 +229,8 @@ Tokenizer::Tokenizer()
 	_exception_token_group_regex.push_back(pair<regex, string>(regex("^(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+"), "<email-address>"));
 	_exception_token_group_regex.push_back(pair<regex, string>(regex("^http://[a-zA-z.]+(/[a-zA-z.]+)*"), "<url>"));
 	_exception_token_group_regex.push_back(pair<regex, string>(regex("^https://[a-zA-z.]+(/[a-zA-z.]+)*"), "<url>"));
+	_exception_token_group_regex.push_back(pair<regex, string>(regex("^[a-z][.]([a-z][.])+"), ""));
+
 
 	// TODO:
 	// ordinal numbers, 1st, 2nd, 3rd, 5th, 4th, 53rd, etc.
@@ -350,8 +390,8 @@ list<string> Tokenizer::Tokenize(const string& input_string, bool translit, list
 		if ((type[i] > 0) && (!_exception_token_group_regex[type[i]].second.empty())) {
 			str = _exception_token_group_regex[type[i]].second;
 		}
-		if (translit && _translit_map.count(str))
-			result.push_back(_translit_map[str]);
+		if (translit) // && _translit_map.count(str))
+			result.push_back(Translit(str));// _translit_map[str]);
 		else
 			result.push_back(str);
 		if (token_start_len)
@@ -368,5 +408,27 @@ string Tokenizer::TokenizeAndJuxtapose(const string& input_string, bool translit
 			result += " ";
 		result += (*token);
 	}
+	return result;
+}
+
+string Tokenizer::Translit(const string& input_string) {
+	int marker = 0;
+	int start_marker = marker;
+	string result = "";
+	while (marker < input_string.length()) {
+		for (auto len = _min_translit_len; len <= _max_translit_len; len++) {
+			string piece = input_string.substr(marker, len);
+			auto match = _translit_map.find(piece);
+			if (match != _translit_map.end()) {
+				result += input_string.substr(start_marker, marker - start_marker) + match->second;
+				marker += len - 1;
+				start_marker = marker + 1;
+				break;
+			}
+		}
+		marker += 1;
+	}
+	if (start_marker < input_string.length())
+		result += input_string.substr(start_marker);
 	return result;
 }

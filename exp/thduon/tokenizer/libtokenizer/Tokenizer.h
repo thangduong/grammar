@@ -13,6 +13,8 @@ class Tokenizer
 	list<string> _retain_delimiters;
 	list<string> _exception_tokens;
 	unordered_map<string, string> _translit_map;
+	int _min_translit_len;
+	int _max_translit_len;
 	vector<pair<regex,string>> _exception_token_group_regex;
 
 	inline size_t ExactStringMatch(const list<string>& candidates, const string& input_string, int start)
@@ -49,6 +51,7 @@ public:
 	Tokenizer();
 	virtual ~Tokenizer();
 
+	string Translit(const string& input_string);
 	int Tokenize(const string& input_string, int* start, int* len, int* type);
 	list<string> Tokenize(const string& input_string, bool translit = true, list<pair<int,int>>* token_start_len = 0);
 	string TokenizeAndJuxtapose(const string& input_string, bool translit = true, list<pair<int, int>>* token_start_len = 0);
