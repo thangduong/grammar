@@ -271,8 +271,8 @@ bool Tokenizer::CheckDelimiters(int matched_token_len,
 			tuple<int, int, int> token(marker, matched_token_len, matched_type);
 			start_len_type.push_back(token);
 			if (token_list) {
-				if ((matched_type > 0) && (!get<1>(_exception_token_group_regex[matched_type]).empty()))
-					token_list->push_back(Translit(get<1>(_exception_token_group_regex[matched_type]),translit));
+				if ((matched_type > 0) && (!get<1>(_exception_token_group_regex[matched_type - REGEX_TOKEN_TYPE_START]).empty()))
+					token_list->push_back(Translit(get<1>(_exception_token_group_regex[matched_type - REGEX_TOKEN_TYPE_START]),translit));
 				else
 					token_list->push_back(Translit(input_string.substr(get<0>(token), get<1>(token)),translit));
 			}
@@ -299,7 +299,7 @@ list<tuple<int,int,int>> Tokenizer::Tokenize(const string& input_string, bool tr
 		int regex_pattern_matched;
 		size_t matched_regex_token_len = RegexStringMatch(_exception_token_group_regex, input_string, marker, &regex_pattern_matched);
 		if ((matched_regex_token_len>0) 
-			&& (get<2>(_exception_token_group_regex[regex_pattern_matched]) || (marker == start_marker))
+			&& (get<2>(_exception_token_group_regex[regex_pattern_matched - REGEX_TOKEN_TYPE_START]) || (marker == start_marker))
 			&& CheckDelimiters((int)matched_regex_token_len, regex_pattern_matched, input_string, start_marker, marker, result, translit, token_list))
 			continue;
 

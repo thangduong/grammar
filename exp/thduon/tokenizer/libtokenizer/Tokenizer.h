@@ -9,6 +9,9 @@ using namespace std;
 
 class Tokenizer
 {
+	enum {
+		REGEX_TOKEN_TYPE_START = 100
+	};
 	list<string> _discard_delimiters;
 	list<string> _retain_delimiters;
 	list<string> _exception_tokens;
@@ -38,7 +41,7 @@ class Tokenizer
 			regex_search(next(input_string.begin(), start), input_string.end(), sm, get<0>(*candidate_itr));
 			if (sm.length()) {
 				if (pattern_matched)
-					(*pattern_matched) = idx;// candidate_itr->second;
+					(*pattern_matched) = idx + REGEX_TOKEN_TYPE_START;
 				size_t result = sm[0].length();
 				return result;
 			}
