@@ -1,5 +1,7 @@
 ﻿#include "Tokenizer.h"
+#include <list>
 #include <iostream>
+using namespace std;
 
 Tokenizer::Tokenizer()
 {
@@ -217,7 +219,7 @@ Tokenizer::Tokenizer()
 //	_exception_token_group_regex.push_back(pair<regex, string>(regex("^20[0-9][0-9]"), "<year>"));
 	_exception_token_group_regex.push_back(pair<regex, string>(regex("^([0-9][0-9][0-9]|[0-9][0-9]|[0-9])(,[0-9][0-9][0-9])+"), "<large-number>"));
 	_exception_token_group_regex.push_back(pair<regex, string>(regex("^([0-9]*)[.]([0-9])+"), "<decimal>"));
-	_exception_token_group_regex.push_back(pair<regex, string>(regex("^([A-Z][.])+"), ""));
+//	_exception_token_group_regex.push_back(pair<regex, string>(regex("^([A-Z][.])+"), ""));
 	_exception_token_group_regex.push_back(pair<regex, string>(regex("^([4-9])([0-9])*"), "<integer>"));
 	_exception_token_group_regex.push_back(pair<regex, string>(regex("^0([0-9])+"), "<integer>"));
 	_exception_token_group_regex.push_back(pair<regex, string>(regex("^1([0-9])+"), "<integer>"));
@@ -230,7 +232,7 @@ Tokenizer::Tokenizer()
 	_exception_token_group_regex.push_back(pair<regex, string>(regex("^(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+"), "<email-address>"));
 	_exception_token_group_regex.push_back(pair<regex, string>(regex("^http://[a-zA-z.]+(/[a-zA-z.]+)*"), "<url>"));
 	_exception_token_group_regex.push_back(pair<regex, string>(regex("^https://[a-zA-z.]+(/[a-zA-z.]+)*"), "<url>"));
-	_exception_token_group_regex.push_back(pair<regex, string>(regex("^[a-z][.]([a-z][.])+"), ""));
+	_exception_token_group_regex.push_back(pair<regex, string>(regex("^[a-zA-Z][.]([a-zA-Z][.])+"), ""));
 
 
 	// TODO:
