@@ -46,14 +46,28 @@ class Tokenizer
 		
 		return 0;
 	}
-	bool CheckDelimiters(int matched_token_len, int matched_type, const string& input_string, int& start_marker, int& marker, int* start, int* len, int* type, int& output_index, list<string>* token_list);
+
+	bool CheckDelimiters(int matched_token_len,
+		int matched_type,
+		const string& input_string,
+		int& start_marker,
+		int& marker,
+		list<tuple<int, int, int>>& start_len_type,
+		bool translit,
+		list<string>* token_list);
+
+	string Tokenizer::Translit(const string& input_string, bool translit) {
+		if (translit)
+			return Translit(input_string);
+		else
+			return input_string;
+	}
 public:
 	Tokenizer();
 	virtual ~Tokenizer();
 
 	string Translit(const string& input_string);
-	int Tokenize(const string& input_string, int* start, int* len, int* type);
-	list<string> Tokenize(const string& input_string, bool translit = true, list<pair<int,int>>* token_start_len = 0);
+	list<tuple<int, int, int>> Tokenize(const string& input_string, bool translit, list<string>* token_list = 0);
 	string TokenizeAndJuxtapose(const string& input_string, bool translit = true, list<pair<int, int>>* token_start_len = 0);
 	
 };

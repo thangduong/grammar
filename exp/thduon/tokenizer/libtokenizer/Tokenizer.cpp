@@ -125,6 +125,7 @@ Tokenizer::Tokenizer()
 	_exception_tokens.push_back(u8"'LL");
 	_exception_tokens.push_back(u8"’LL");
 
+	_exception_tokens.push_back("(tm)");
 	_exception_tokens.push_back("a.m.");
 	_exception_tokens.push_back("p.m");
 	_exception_tokens.push_back("jr.");
@@ -173,12 +174,12 @@ Tokenizer::Tokenizer()
 	_translit_map[u8"ë"] = "e";
 
 
-	_max_translit_len = _min_translit_len = _translit_map.begin()->first.length();
+	_max_translit_len = _min_translit_len = (int)_translit_map.begin()->first.length();
 	for (auto translit_itr = _translit_map.begin(); translit_itr != _translit_map.end(); translit_itr++) {
 		if ((int)translit_itr->first.length() < _min_translit_len)
-			_min_translit_len = translit_itr->first.length();
+			_min_translit_len = (int)translit_itr->first.length();
 		else if ((int)translit_itr->first.length() > _max_translit_len)
-			_max_translit_len = translit_itr->first.length();
+			_max_translit_len = (int)translit_itr->first.length();
 	}
 
 	/*
@@ -240,97 +241,69 @@ Tokenizer::Tokenizer()
 Tokenizer::~Tokenizer()
 {
 }
-bool Tokenizer::CheckDelimiters(int matched_token_len, int matched_type, const string& input_string, int& start_marker, int& marker, int* start, int* len, int* type, int& output_index, list<string>* token_list) {
+bool Tokenizer::CheckDelimiters(int matched_token_len, 
+	int matched_type, 
+	const string& input_string, 
+	int& start_marker, 
+	int& marker, 
+	list<tuple<int, int, int>>& start_len_type, 
+	bool translit,
+	list<string>* token_list) {
+
 	if (matched_token_len > 0) {
 		int proposed_marker = marker + matched_token_len;
-		size_t discard_token_len = ExactStringMatch(_discard_delimiters, input_string, proposed_marker);
-		if (discard_token_len > 0) {
+		if (
+			   (ExactStringMatch(_discard_delimiters, input_string, proposed_marker) > 0) 
+			|| (ExactStringMatch(_retain_delimiters, input_string, proposed_marker) > 0)
+			|| (proposed_marker >= (int)input_string.length())
+			){
 			if (start_marker < marker) {
-				start[output_index] = start_marker;
-				len[output_index] = marker - start_marker;
-				type[output_index] = 0;
+				tuple<int, int, int> token(start_marker, marker - start_marker, 0);
+				start_len_type.push_back(token);
 				if (token_list)
-					token_list->push_back(input_string.substr(start[output_index], len[output_index]));
-				output_index += 1;
+					token_list->push_back(Translit(input_string.substr(get<0>(token),get<1>(token)),translit));
 			}
-			start[output_index] = marker;
-			len[output_index] = matched_token_len;
-			type[output_index] = matched_type;
-			if (token_list)
-				token_list->push_back(input_string.substr(start[output_index], len[output_index]));
-			output_index += 1;
-			marker = proposed_marker;// +discard_token_len;
+			tuple<int, int, int> token(marker, matched_token_len, matched_type);
+			start_len_type.push_back(token);
+			if (token_list) {
+				if ((matched_type > 0) && (!_exception_token_group_regex[matched_type].second.empty()))
+					token_list->push_back(Translit(_exception_token_group_regex[matched_type].second,translit));
+				else
+					token_list->push_back(Translit(input_string.substr(get<0>(token), get<1>(token)),translit));
+			}
+			marker = proposed_marker;
 			start_marker = marker;
 			return true;
-		}
-		else {
-			size_t retain_token_len = ExactStringMatch(_retain_delimiters, input_string, proposed_marker);
-			if (retain_token_len > 0) {
-				if (start_marker < marker) {
-					start[output_index] = start_marker;
-					len[output_index] = marker - start_marker;
-					type[output_index] = 0;
-					if (token_list)
-						token_list->push_back(input_string.substr(start[output_index], len[output_index]));
-					output_index += 1;
-				}
-				start[output_index] = marker;
-				len[output_index] = matched_token_len;
-				type[output_index] = matched_type;
-				if (token_list)
-					token_list->push_back(input_string.substr(start[output_index], len[output_index]));
-				output_index += 1;
-				/*
-				start[output_index] = proposed_marker;
-				len[output_index] = retain_token_len;
-				type[output_index] = 0;
-				if (token_list)
-					token_list->push_back(input_string.substr(start[output_index], len[output_index]));
-				output_index += 1;
-				*/
-				marker = proposed_marker;// +retain_token_len;
-				start_marker = marker;
-				return true;
-			}
-			else if (proposed_marker >= (int)input_string.length()) {
-				start[output_index] = marker;
-				len[output_index] = matched_token_len;
-				type[output_index] = matched_type;
-				if (token_list)
-					token_list->push_back(input_string.substr(start[output_index], len[output_index]));
-				output_index += 1;
-				marker = proposed_marker;
-				start_marker = marker;
-			}
 		}
 	}
 	return false;
 }
 
 
-int Tokenizer::Tokenize(const string& input_string, int* start, int* len, int* type) {
+list<tuple<int,int,int>> Tokenizer::Tokenize(const string& input_string, bool translit, list<string>* token_list) {
 	int start_marker = 0;
 	int marker = 0;
-	int output_index = 0;
-	list<string> token_list;
+	list<tuple<int, int, int>> result;
+
 	while (marker < (int)input_string.length()) {
 		
 		size_t matched_exception_token_len = ExactStringMatch(_exception_tokens, input_string, marker);
-		if ((matched_exception_token_len>0) && CheckDelimiters((int)matched_exception_token_len, 0, input_string, start_marker, marker, start, len, type, output_index, &token_list))
+		if ((matched_exception_token_len>0) 
+			&& CheckDelimiters((int)matched_exception_token_len, 0, input_string, start_marker, marker, result, translit, token_list))
 			continue;
 		int regex_pattern_matched;
 		size_t matched_regex_token_len = RegexStringMatch(_exception_token_group_regex, input_string, marker, &regex_pattern_matched);
-		if ((matched_regex_token_len>0) && CheckDelimiters((int)matched_regex_token_len, regex_pattern_matched, input_string, start_marker, marker, start, len, type, output_index, &token_list))
+		if ((matched_regex_token_len>0) 
+			&& CheckDelimiters((int)matched_regex_token_len, regex_pattern_matched, input_string, start_marker, marker, result, translit, token_list))
 			continue;
 
 		size_t discard_token_len = ExactStringMatch(_discard_delimiters, input_string, marker);
 		if (discard_token_len > 0) {
 			if (start_marker < marker) {
-				start[output_index] = start_marker;
-				len[output_index] = marker - start_marker;
-				type[output_index] = 0;
-				token_list.push_back(input_string.substr(start[output_index], len[output_index]));
-				output_index += 1;
+				tuple<int, int, int> token(start_marker, marker - start_marker, 0);
+				result.push_back(token);
+				if (token_list)
+					token_list->push_back(Translit(input_string.substr(get<0>(token), get<1>(token)),translit));
 			}
 			marker += 1;
 			start_marker = marker;
@@ -339,17 +312,15 @@ int Tokenizer::Tokenize(const string& input_string, int* start, int* len, int* t
 		size_t retain_token_len = ExactStringMatch(_retain_delimiters, input_string, marker);
 		if (retain_token_len > 0) {
 			if (start_marker < marker) {
-				start[output_index] = start_marker;
-				len[output_index] = marker - start_marker;
-				type[output_index] = 0;
-				token_list.push_back(input_string.substr(start[output_index], len[output_index]));
-				output_index += 1;
+				tuple<int, int, int> token(start_marker, marker - start_marker, 0);
+				result.push_back(token);
+				if (token_list)
+					token_list->push_back(Translit(input_string.substr(get<0>(token), get<1>(token)),translit));
 			}
-			start[output_index] = marker;
-			len[output_index] = (int)retain_token_len;
-			type[output_index] = 0;
-			token_list.push_back(input_string.substr(start[output_index], len[output_index]));
-			output_index += 1;
+			tuple<int, int, int> token(marker, (int)retain_token_len, 0);
+			result.push_back(token);
+			if (token_list)
+				token_list->push_back(Translit(input_string.substr(get<0>(token), get<1>(token)),translit));
 
 			marker += (int)retain_token_len;
 			start_marker = marker;
@@ -358,51 +329,18 @@ int Tokenizer::Tokenize(const string& input_string, int* start, int* len, int* t
 		marker += 1;
 	} 
 	if (start_marker < marker) {
-		start[output_index] = start_marker;
-		len[output_index] = marker - start_marker;
-		type[output_index] = 0;
-		token_list.push_back(input_string.substr(start[output_index], len[output_index]));
-		output_index += 1;
-	}
-	/*
-	int i = 0;
-	for (auto x = token_list.begin(); x != token_list.end(); x++) {
-		if (_translit_map.count(*x)) {
-			cout << "["<<_translit_map[*x]<<"]" << " " ;
-		}
-		else {
-			cout << "[" << *x << "]" << " " ;
-		}
-	}
-	cout << endl;
-	*/
-	return output_index;
-}
-
-list<string> Tokenizer::Tokenize(const string& input_string, bool translit, list<pair<int,int>>* token_start_len) {
-	int start[1000];
-	int len[1000];
-	int type[1000];
-	int number_of_tokens = Tokenize(input_string, start, len, type);
-	list<string> result;
-	for (int i = 0; i < number_of_tokens; i++) {
-		string str = input_string.substr(start[i], len[i]);
-		if ((type[i] > 0) && (!_exception_token_group_regex[type[i]].second.empty())) {
-			str = _exception_token_group_regex[type[i]].second;
-		}
-		if (translit) // && _translit_map.count(str))
-			result.push_back(Translit(str));// _translit_map[str]);
-		else
-			result.push_back(str);
-		if (token_start_len)
-			token_start_len->push_back(pair<int, int>(start[i],len[i]));
+		tuple<int, int, int> token(marker, marker - start_marker, 0);
+		result.push_back(token);
+		if (token_list)
+			token_list->push_back(Translit(input_string.substr(get<0>(token), get<1>(token)),translit));
 	}
 	return result;
 }
 
 string Tokenizer::TokenizeAndJuxtapose(const string& input_string, bool translit, list<pair<int, int>>* token_start_len) {
+	list<string> tokens;
+	list<tuple<int, int, int>> token_start_len_type = Tokenize(input_string, translit, &tokens);
 	string result;
-	list<string> tokens = Tokenize(input_string, translit, token_start_len);
 	for (auto token = tokens.begin(); token != tokens.end(); token++) {
 		if (!result.empty())
 			result += " ";
