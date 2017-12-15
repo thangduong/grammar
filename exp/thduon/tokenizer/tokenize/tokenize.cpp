@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
 		auto t2 = Clock::now();
 		auto read_time = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
 		auto tok_time = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
-		tok_time_file << tok_time << endl;
+		tok_time_file << tok_time << " " << line.length() << endl;
 		if ((tok_time > 200)|| (tok_time > max_tok_time)) {
 			cerr << line << endl;
 			cerr << tokenized_line << endl;
@@ -63,18 +63,21 @@ int main(int argc, char* argv[]) {
 			cerr << line << endl;
 			cerr << tokenized_line << endl;
 			cerr << "max_read_time = " << max_read_time << endl;
+			cerr << "tok_time = " << tok_time << endl;
 		}
 		if (write_time > max_write_time) {
 			max_write_time = write_time;
 			cerr << line << endl;
 			cerr << tokenized_line << endl;
 			cerr << "max_write_time = " << max_write_time << endl;
+			cerr << "tok_time = " << tok_time << endl;
 		}
 		if (line.length() > max_line_len) {
 			max_line_len = line.length();
 			cerr << line << endl;
 			cerr << tokenized_line << endl;
 			cerr << "max_line_len = " << max_line_len << endl;
+			cerr << "tok_time = " << tok_time << endl;
 		}
 	}
 	return 0;
