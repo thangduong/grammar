@@ -54,6 +54,7 @@ Tokenizer::Tokenizer()
 	_retain_delimiters.push_back(u8"‘");
 	_retain_delimiters.push_back(u8"′");
 	_retain_delimiters.push_back(u8"¶");
+	_retain_delimiters.push_back(u8"″");
 
 	_exception_tokens.push_back("...");
 	_exception_tokens.push_back("....");
@@ -177,6 +178,7 @@ Tokenizer::Tokenizer()
 	_translit_map[u8"é"] = "e";
 	_translit_map[u8"ê"] = "e";
 	_translit_map[u8"ë"] = "e";
+	_translit_map[u8"″"] = "\"";
 
 
 	_max_translit_len = _min_translit_len = (int)_translit_map.begin()->first.length();
