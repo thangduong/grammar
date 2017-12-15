@@ -335,7 +335,7 @@ list<tuple<int,int,int>> Tokenizer::Tokenize(const string& input_string, bool tr
 		marker += 1;
 	} 
 	if (start_marker < marker) {
-		tuple<int, int, int> token(marker, marker - start_marker, 0);
+		tuple<int, int, int> token(start_marker, marker - start_marker, 0);
 		result.push_back(token);
 		if (token_list)
 			token_list->push_back(Translit(input_string.substr(get<0>(token), get<1>(token)),translit));

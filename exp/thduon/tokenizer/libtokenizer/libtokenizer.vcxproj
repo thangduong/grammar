@@ -20,11 +20,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Tokenizer.h" />
-    <ClInclude Include="Tokenizer_python.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Tokenizer.cpp" />
-    <ClCompile Include="Tokenizer_python.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1A4B454D-6959-44CA-98F4-C48FC1E1ACD2}</ProjectGuid>
