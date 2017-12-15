@@ -21,6 +21,7 @@ int main(int argc, char* argv[]) {
 	auto t0 = Clock::now();
 	long long write_time;
 	long long max_read_time = 0, max_write_time = 0, max_tok_time = 0;
+	size_t max_line_len = 0;
 	while (getline(infile, line)) {
 		auto t1 = Clock::now();
 		string tokenized_line = tokenizer.TokenizeAndJuxtapose(line);
@@ -36,21 +37,27 @@ int main(int argc, char* argv[]) {
 		write_time = std::chrono::duration_cast<std::chrono::milliseconds>(t0 - t2).count();
 		if (read_time > max_read_time) {
 			max_read_time = read_time;
-			cerr << "max_read_time = " << max_read_time << endl;
 			cerr << line << endl;
 			cerr << tokenized_line << endl;
+			cerr << "max_read_time = " << max_read_time << endl;
 		}
 		if (tok_time > max_tok_time) {
 			max_tok_time = tok_time;
-			cerr << "max_tok_time = " << max_tok_time << endl;
 			cerr << line << endl;
 			cerr << tokenized_line << endl;
+			cerr << "max_tok_time = " << max_tok_time << endl;
 		}
 		if (write_time > max_write_time) {
 			max_write_time = write_time;
-			cerr << "max_write_time = " << max_write_time << endl;
 			cerr << line << endl;
 			cerr << tokenized_line << endl;
+			cerr << "max_write_time = " << max_write_time << endl;
+		}
+		if (line.length() > max_line_len) {
+			max_line_len = line.length();
+			cerr << line << endl;
+			cerr << tokenized_line << endl;
+			cerr << "max_line_len = " << max_line_len << endl;
 		}
 	}
 	return 0;
