@@ -1,0 +1,12 @@
+all: libtokenizer/libtokenizer.a tokenizer/tokenizer_so.so tokenize/tokenize
+	-mkdir bin
+	cp libtokenizer/libtokenizer.a tokenizer/tokenizer_so.so tokenize/tokenize bin
+	echo all done!
+clean:
+	-rm libtokenizer/libtokenizer.a tokenizer/tokenizer_so.so tokenize/tokenize
+tokenizer/tokenizer_so.so: libtokenizer/libtokenizer.a
+	make -C tokenizer
+tokenize/tokenize: libtokenizer/libtokenizer.a tokenize/tokenize.cpp tokenize/makefile
+	make -C tokenize
+libtokenizer/libtokenizer.a: libtokenizer/makefile libtokenizer/Tokenizer.cpp libtokenizer/Tokenizer.h
+	make -C libtokenizer

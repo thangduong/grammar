@@ -11,7 +11,7 @@ from wrmeval import WRMEval
 
 http_port = 8085
 e = WRMEval()
-e.load('./output/wrmV15/')
+e.load('./output/wrmV16/')
 
 class HttpHandler(BaseHTTPRequestHandler):
 
