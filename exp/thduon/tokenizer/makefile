@@ -3,6 +3,7 @@ all: libtokenizer/libtokenizer.a tokenizer/tokenizer_so.so tokenize/tokenize
 	cp libtokenizer/libtokenizer.a tokenizer/tokenizer_so.so tokenize/tokenize bin
 	echo all done!
 clean:
+	-rm bin/libtokenizer.a bin/tokenizer_so.so bin/tokenize
 	-rm libtokenizer/libtokenizer.a tokenizer/tokenizer_so.so tokenize/tokenize
 tokenizer/tokenizer_so.so: libtokenizer/libtokenizer.a
 	make -C tokenizer

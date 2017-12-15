@@ -226,6 +226,7 @@ Tokenizer::Tokenizer()
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9][0-9][0-9]|[0-9][0-9]|[0-9])(,[0-9][0-9][0-9])+"), "<large-number>", true));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*)[.]([0-9])+"), "<decimal>", true));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([A-Za-z][.])+"), "", false));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*[04-9]th)|^([0-9]*[1]st)|^([0-9]*[2]nd)|^([0-9]*[3]rd)"), "<ordinal>", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([4-9])([0-9])*"), "<integer>", true));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^0([0-9])+"), "<integer>", true));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^1([0-9])+"), "<integer>", true));

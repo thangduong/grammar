@@ -1,11 +1,13 @@
 from ctypes import *
 import os
 
+script_dir = os.path.dirname(os.path.realpath(__file__))
+
 if os.name=='nt':
-	tok_so = cdll.LoadLibrary('tokenizer_dll.dll')
+	tok_so = cdll.LoadLibrary(os.path.join(script_dir,'tokenizer_dll.dll'))
 	tokenizer = tok_so.LoadTokenizer()
 else:
-	tok_so = cdll.LoadLibrary('tokenizer_so.so')
+	tok_so = cdll.LoadLibrary(os.path.join(script_dir,'tokenizer_so.so'))
 	tokenizer = tok_so.LoadTokenizer()
 """
 input_string = c_char_p("hello this is a 500 test!".encode('utf-8'))
