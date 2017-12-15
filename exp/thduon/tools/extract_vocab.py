@@ -13,7 +13,7 @@ for i,filename in enumerate(filenames):
 #	if i>2:
 #		break
 	print(filename)
-	with open(filename,'r') as f:
+	with open(filename,'r',encoding='utf-8',errors='ignore') as f:
 		for line in f:
 			line = line.rstrip().lstrip()
 			if lowercase:

@@ -48,6 +48,7 @@ Tokenizer::Tokenizer()
 	_retain_delimiters.push_back(u8"\\");
 	_retain_delimiters.push_back(u8"—");
 	_retain_delimiters.push_back(u8"’");
+	_retain_delimiters.push_back(u8"ʼ");
 	_retain_delimiters.push_back(u8"“");
 	_retain_delimiters.push_back(u8"”");
 	_retain_delimiters.push_back(u8"‘");
@@ -68,6 +69,8 @@ Tokenizer::Tokenizer()
 	_exception_tokens.push_back(u8"N'T");
 	_exception_tokens.push_back(u8"’s");
 	_exception_tokens.push_back(u8"’S");
+	_exception_tokens.push_back(u8"ʼs");
+	_exception_tokens.push_back(u8"ʼS");
 	_exception_tokens.push_back(u8"n’t");
 	_exception_tokens.push_back(u8"N’t");
 	_exception_tokens.push_back(u8"n’T");

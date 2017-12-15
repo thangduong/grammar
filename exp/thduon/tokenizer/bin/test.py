@@ -1,4 +1,4 @@
 import tokenizer
 
 
-print(tokenizer.tokenize_string("hello, world!"))
+print(tokenizer.tokenize_string("hello, world siicʼs!"))
