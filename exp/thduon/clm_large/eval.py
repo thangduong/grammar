@@ -9,7 +9,7 @@ import gflags
 import os
 import sys
 
-gflags.DEFINE_string('paramsfile', 'output/clmV0/params.py', 'parameter files')
+gflags.DEFINE_string('paramsfile', 'output/clmV1/params.py', 'parameter files')
 FLAGS = gflags.FLAGS
 
 
@@ -96,7 +96,7 @@ def eval(params,
 		print("%s %s"%(x,sm[k.index(x)]))
 	for i,(x,y) in enumerate(zip(sm,k)):
 		if i>20:
-			exit(0)
+			break
 		print("%d %f %s" %(i, x,y))
 	print(test_sentence)
 	print("EVAL TIME = %s"%(aft-bef))

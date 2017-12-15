@@ -1,7 +1,7 @@
 import os
 
 
-model_name = 'determinerCCNNV7'
+model_name = 'determinerCCNNV8'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor

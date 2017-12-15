@@ -1,11 +1,12 @@
 import os
 import pickle
 import operator
-data_dir = '/mnt/work/tokenized_training_data'
+import gflags
+data_dir = '/mnt/work/test' #/mnt/work/tokenized_training_data'
 filenames = [os.path.join(data_dir, f) for f in os.listdir(data_dir)]
 vocab = {}
 lowercase = True
-prefix=''
+prefix='test_'
 if lowercase:
 	prefix='lowercase_'
 for i,filename in enumerate(filenames):

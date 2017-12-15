@@ -15,6 +15,7 @@ ckpt = os.path.join(utils.get_dict_value(params,'output_location'),
 										utils.get_dict_value(params, 'model_name') + '.ckpt')
 
 e = Evaluator.load2(ckpt)
+e.dump_variable_sizes()
 i = TextIndexer.from_file(vocab_file)
 
 #test_data = ClassifierData.get_monolingual_test(params=params)
@@ -59,7 +60,9 @@ for batch_no in range(1):
 		pickpr = [r[0][0][idx] for idx in pick]
 		model_score = r[0][0]
 		x = [dt, pick, pickpr, ground_truth, num_unk, num_indexed, sentence]
+		model_pick = pick[0]
 		if ground_truth in pick:
+			model_pick = ground_truth
 			no_right[ground_truth] += 1
 			fip.write('1 %s %s %s %d %0.2f\n'%(dt,ground_truth,pickpr[0], num_unk, 100*num_unk/num_indexed))
 		else:
@@ -70,11 +73,11 @@ for batch_no in range(1):
 			print(sentence)
 		error_scenario[ground_truth][pick[0]] += 1
 		no_total[ground_truth] += 1
-		no_total_model[pick[0]] += 1
+		no_total_model[model_pick] += 1
 		model_results.append(x)
 		f.write('%s\n'%x)
 		if idx-last > 10000:
-			print(all_unk_words)
+#			print(all_unk_words)
 			print("NUMBER OF UNK: %d (%0.2f)" % (total_unk, 100 * total_unk / max(total_indexed, 1)))
 			print("recall = %s" % [x / y for x, y in zip(no_right, no_total)])
 			print("precision = %s" % [x / y for x, y in zip(no_right, no_total_model)])
