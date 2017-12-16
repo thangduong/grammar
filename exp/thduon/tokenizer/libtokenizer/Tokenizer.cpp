@@ -47,6 +47,7 @@ Tokenizer::Tokenizer()
 	_retain_delimiters.push_back(u8"/");
 	_retain_delimiters.push_back(u8"\\");
 	_retain_delimiters.push_back(u8"—");
+	_retain_delimiters.push_back(u8"–");
 	_retain_delimiters.push_back(u8"’");
 	_retain_delimiters.push_back(u8"ʼ");
 	_retain_delimiters.push_back(u8"“");
@@ -161,6 +162,7 @@ Tokenizer::Tokenizer()
 	_translit_map[u8"“"] = "\"";
 	_translit_map[u8"”"] = "\"";
 	_translit_map[u8"…"] = "...";
+	_translit_map[u8"–"] = "-";
 	_translit_map[u8"—"] = "--";
 	_translit_map[u8"′"] = "'";
 	_translit_map[u8"`"] = "'";
