@@ -25,15 +25,18 @@ int main(int argc, char* argv[]) {
 	ofstream tok_time_file("toktime.txt");
 	while (getline(infile, line)) {
 		auto t1 = Clock::now();
-		string tokenized_line = tokenizer.TokenizeAndJuxtapose(line);
-		if (tokenized_line.find_first_of("<b>") != string::npos) {
+		number_of_lines_processed += 1;
+		if ((line.find_first_of("<b>") != string::npos)
+		 ||(line.length()>2000)
+		 ){
 			continue;
 		}
+		string tokenized_line = tokenizer.TokenizeAndJuxtapose(line);
 		auto t2 = Clock::now();
 		auto read_time = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count();
 		auto tok_time = std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1).count();
 		tok_time_file << tok_time << " " << line.length() << endl;
-		if ((tok_time > 200)|| (tok_time > max_tok_time)) {
+		if ((tok_time > 20)|| (tok_time > max_tok_time)) {
 			cerr << line << endl;
 			cerr << tokenized_line << endl;
 			cerr << "tok_time = " << tok_time << endl;
@@ -50,7 +53,6 @@ int main(int argc, char* argv[]) {
 		}
 
 		cout  << tokenized_line << endl;
-		number_of_lines_processed += 1;
 		if ((number_of_lines_processed % 10000) == 0) {
 			tok_time_file.flush();
 			cerr << "processed " << number_of_lines_processed << " lines" << endl;
