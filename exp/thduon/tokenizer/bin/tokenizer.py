@@ -20,7 +20,7 @@ class Tokenizer:
 		self._tokenizer = tok_so.LoadTokenizer()
 
 	def tokenize(self, string, translit=True):
-		input_string = c_char_p(string.encode('utf-8'))
+		input_string = c_char_p(string.encode('utf-8', errors="ignore"))
 		tokenizer_result = tok_so.TokenizeString(self._tokenizer, input_string, translit)
 		start = c_int()
 		len = c_int()
@@ -30,7 +30,7 @@ class Tokenizer:
 		while (not done):
 			ctoken = tok_so.NextToken(tokenizer_result, byref(start), byref(len), byref(type))
 			if ctoken is not None:
-				token = [c_char_p(ctoken).value.decode('utf-8'), start.value, len.value, type.value]
+				token = [c_char_p(ctoken).value.decode('utf-8', errors="ignore"), start.value, len.value, type.value]
 				result.append(token)
 			else:
 				done = True

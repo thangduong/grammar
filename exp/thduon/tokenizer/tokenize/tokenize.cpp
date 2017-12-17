@@ -25,7 +25,9 @@ int main(int argc, char* argv[]) {
 	while (getline(infile, line)) {
 		auto t1 = Clock::now();
 		number_of_lines_processed += 1;
-		if ((line.find("<b>") != string::npos)
+		if ((line.find("<br>") != string::npos)
+		 ||(line.find("<BR>") != string::npos)
+		 ||(line.find("</") != string::npos)
 		 ||(line.length()>1000)
 		 ){
 		 	cerr  << endl <<line.find_first_of("<b>")<<endl<<line.length()<<endl<< line << endl;

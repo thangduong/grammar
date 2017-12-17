@@ -10,6 +10,7 @@ Tokenizer::Tokenizer()
 	_discard_delimiters.push_back("\t");
 	_discard_delimiters.push_back("\r");
 	_discard_delimiters.push_back("\n");
+	_discard_delimiters.push_back(u8"\xc2\xa0");
 	_discard_delimiters.push_back(u8"¬");	// not sure what this is.  probably just noise!
 
 	_retain_delimiters.push_back("''");
@@ -47,6 +48,7 @@ Tokenizer::Tokenizer()
 	_retain_delimiters.push_back(u8"/");
 	_retain_delimiters.push_back(u8"\\");
 	_retain_delimiters.push_back(u8"—");
+	_retain_delimiters.push_back(u8"–");
 	_retain_delimiters.push_back(u8"–");
 	_retain_delimiters.push_back(u8"’");
 	_retain_delimiters.push_back(u8"ʼ");
@@ -163,6 +165,7 @@ Tokenizer::Tokenizer()
 	_translit_map[u8"”"] = "\"";
 	_translit_map[u8"…"] = "...";
 	_translit_map[u8"–"] = "-";
+	_translit_map[u8"–"] = "-";
 	_translit_map[u8"—"] = "--";
 	_translit_map[u8"′"] = "'";
 	_translit_map[u8"`"] = "'";
@@ -229,6 +232,7 @@ Tokenizer::Tokenizer()
 //	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^20[0-9][0-9]"), "<year>"));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9][0-9][0-9]|[0-9][0-9]|[0-9])(,[0-9][0-9][0-9])+"), "<large-int>", true));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*)[.]([0-9])+"), "<decimal>", true));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([A-Za-z][.])+[A-Za-z]"), "", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([A-Za-z][.])+"), "", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*[04-9]th)|^([0-9]*[1]st)|^([0-9]*[2]nd)|^([0-9]*[3]rd)"), "<ordinal>", false));
 //	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([4-9])([0-9])*"), "<integer>", true));
