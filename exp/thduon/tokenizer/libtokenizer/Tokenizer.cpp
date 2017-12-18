@@ -3,6 +3,20 @@
 #include <iostream>
 using namespace std;
 
+template <class T>
+void getMinMaxLenFromCollection(const T& collection, int& min_len, int& max_len) {
+	if (collection.size() == 0)
+		return;
+	min_len = max_len = (*collection.begin()).length();
+	for (auto itr = collection.begin(); itr != collection.end(); itr++) {
+		int len = itr->length();
+		if (len > max_len)
+			max_len = len;
+		if (len < min_len)
+			min_len = len;
+	}
+}
+
 Tokenizer::Tokenizer()
 {
 	cout << "creating tokenizer object " << endl;
@@ -198,6 +212,11 @@ Tokenizer::Tokenizer()
 		else if ((int)translit_itr->first.length() > _max_translit_len)
 			_max_translit_len = (int)translit_itr->first.length();
 	}
+
+	getMinMaxLenFromCollection(_discard_delimiters, _min_discard_delim_len, _max_discard_delim_len);
+	getMinMaxLenFromCollection(_retain_delimiters, _min_retain_delim_len, _max_retain_delim_len);
+	getMinMaxLenFromCollection(_exception_tokens, _min_exception_token_len, _max__exception_token_len);
+
 
 	// tuple meaning:
 	//	0 = regular expression
