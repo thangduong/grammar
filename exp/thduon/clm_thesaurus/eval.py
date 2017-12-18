@@ -11,7 +11,7 @@ import os
 import sys
 import json
 
-gflags.DEFINE_string('paramsfile', 'output/clmtV1/params.py', 'parameter files')
+gflags.DEFINE_string('paramsfile', 'output/clmtV0/params.py', 'parameter files')
 FLAGS = gflags.FLAGS
 
 
@@ -97,10 +97,10 @@ def eval(params,
 		for o in options:
 			synonym = o['synonym']
 			if synonym not in k:
-				score = -1
+				score = -1000
 				unk_list += [synonym]
 			else:
-				score = -math.log(sm[k.index(synonym)])
+				score = math.log(sm[k.index(synonym)])
 			o['clmtV1'] = score
 			print(score)
 
@@ -109,6 +109,7 @@ def eval(params,
 		json.dump(data,f)
 
 	print(len(unk_list))
+	print(unk_list)
 def main(argv):
 	try:
 		argv = FLAGS(argv)  # parse flags
