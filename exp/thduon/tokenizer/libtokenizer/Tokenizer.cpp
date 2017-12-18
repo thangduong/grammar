@@ -19,7 +19,6 @@ void getMinMaxLenFromCollection(const T& collection, int& min_len, int& max_len)
 
 Tokenizer::Tokenizer()
 {
-	cout << "creating tokenizer object " << endl;
 	// TODO: use hash + set membership to speed up tokenization
 	_discard_delimiters.push_back(" ");
 	_discard_delimiters.push_back("\t");
@@ -81,12 +80,6 @@ Tokenizer::Tokenizer()
 	_retain_delimiters.push_back(u8"−");
 	_retain_delimiters.push_back(u8"•");
 	_retain_delimiters.push_back(u8"·");
-/*
-	for (auto x = _retain_delimiters.begin(); x != _retain_delimiters.end(); x++) {
-	cout << (*x);
-	}
-	cout << endl;
-*/
 
 	_exception_tokens.push_back("...");
 	_exception_tokens.push_back("....");
