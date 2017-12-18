@@ -29,6 +29,8 @@ fe = open(os.path.join(utils.get_dict_value(params,'output_location'),
 											'heldout_%s_err.txt'%timestr), 'w')
 fip = open(os.path.join(utils.get_dict_value(params,'output_location'),
 											'heldout_%s_err2.txt'%timestr), 'w')
+fscores = open(os.path.join(utils.get_dict_value(params,'output_location'),
+											'scores_%s.txt'%timestr), 'w')
 f.write('Exec Time\tModel Pick\tModel Score\tGround Truth\tSentence\n')
 fe.write('Exec Time\tModel Pick\tModel Score\tGround Truth\tSentence\n')
 no_right = [0,0,0,0]
@@ -59,7 +61,9 @@ for batch_no in range(1):
 #		pick = np.argmax(r[0][0])
 		pickpr = [r[0][0][idx] for idx in pick]
 		model_score = r[0][0]
-		x = [dt, pick, pickpr, ground_truth, num_unk, num_indexed, sentence]
+		x = [dt, pick, pickpr, ground_truth, num_unk, num_indexed,
+				 ' '.join(sentence[:int(len(sentence)/2)]+['___']+sentence[int(len(sentence)/2):]),\
+				 r[0][0]]
 		model_pick = pick[0]
 		if ground_truth in pick:
 			model_pick = ground_truth
@@ -78,6 +82,13 @@ for batch_no in range(1):
 		f.write('%s\n'%x)
 		if idx-last > 10000:
 #			print(all_unk_words)
+			fscores.write("NUMBER OF UNK: %d (%0.2f)\n" % (total_unk, 100 * total_unk / max(total_indexed, 1)))
+			fscores.write("recall = %s\n" % [x / y for x, y in zip(no_right, no_total)])
+			fscores.write("precision = %s\n" % [x / y for x, y in zip(no_right, no_total_model)])
+			fscores.write("%s\n"%no_right)
+			fscores.write("%s\n"%no_total)
+			fscores.write("%s\n"%no_total_model)
+			fscores.write("%s\n"%error_scenario)
 			print("NUMBER OF UNK: %d (%0.2f)" % (total_unk, 100 * total_unk / max(total_indexed, 1)))
 			print("recall = %s" % [x / y for x, y in zip(no_right, no_total)])
 			print("precision = %s" % [x / y for x, y in zip(no_right, no_total_model)])
@@ -96,7 +107,25 @@ print(no_total)
 print(no_total_model)
 
 print(error_scenario)
+
+fscores.write("recall = %s\n"%[x/y for x,y in zip(no_right,no_total)])
+fscores.write("precision = %s\n"%[x/y for x,y in zip(no_right, no_total_model)])
+fscores.write("%s\n"%no_right)
+fscores.write("%s\n"%no_total)
+fscores.write("%s\n"%no_total_model)
+fscores.write("%s\n"%error_scenario)
+
+# timestamp, precision, recall, precision, recall, precision, recall, precision, recall
+precision_list = [x/y for x,y in zip(no_right,no_total)]
+recall_list = [x/y for x,y in zip(no_right, no_total_model)]
+
+fascores = open(os.path.join(utils.get_dict_value(params,'output_location'),
+											'scores.txt'), 'a')
+fascores.write("%s %s\n"%(time(),  [x for pair in zip(precision_list, recall_list) for x in pair]))
+fascores.close()
+
 #		f.write('%0.8f\t%0.8f\t%s\t%s\n'%(after_time-before_time,model_score,ground_truth,sentence))
 f.close()
 fe.close()
 fip.close()
+fscores.close()

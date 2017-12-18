@@ -9,7 +9,7 @@ import gflags
 import os
 import sys
 
-gflags.DEFINE_string('paramsfile', 'output/clmV1/params.py', 'parameter files')
+gflags.DEFINE_string('paramsfile', 'output/clmV0/params.py', 'parameter files')
 FLAGS = gflags.FLAGS
 
 
@@ -100,6 +100,7 @@ def eval(params,
 		print("%d %f %s" %(i, x,y))
 	print(test_sentence)
 	print("EVAL TIME = %s"%(aft-bef))
+
 def main(argv):
 	try:
 		argv = FLAGS(argv)  # parse flags

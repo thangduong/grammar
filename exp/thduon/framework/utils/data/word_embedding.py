@@ -6,15 +6,7 @@ from framework.utils.data.text_indexer import TextIndexer
 import math
 import framework.utils.data.text_utils as utils
 import heapq
-
-#def dot(v1, v2):
-#    sum = 0
-#    print(v1)
-#    print(v2)
-#    for x,y in zip(v1,v2):
-#        sum += x * y
-#    print('GOT SUM')
-#    return sum
+import gensim
 
 import warnings
 warnings.filterwarnings('error')
@@ -156,6 +148,12 @@ class WordEmbedding(object):
                     print("%s rows loaded" % i)
                 line = line.rstrip().lstrip()
                 row = line.decode('utf8').split(' ')
+
+                # probably header
+                if len(row) < dimension:
+                    print("SKIPPING ROW %s" % i)
+                    continue
+
                 word = row[0]
                 del row[0]
                 vector = np.asarray(row).astype(np.float32)
@@ -170,10 +168,6 @@ class WordEmbedding(object):
                 word_index += 1
         embedding = WordEmbedding.from_embedding_dict(vectors, vocab, unk_token=unk_token, pad_token=pad_token)
         return embedding
-
-    @classmethod
-    def from_bin_file(cls, filename, unk_token='unk', pad_token='<pad>'):
-        from gensim.models.keyedvectors import KeyedVectors
 
     @classmethod
     def from_file(cls, filename):
@@ -307,6 +301,8 @@ class WordEmbedding(object):
                 result = cos_distance(v1, v2)
             elif method == 1:
                 result = euclidean_distance(v1, v2)
+            elif method == 2:
+                result = np.dot(v1, v2)
         except:
             result = -1
         return result
@@ -330,7 +326,7 @@ class WordEmbedding(object):
         if bits_to_use == 2:
             v1 = v1[midpt:]
             v2 = v2[midpt:]
-        return self.vector_similarity(v1,v2)
+        return self.vector_similarity(v1,v2, method)
 
     def word_similarity(self, w1, w2, method=0,
                         context_sentence1=None,
