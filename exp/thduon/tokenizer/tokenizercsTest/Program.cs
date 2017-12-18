@@ -15,7 +15,7 @@ namespace tokenizercsTest
             var result = tok.Tokenize("F.D.R. was a great president in the 1930s.");
             foreach (var token in result)
             {
-                System.Console.WriteLine(token.token);
+                System.Console.WriteLine("{0}, {1}, {2}, {3}", token.token, token.start, token.len, token.type);
             }
         }
     }

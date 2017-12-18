@@ -21,6 +21,7 @@ namespace TokenizerCS
         public static extern void FreeTokenizedResult(IntPtr result);
 
         IntPtr _tokenizer;
+        bool _disposed = false;
 
         /// <summary>
         /// Token structure contains the string token, the start position
@@ -28,7 +29,9 @@ namespace TokenizerCS
         /// </summary>
         public struct Token {
             public string token;
-            public int start, len, type;
+            public int start;
+            public int len;
+            public int type;
         };
 
         public Tokenizer()
@@ -37,7 +40,7 @@ namespace TokenizerCS
         }
 
         /// <summary>
-        /// Tokenize a string using the C++ native tokenizer
+        /// Tokenize a string using the C++ native tokenizer.
         /// </summary>
         /// <param name="input_string">Input string to tokenize.  Try "F.D.R. was a great president in the 1930s."</param>
         /// <param name="translit">True to turn on UTF-8 to ASCII translit</param>
@@ -55,10 +58,6 @@ namespace TokenizerCS
             }
             return token_list;
         }
-
-
-
-        bool _disposed = false;
 
         public void Dispose()
         {
