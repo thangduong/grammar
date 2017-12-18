@@ -8,9 +8,9 @@ class TestTokenizer(unittest.TestCase):
 		pass
 
 	def test_smoke(self):
-		input_string = "today      is monday."\
+		input_string = "today      is monday. hello1920s world "\
 				"tomorrow is the 10th of april 1920,and it will rain"
-		expected_output = "today is monday . " \
+		expected_output = "today is monday . hello1920s world " \
 				"tomorrow is the <ordinal> of april <int> , and it will rain"
 		tok = Tokenizer()
 		tokens = [x[0] for x in tok.tokenize(input_string)]
@@ -18,6 +18,10 @@ class TestTokenizer(unittest.TestCase):
 
 	def test_regex(self):
 		test_strings = [
+			[
+				'\'$`:!%^)(][}{@#~-.";,™€°?*|…=+&/\—––’ʼ“”‘′¶″·¢⁄><−•·',
+				'\' $ ` : ! % ^ ) ( ] [ } { @ # ~ - . " ; , ™ € ° ? * | … = + & / \ — – – ’ ʼ “ ” ‘ ′ ¶ ″ · ¢ ⁄ > < − • ·',
+			],
 			[
 			 'The music was better in the 1980s',
 			 'The music was better in the <decade-year>'

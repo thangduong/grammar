@@ -66,7 +66,12 @@ Tokenizer::Tokenizer()
 	_retain_delimiters.push_back(u8"−");
 	_retain_delimiters.push_back(u8"•");
 	_retain_delimiters.push_back(u8"·");
-
+/*
+	for (auto x = _retain_delimiters.begin(); x != _retain_delimiters.end(); x++) {
+	cout << (*x);
+	}
+	cout << endl;
+*/
 
 	_exception_tokens.push_back("...");
 	_exception_tokens.push_back("....");
