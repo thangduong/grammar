@@ -106,18 +106,9 @@ Tokenizer::Tokenizer()
 	_exception_tokens.push_back(u8"S'");
 	_exception_tokens.push_back(u8"s’");
 	_exception_tokens.push_back(u8"S’");
-	/*
-	// these are covered by a regex now
-	_exception_tokens.push_back(u8"i.e.");
-	_exception_tokens.push_back(u8"e.g.");
-	_exception_tokens.push_back("m.p.h.");
-	_exception_tokens.push_back("M.P.H.");
-	_exception_tokens.push_back("M.p.h.");
-*/
 	_exception_tokens.push_back(u8"gov’t");
 	_exception_tokens.push_back(u8"Gov’t");
 	_exception_tokens.push_back(u8"GOV’T");
-
 	_exception_tokens.push_back(u8"'ve");
 	_exception_tokens.push_back(u8"’ve");
 	_exception_tokens.push_back(u8"'Ve");
@@ -126,7 +117,6 @@ Tokenizer::Tokenizer()
 	_exception_tokens.push_back(u8"’vE");
 	_exception_tokens.push_back(u8"'VE");
 	_exception_tokens.push_back(u8"’VE");
-
 	_exception_tokens.push_back(u8"'re");
 	_exception_tokens.push_back(u8"’re");
 	_exception_tokens.push_back(u8"'Re");
@@ -135,7 +125,6 @@ Tokenizer::Tokenizer()
 	_exception_tokens.push_back(u8"’rE");
 	_exception_tokens.push_back(u8"'RE");
 	_exception_tokens.push_back(u8"’RE");
-
 	_exception_tokens.push_back(u8"'ll");
 	_exception_tokens.push_back(u8"’ll");
 	_exception_tokens.push_back(u8"'Ll");
@@ -144,7 +133,6 @@ Tokenizer::Tokenizer()
 	_exception_tokens.push_back(u8"’lL");
 	_exception_tokens.push_back(u8"'LL");
 	_exception_tokens.push_back(u8"’LL");
-
 	_exception_tokens.push_back("(tm)");
 	_exception_tokens.push_back("jr.");
 	_exception_tokens.push_back("Jr.");
@@ -196,6 +184,7 @@ Tokenizer::Tokenizer()
 	_translit_map[u8"″"] = "\"";
 
 
+	// compute min and max lengths
 	_max_translit_len = _min_translit_len = (int)_translit_map.begin()->first.length();
 	for (auto translit_itr = _translit_map.begin(); translit_itr != _translit_map.end(); translit_itr++) {
 		if ((int)translit_itr->first.length() < _min_translit_len)
