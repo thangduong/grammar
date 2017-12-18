@@ -67,6 +67,7 @@ Tokenizer::Tokenizer()
 	_retain_delimiters.push_back(u8"•");
 	_retain_delimiters.push_back(u8"·");
 
+
 	_exception_tokens.push_back("...");
 	_exception_tokens.push_back("....");
 	_exception_tokens.push_back(u8"can't");
@@ -105,12 +106,14 @@ Tokenizer::Tokenizer()
 	_exception_tokens.push_back(u8"S'");
 	_exception_tokens.push_back(u8"s’");
 	_exception_tokens.push_back(u8"S’");
+	/*
+	// these are covered by a regex now
 	_exception_tokens.push_back(u8"i.e.");
 	_exception_tokens.push_back(u8"e.g.");
 	_exception_tokens.push_back("m.p.h.");
 	_exception_tokens.push_back("M.P.H.");
 	_exception_tokens.push_back("M.p.h.");
-
+*/
 	_exception_tokens.push_back(u8"gov’t");
 	_exception_tokens.push_back(u8"Gov’t");
 	_exception_tokens.push_back(u8"GOV’T");
@@ -143,8 +146,6 @@ Tokenizer::Tokenizer()
 	_exception_tokens.push_back(u8"’LL");
 
 	_exception_tokens.push_back("(tm)");
-	_exception_tokens.push_back("a.m.");
-	_exception_tokens.push_back("p.m");
 	_exception_tokens.push_back("jr.");
 	_exception_tokens.push_back("Jr.");
 	_exception_tokens.push_back("sr.");
@@ -167,8 +168,6 @@ Tokenizer::Tokenizer()
 	_exception_tokens.push_back(">=");
 	_exception_tokens.push_back("<=");
 	_exception_tokens.push_back("==");
-//	_exception_tokens.push_back("t.v.");
-//	_exception_tokens.push_back("r.p.m.");
 
 
 	_translit_map[u8"™"] = "(tm)";
@@ -205,62 +204,30 @@ Tokenizer::Tokenizer()
 			_max_translit_len = (int)translit_itr->first.length();
 	}
 
-	/*
-	_translit_map[u8"™"] = "(tm)";
-	_translit_map[u8"“"] = "\"";
-	_translit_map[u8"”"] = "\"";
-	_translit_map[u8"…"] = "...";
-	_translit_map[u8"—"] = "--";
-	_translit_map[u8"′"] = "'";
-	_translit_map[u8"’"] = "'";
-	_translit_map[u8"‘"] = "'";
-	_translit_map[u8"’ve"] = "'ve";
-	_translit_map[u8"’t"] = "'t";
-	_translit_map[u8"’s"] = "'s";
-	_translit_map[u8"’S"] = "'S";
-	_translit_map[u8"n’t"] = "n't";
-	_translit_map[u8"…"] = "...";
-	_translit_map["...."] = "...";
-	_translit_map["''"] = "\"";
-	_translit_map[u8"’m"] = "'m";
-	_translit_map[u8"’re"] = "'re";
-	_translit_map[u8"’M"] = "'M";
-	_translit_map[u8"s’"] = "s'";
-	_translit_map[u8"S’"] = "S'";
-	_translit_map[u8"can’t"] = "can't";
-	*/
-
 	// tuple meaning:
 	//	0 = regular expression
 	//	1 = string to identify token, if "", then string is actual matched string
 	//	2 = true if this can act as a retain delimiter, false if not
-//	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^20[0-9]0s"), "<decade-year>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[12][0-9][0-9]0s"), "<decade-year>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[0-9]0s"), "<decade>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^\\([0-9][0-9][0-9]\\)[ -]*[0-9][0-9][0-9][ -]*[0-9][0-9][0-9][0-9]"), "<phone>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[0-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]"), "<phone>", true));
-	//	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^19[0-9][0-9]"), "<year>"));
-//	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^20[0-9][0-9]"), "<year>"));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9][0-9][0-9]|[0-9][0-9]|[0-9])(,[0-9][0-9][0-9])+"), "<large-int>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*)[.]([0-9])+"), "<decimal>", true));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[12][0-9][0-9]0s"), "<decade-year>", false));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[0-9]0s"), "<decade>", false));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^\\([0-9][0-9][0-9]\\)[ -]*[0-9][0-9][0-9][ -]*[0-9][0-9][0-9][0-9]"), "<phone>", false));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[0-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]"), "<phone>", false));
+//_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^19[0-9][0-9]"), "<year>"));
+//_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^20[0-9][0-9]"), "<year>"));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9][0-9][0-9]|[0-9][0-9]|[0-9])(,[0-9][0-9][0-9])+"), "<large-int>", false));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*)[.]([0-9])+"), "<decimal>", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([A-Za-z][.])+[A-Za-z]"), "", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([A-Za-z][.])+"), "", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*[04-9]th)|^([0-9]*[1]st)|^([0-9]*[2]nd)|^([0-9]*[3]rd)"), "<ordinal>", false));
-//	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([4-9])([0-9])*"), "<integer>", true));
-//	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^0([0-9])+"), "<integer>", true));
-//	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^1([0-9])+"), "<integer>", true));
-//	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^2([0-9])+"), "<integer>", true));
-//	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^3([0-9])+"), "<integer>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9])+k"), "<int-k>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9])+"), "<int>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^0"), "<zero>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^1"), "<one>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^2"), "<two>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^3"), "<three>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+"), "<email>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^http://[a-zA-z.]+(/[a-zA-z.]+)*"), "<url>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^https://[a-zA-z.]+(/[a-zA-z.]+)*"), "<url>", true));
-//	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[a-z][.]([a-zA-Z][.])+"), "", true));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9])+k"), "<int-k>", false));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9])+"), "<int>", false));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^0"), "<zero>", false));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^1"), "<one>", false));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^2"), "<two>", false));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^3"), "<three>", false));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+"), "<email>", false));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^http://[a-zA-z.]+(/[a-zA-z.]+)*"), "<url>", false));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^https://[a-zA-z.]+(/[a-zA-z.]+)*"), "<url>", false));
 }
 
 
@@ -315,6 +282,7 @@ list<tuple<int,int,int>> Tokenizer::Tokenize(const string& input_string, bool tr
 		
 		size_t matched_exception_token_len = ExactStringMatch(_exception_tokens, input_string, marker);
 		if ((matched_exception_token_len>0) 
+			&& (marker == start_marker)
 			&& CheckDelimiters((int)matched_exception_token_len, 0, input_string, start_marker, marker, result, translit, token_list))
 			continue;
 		int regex_pattern_matched;
