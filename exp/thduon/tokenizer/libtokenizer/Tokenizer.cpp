@@ -7,9 +7,9 @@ template <class T>
 void getMinMaxLenFromCollection(const T& collection, int& min_len, int& max_len) {
 	if (collection.size() == 0)
 		return;
-	min_len = max_len = (*collection.begin()).length();
+	min_len = max_len = (int)(*collection.begin()).length();
 	for (auto itr = collection.begin(); itr != collection.end(); itr++) {
-		int len = itr->length();
+		int len = (int)itr->length();
 		if (len > max_len)
 			max_len = len;
 		if (len < min_len)
@@ -230,8 +230,8 @@ Tokenizer::Tokenizer()
 //_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^20[0-9][0-9]"), "<year>"));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9][0-9][0-9]|[0-9][0-9]|[0-9])(,[0-9][0-9][0-9])+"), "<large-int>", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*)[.]([0-9])+"), "<decimal>", false));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([A-Za-z][.])+[A-Za-z]"), "", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([A-Za-z][.])+"), "", false));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([A-Za-z][.])+[A-Za-z]"), "", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*[04-9]th)|^([0-9]*[1]st)|^([0-9]*[2]nd)|^([0-9]*[3]rd)"), "<ordinal>", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9])+k"), "<int-k>", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9])+"), "<int>", false));

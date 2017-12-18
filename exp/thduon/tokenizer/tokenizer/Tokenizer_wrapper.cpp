@@ -1,7 +1,6 @@
 #include "Tokenizer_wrapper.h"
 #include "Tokenizer.h"
 
-
 struct TokenizerObject {
 	Tokenizer tokenizer;
 };
@@ -14,6 +13,7 @@ struct TokenizerResult {
 	list<string>::iterator _token_itr;
 };
 #ifdef _WIN32
+#include <Windows.h>
 #define DLL_EXPORT	__declspec(dllexport)
 #else
 #define DLL_EXPORT
