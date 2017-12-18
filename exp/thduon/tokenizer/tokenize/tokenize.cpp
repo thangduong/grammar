@@ -28,6 +28,8 @@ int main(int argc, char* argv[]) {
 		if ((line.find("<br>") != string::npos)
 		 ||(line.find("<BR>") != string::npos)
 		 ||(line.find("</") != string::npos)
+		 ||(line.find("<ref>") != string::npos)
+		 ||(line.find("<reference>") != string::npos)
 		 ||(line.length()>1000)
 		 ){
 		 	cerr  << endl <<line.find_first_of("<b>")<<endl<<line.length()<<endl<< line << endl;

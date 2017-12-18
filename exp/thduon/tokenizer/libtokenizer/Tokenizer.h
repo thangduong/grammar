@@ -15,10 +15,10 @@ class Tokenizer
 	};
 	list<string> _discard_delimiters;
 	list<string> _retain_delimiters;
+	int _min_retain_delim_len, _max_retain_delim_len;
 	list<string> _exception_tokens;
 	unordered_map<string, string> _translit_map;
-	int _min_translit_len;
-	int _max_translit_len;
+	int _min_translit_len, _max_translit_len;
 	vector<tuple<regex, string, bool>> _exception_token_group_regex;
 
 	inline size_t ExactStringMatch(const list<string>& candidates, const string& input_string, int start)

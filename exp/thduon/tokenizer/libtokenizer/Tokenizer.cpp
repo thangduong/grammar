@@ -58,6 +58,14 @@ Tokenizer::Tokenizer()
 	_retain_delimiters.push_back(u8"′");
 	_retain_delimiters.push_back(u8"¶");
 	_retain_delimiters.push_back(u8"″");
+	_retain_delimiters.push_back(u8"·");
+	_retain_delimiters.push_back(u8"¢");
+	_retain_delimiters.push_back(u8"⁄");
+	_retain_delimiters.push_back(u8">");
+	_retain_delimiters.push_back(u8"<");
+	_retain_delimiters.push_back(u8"−");
+	_retain_delimiters.push_back(u8"•");
+	_retain_delimiters.push_back(u8"·");
 
 	_exception_tokens.push_back("...");
 	_exception_tokens.push_back("....");
@@ -156,6 +164,9 @@ Tokenizer::Tokenizer()
 	_exception_tokens.push_back("rock'N'roll");
 	_exception_tokens.push_back("'t");
 	_exception_tokens.push_back(u8"`t");
+	_exception_tokens.push_back(">=");
+	_exception_tokens.push_back("<=");
+	_exception_tokens.push_back("==");
 //	_exception_tokens.push_back("t.v.");
 //	_exception_tokens.push_back("r.p.m.");
 
@@ -224,7 +235,7 @@ Tokenizer::Tokenizer()
 	//	1 = string to identify token, if "", then string is actual matched string
 	//	2 = true if this can act as a retain delimiter, false if not
 //	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^20[0-9]0s"), "<decade-year>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[12][1-9][0-9]0s"), "<decade-year>", true));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[12][0-9][0-9]0s"), "<decade-year>", true));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[0-9]0s"), "<decade>", true));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^\\([0-9][0-9][0-9]\\)[ -]*[0-9][0-9][0-9][ -]*[0-9][0-9][0-9][0-9]"), "<phone>", true));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[0-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]"), "<phone>", true));
@@ -250,10 +261,6 @@ Tokenizer::Tokenizer()
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^http://[a-zA-z.]+(/[a-zA-z.]+)*"), "<url>", true));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^https://[a-zA-z.]+(/[a-zA-z.]+)*"), "<url>", true));
 //	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[a-z][.]([a-zA-Z][.])+"), "", true));
-
-
-	// TODO:
-	// ordinal numbers, 1st, 2nd, 3rd, 5th, 4th, 53rd, etc.
 }
 
 
