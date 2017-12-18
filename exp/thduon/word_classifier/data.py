@@ -74,7 +74,7 @@ def _gen_data(dataobj, tokens, keywords,
 			n0 = []
 		else:
 			if null_sample_factor > 0:
-				n0 = random.sample(n0, math.ceil(len(n1)*null_sample_factor))
+				n0 = random.sample(n0, min(len(n0),math.ceil(len(n1)*null_sample_factor)))
 	#		n0 = random.sample(n0, math.ceil(len(n1)))
 		n = []
 		n += [[x,0] for x in n0]

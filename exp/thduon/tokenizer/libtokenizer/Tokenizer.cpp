@@ -54,6 +54,7 @@ Tokenizer::Tokenizer()
 	_retain_delimiters.push_back(u8"′");
 	_retain_delimiters.push_back(u8"¶");
 
+
 	_exception_tokens.push_back("...");
 	_exception_tokens.push_back("....");
 	_exception_tokens.push_back(u8"can't");
@@ -90,12 +91,14 @@ Tokenizer::Tokenizer()
 	_exception_tokens.push_back(u8"S'");
 	_exception_tokens.push_back(u8"s’");
 	_exception_tokens.push_back(u8"S’");
+	/*
+	// these are covered by a regex now
 	_exception_tokens.push_back(u8"i.e.");
 	_exception_tokens.push_back(u8"e.g.");
 	_exception_tokens.push_back("m.p.h.");
 	_exception_tokens.push_back("M.P.H.");
 	_exception_tokens.push_back("M.p.h.");
-
+*/
 	_exception_tokens.push_back(u8"gov’t");
 	_exception_tokens.push_back(u8"Gov’t");
 	_exception_tokens.push_back(u8"GOV’T");
@@ -128,8 +131,6 @@ Tokenizer::Tokenizer()
 	_exception_tokens.push_back(u8"’LL");
 
 	_exception_tokens.push_back("(tm)");
-	_exception_tokens.push_back("a.m.");
-	_exception_tokens.push_back("p.m");
 	_exception_tokens.push_back("jr.");
 	_exception_tokens.push_back("Jr.");
 	_exception_tokens.push_back("sr.");
@@ -149,8 +150,6 @@ Tokenizer::Tokenizer()
 	_exception_tokens.push_back("rock'N'roll");
 	_exception_tokens.push_back("'t");
 	_exception_tokens.push_back(u8"`t");
-//	_exception_tokens.push_back("t.v.");
-//	_exception_tokens.push_back("r.p.m.");
 
 
 	_translit_map[u8"™"] = "(tm)";
@@ -183,31 +182,6 @@ Tokenizer::Tokenizer()
 		else if ((int)translit_itr->first.length() > _max_translit_len)
 			_max_translit_len = (int)translit_itr->first.length();
 	}
-
-	/*
-	_translit_map[u8"™"] = "(tm)";
-	_translit_map[u8"“"] = "\"";
-	_translit_map[u8"”"] = "\"";
-	_translit_map[u8"…"] = "...";
-	_translit_map[u8"—"] = "--";
-	_translit_map[u8"′"] = "'";
-	_translit_map[u8"’"] = "'";
-	_translit_map[u8"‘"] = "'";
-	_translit_map[u8"’ve"] = "'ve";
-	_translit_map[u8"’t"] = "'t";
-	_translit_map[u8"’s"] = "'s";
-	_translit_map[u8"’S"] = "'S";
-	_translit_map[u8"n’t"] = "n't";
-	_translit_map[u8"…"] = "...";
-	_translit_map["...."] = "...";
-	_translit_map["''"] = "\"";
-	_translit_map[u8"’m"] = "'m";
-	_translit_map[u8"’re"] = "'re";
-	_translit_map[u8"’M"] = "'M";
-	_translit_map[u8"s’"] = "s'";
-	_translit_map[u8"S’"] = "S'";
-	_translit_map[u8"can’t"] = "can't";
-	*/
 
 	// tuple meaning:
 	//	0 = regular expression

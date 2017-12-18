@@ -14,7 +14,11 @@ class Tokenizer
 		REGEX_TOKEN_TYPE_START = 100
 	};
 	list<string> _discard_delimiters;
+	int _min_discard_delim_len;
+	int _max_discard_delim_len;
 	list<string> _retain_delimiters;
+	int _min_retain_delim_len;
+	int _max_retain_delim_len;
 	list<string> _exception_tokens;
 	unordered_map<string, string> _translit_map;
 	int _min_translit_len;
