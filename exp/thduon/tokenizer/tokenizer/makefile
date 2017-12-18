@@ -7,3 +7,7 @@ tokenizer_so.so: Tokenizer_wrapper.o
 
 Tokenizer_wrapper.o: Tokenizer_wrapper.cpp
 	$(CC) -c Tokenizer_wrapper.cpp $(CFLAGS)
+
+clean:
+	-rm tokenizer_so.so
+	-rm *.o

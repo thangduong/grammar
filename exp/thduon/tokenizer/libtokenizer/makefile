@@ -6,3 +6,7 @@ libtokenizer.a: Tokenizer.o
 
 Tokenizer.o: Tokenizer.h Tokenizer.cpp
 	$(CC) -c Tokenizer.cpp $(CFLAGS)
+
+clean:
+	-rm libtokenizer.a
+	-rm *.o

@@ -5,6 +5,7 @@ using namespace std;
 
 Tokenizer::Tokenizer()
 {
+	cout << "creating tokenizer object " << endl;
 	// TODO: use hash + set membership to speed up tokenization
 	_discard_delimiters.push_back(" ");
 	_discard_delimiters.push_back("\t");
