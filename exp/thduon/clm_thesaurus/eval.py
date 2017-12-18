@@ -3,13 +3,15 @@ from framework.evaluator import Evaluator
 import framework.utils.common as utils
 import word_classifier.data as data
 import numpy as np
+import math
 from time import time
 import pickle
 import gflags
 import os
 import sys
+import json
 
-gflags.DEFINE_string('paramsfile', 'output/clmV0/params.py', 'parameter files')
+gflags.DEFINE_string('paramsfile', 'output/clmtV1/params.py', 'parameter files')
 FLAGS = gflags.FLAGS
 
 
@@ -69,37 +71,44 @@ def eval(params,
 	test_sentence = "<s> I live in a ___ ."
 	test_sentence = "<s> I have seen it on him , and can ___ to it ."
 	test_sentence = "<s> the thieves ___ the library and got very little for their pains ."
-	test_sentence = test_sentence.lower()
-	split_sentence = list(split_sentence_for_eval(test_sentence.split(), ["___"], num_before, num_after))
-#	print(split_sentence[0][0])
-	print(split_sentence[0][0])
-	_, sentence, _, _ = i.index_wordlist(split_sentence[0][0])
-	bef = time()
-	r = e.eval({'sentence': [sentence]}, {'sm_decision'})
-	aft = time()
-	#print(r[0][0])
-	sm = r[0][0]
-	am = np.argmax(sm)
+
+	# input data
+	with open('/mnt/work/NeuralRewriting/eval/small_eval_data.json') as f:
+		data = json.load(f)
 	with open(keywords_file, 'rb') as f:
 		k = pickle.load(f)
-	#print(am)
-#	if am == 0:
-#		print("DO NOTHING")
-#	else:
-#		print(k[am - 1])
-	k = k
-	sm, k = zip(*sorted(zip(sm, k), reverse=True))
-#	print(k)
-	wlist = ['migrate','contribute','swear','write','climb']
-	wlist = ['ruled', 'ransacked', 'identified', 'visited', 'enjoyed']
-	for x in wlist:
-		print("%s %s"%(x,sm[k.index(x)]))
-	for i,(x,y) in enumerate(zip(sm,k)):
-		if i>20:
-			exit(0)
-		print("%d %f %s" %(i, x,y))
-	print(test_sentence)
-	print("EVAL TIME = %s"%(aft-bef))
+
+	unk_list = []
+	for q in data:
+		query_word = q['query_word']
+		orig_sent = q['orig_sent']
+		options = q['options']
+		orig_sent = orig_sent.replace(query_word, "___")
+		orig_sent = "<s> " + orig_sent
+		test_sentence = orig_sent.lower()
+		split_sentence = list(split_sentence_for_eval(test_sentence.split(), ["___"], num_before, num_after))
+#		print(split_sentence[0][0])
+		_, sentence, _, _ = i.index_wordlist(split_sentence[0][0])
+		bef = time()
+		r = e.eval({'sentence': [sentence]}, {'sm_decision'})
+		aft = time()
+		sm = r[0][0]
+
+		for o in options:
+			synonym = o['synonym']
+			if synonym not in k:
+				score = -1
+				unk_list += [synonym]
+			else:
+				score = -math.log(sm[k.index(synonym)])
+			o['clmtV1'] = score
+			print(score)
+
+	# save output
+	with open('/mnt/work/NeuralRewriting/eval/small_eval_data_out.json','w') as f:
+		json.dump(data,f)
+
+	print(len(unk_list))
 def main(argv):
 	try:
 		argv = FLAGS(argv)  # parse flags
