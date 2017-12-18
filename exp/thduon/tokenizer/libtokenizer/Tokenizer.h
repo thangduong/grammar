@@ -43,7 +43,9 @@ class Tokenizer
 		for (auto candidate_itr = candidates.begin();
 			candidate_itr != candidates.end(); candidate_itr++, idx++) {
 			smatch sm;
-			regex_search(next(input_string.begin(), start), input_string.end(), sm, get<0>(*candidate_itr));
+			regex_search(next(input_string.begin(), start),
+					input_string.end(),
+					sm, get<0>(*candidate_itr));
 			if (sm.length()) {
 				if (pattern_matched)
 					(*pattern_matched) = idx + REGEX_TOKEN_TYPE_START;

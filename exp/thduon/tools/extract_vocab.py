@@ -3,6 +3,7 @@ import pickle
 import operator
 import gflags
 data_dir = '/mnt/work/test' #/mnt/work/tokenized_training_data'
+data_dir = '/mnt/work/training_data.tok'
 filenames = [os.path.join(data_dir, f) for f in os.listdir(data_dir)]
 vocab = {}
 lowercase = True
@@ -12,8 +13,10 @@ if lowercase:
 for i,filename in enumerate(filenames):
 #	if i>2:
 #		break
+	if filename.endswith('.idea'):
+		continue
 	print(filename)
-	with open(filename,'r') as f:
+	with open(filename,'r',encoding='utf-8',errors='ignore') as f:
 		for line in f:
 			line = line.rstrip().lstrip()
 			if lowercase:

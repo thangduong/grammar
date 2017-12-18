@@ -10,6 +10,7 @@ Tokenizer::Tokenizer()
 	_discard_delimiters.push_back("\t");
 	_discard_delimiters.push_back("\r");
 	_discard_delimiters.push_back("\n");
+	_discard_delimiters.push_back(u8"\xc2\xa0");
 	_discard_delimiters.push_back(u8"¬");	// not sure what this is.  probably just noise!
 
 	_retain_delimiters.push_back("''");
@@ -47,12 +48,16 @@ Tokenizer::Tokenizer()
 	_retain_delimiters.push_back(u8"/");
 	_retain_delimiters.push_back(u8"\\");
 	_retain_delimiters.push_back(u8"—");
+	_retain_delimiters.push_back(u8"–");
+	_retain_delimiters.push_back(u8"–");
 	_retain_delimiters.push_back(u8"’");
+	_retain_delimiters.push_back(u8"ʼ");
 	_retain_delimiters.push_back(u8"“");
 	_retain_delimiters.push_back(u8"”");
 	_retain_delimiters.push_back(u8"‘");
 	_retain_delimiters.push_back(u8"′");
 	_retain_delimiters.push_back(u8"¶");
+	_retain_delimiters.push_back(u8"″");
 
 
 	_exception_tokens.push_back("...");
@@ -69,6 +74,8 @@ Tokenizer::Tokenizer()
 	_exception_tokens.push_back(u8"N'T");
 	_exception_tokens.push_back(u8"’s");
 	_exception_tokens.push_back(u8"’S");
+	_exception_tokens.push_back(u8"ʼs");
+	_exception_tokens.push_back(u8"ʼS");
 	_exception_tokens.push_back(u8"n’t");
 	_exception_tokens.push_back(u8"N’t");
 	_exception_tokens.push_back(u8"n’T");
@@ -156,6 +163,8 @@ Tokenizer::Tokenizer()
 	_translit_map[u8"“"] = "\"";
 	_translit_map[u8"”"] = "\"";
 	_translit_map[u8"…"] = "...";
+	_translit_map[u8"–"] = "-";
+	_translit_map[u8"–"] = "-";
 	_translit_map[u8"—"] = "--";
 	_translit_map[u8"′"] = "'";
 	_translit_map[u8"`"] = "'";
@@ -173,6 +182,7 @@ Tokenizer::Tokenizer()
 	_translit_map[u8"é"] = "e";
 	_translit_map[u8"ê"] = "e";
 	_translit_map[u8"ë"] = "e";
+	_translit_map[u8"″"] = "\"";
 
 
 	_max_translit_len = _min_translit_len = (int)_translit_map.begin()->first.length();
@@ -187,26 +197,30 @@ Tokenizer::Tokenizer()
 	//	0 = regular expression
 	//	1 = string to identify token, if "", then string is actual matched string
 	//	2 = true if this can act as a retain delimiter, false if not
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^20[0-9]0s"), "<decade-year>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^19[0-9]0s"), "<decade-year>", true));
+//	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^20[0-9]0s"), "<decade-year>", true));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[12][1-9][0-9]0s"), "<decade-year>", true));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[0-9]0s"), "<decade>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^\\([0-9][0-9][0-9]\\)[ -]*[0-9][0-9][0-9][ -]*[0-9][0-9][0-9][0-9]"), "<phone-number>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[0-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]"), "<phone-number>", true));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^\\([0-9][0-9][0-9]\\)[ -]*[0-9][0-9][0-9][ -]*[0-9][0-9][0-9][0-9]"), "<phone>", true));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[0-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]"), "<phone>", true));
 	//	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^19[0-9][0-9]"), "<year>"));
 //	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^20[0-9][0-9]"), "<year>"));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9][0-9][0-9]|[0-9][0-9]|[0-9])(,[0-9][0-9][0-9])+"), "<large-number>", true));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9][0-9][0-9]|[0-9][0-9]|[0-9])(,[0-9][0-9][0-9])+"), "<large-int>", true));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*)[.]([0-9])+"), "<decimal>", true));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([A-Za-z][.])+[A-Za-z]"), "", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([A-Za-z][.])+"), "", false));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([4-9])([0-9])*"), "<integer>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^0([0-9])+"), "<integer>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^1([0-9])+"), "<integer>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^2([0-9])+"), "<integer>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^3([0-9])+"), "<integer>", true));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*[04-9]th)|^([0-9]*[1]st)|^([0-9]*[2]nd)|^([0-9]*[3]rd)"), "<ordinal>", false));
+//	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([4-9])([0-9])*"), "<integer>", true));
+//	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^0([0-9])+"), "<integer>", true));
+//	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^1([0-9])+"), "<integer>", true));
+//	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^2([0-9])+"), "<integer>", true));
+//	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^3([0-9])+"), "<integer>", true));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9])+k"), "<int-k>", true));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9])+"), "<int>", true));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^0"), "<zero>", true));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^1"), "<one>", true));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^2"), "<two>", true));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^3"), "<three>", true));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+"), "<email-address>", true));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+"), "<email>", true));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^http://[a-zA-z.]+(/[a-zA-z.]+)*"), "<url>", true));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^https://[a-zA-z.]+(/[a-zA-z.]+)*"), "<url>", true));
 //	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[a-z][.]([a-zA-Z][.])+"), "", true));
