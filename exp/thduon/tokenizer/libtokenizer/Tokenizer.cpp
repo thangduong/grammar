@@ -83,10 +83,6 @@ Tokenizer::Tokenizer()
 
 	_exception_tokens.push_back("...");
 	_exception_tokens.push_back("....");
-	_exception_tokens.push_back(u8"can't");
-	_exception_tokens.push_back(u8"can’t");
-	_exception_tokens.push_back(u8"Can't");
-	_exception_tokens.push_back(u8"Can’t");
 	_exception_tokens.push_back(u8"'s");
 	_exception_tokens.push_back(u8"'S");
 	_exception_tokens.push_back(u8"n't");
@@ -105,16 +101,6 @@ Tokenizer::Tokenizer()
 	_exception_tokens.push_back(u8"'M");
 	_exception_tokens.push_back(u8"’m");
 	_exception_tokens.push_back(u8"’M");
-	_exception_tokens.push_back("dr.");
-	_exception_tokens.push_back("Dr.");
-	_exception_tokens.push_back("no.");
-	_exception_tokens.push_back("No.");
-	_exception_tokens.push_back("mr.");
-	_exception_tokens.push_back("Mr.");
-	_exception_tokens.push_back("Ms.");
-	_exception_tokens.push_back("ms.");
-	_exception_tokens.push_back("Mrs.");
-	_exception_tokens.push_back("mrs.");
 	_exception_tokens.push_back(u8"s'");
 	_exception_tokens.push_back(u8"S'");
 	_exception_tokens.push_back(u8"s’");
@@ -147,28 +133,43 @@ Tokenizer::Tokenizer()
 	_exception_tokens.push_back(u8"'LL");
 	_exception_tokens.push_back(u8"’LL");
 	_exception_tokens.push_back("(tm)");
-	_exception_tokens.push_back("jr.");
-	_exception_tokens.push_back("Jr.");
-	_exception_tokens.push_back("sr.");
-	_exception_tokens.push_back("Sr.");
-	_exception_tokens.push_back("hon.");
-	_exception_tokens.push_back("hr.");
-	_exception_tokens.push_back("hosp.");
-	_exception_tokens.push_back("lt.");
-	_exception_tokens.push_back("gen.");
-	_exception_tokens.push_back("Gen.");
-	_exception_tokens.push_back("e-mail");
-	_exception_tokens.push_back("E-mail");
-	_exception_tokens.push_back("E-Mail");
-	_exception_tokens.push_back("Rock'n'Roll");
-	_exception_tokens.push_back("Rock'N'Roll");
-	_exception_tokens.push_back("rock'n'roll");
-	_exception_tokens.push_back("rock'N'roll");
 	_exception_tokens.push_back("'t");
 	_exception_tokens.push_back(u8"`t");
 	_exception_tokens.push_back(">=");
 	_exception_tokens.push_back("<=");
 	_exception_tokens.push_back("==");
+
+	_exception_tokens_delimited_before.push_back("dr.");
+	_exception_tokens_delimited_before.push_back("Dr.");
+	_exception_tokens_delimited_before.push_back("no.");
+	_exception_tokens_delimited_before.push_back("No.");
+	_exception_tokens_delimited_before.push_back("mr.");
+	_exception_tokens_delimited_before.push_back("Mr.");
+	_exception_tokens_delimited_before.push_back("Ms.");
+	_exception_tokens_delimited_before.push_back("ms.");
+	_exception_tokens_delimited_before.push_back("Mrs.");
+	_exception_tokens_delimited_before.push_back("mrs.");
+	_exception_tokens_delimited_before.push_back(u8"can't");
+	_exception_tokens_delimited_before.push_back(u8"can’t");
+	_exception_tokens_delimited_before.push_back(u8"Can't");
+	_exception_tokens_delimited_before.push_back(u8"Can’t");
+	_exception_tokens_delimited_before.push_back("jr.");
+	_exception_tokens_delimited_before.push_back("Jr.");
+	_exception_tokens_delimited_before.push_back("sr.");
+	_exception_tokens_delimited_before.push_back("Sr.");
+	_exception_tokens_delimited_before.push_back("hon.");
+	_exception_tokens_delimited_before.push_back("hr.");
+	_exception_tokens_delimited_before.push_back("hosp.");
+	_exception_tokens_delimited_before.push_back("lt.");
+	_exception_tokens_delimited_before.push_back("gen.");
+	_exception_tokens_delimited_before.push_back("Gen.");
+	_exception_tokens_delimited_before.push_back("e-mail");
+	_exception_tokens_delimited_before.push_back("E-mail");
+	_exception_tokens_delimited_before.push_back("E-Mail");
+	_exception_tokens_delimited_before.push_back("Rock'n'Roll");
+	_exception_tokens_delimited_before.push_back("Rock'N'Roll");
+	_exception_tokens_delimited_before.push_back("rock'n'roll");
+	_exception_tokens_delimited_before.push_back("rock'N'roll");
 
 
 	_translit_map[u8"™"] = "(tm)";
@@ -223,8 +224,7 @@ Tokenizer::Tokenizer()
 //_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^20[0-9][0-9]"), "<year>"));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9][0-9][0-9]|[0-9][0-9]|[0-9])(,[0-9][0-9][0-9])+"), "<large-int>", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*)[.]([0-9])+"), "<decimal>", false));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([A-Za-z][.])+"), "", false));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([A-Za-z][.])+[A-Za-z]"), "", false));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([A-Za-z][.])+[A-Za-z]?"), "", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*[04-9]th)|^([0-9]*[1]st)|^([0-9]*[2]nd)|^([0-9]*[3]rd)"), "<ordinal>", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9])+k"), "<int-k>", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9])+"), "<int>", false));
@@ -289,11 +289,18 @@ list<tuple<int,int,int>> Tokenizer::Tokenize(const string& input_string, bool tr
 		
 		size_t matched_exception_token_len = ExactStringMatch(_exception_tokens, input_string, marker);
 		if ((matched_exception_token_len>0) 
-			&& (marker == start_marker)
 			&& CheckDelimiters((int)matched_exception_token_len, 0, input_string, start_marker, marker, result, translit, token_list))
 			continue;
+
+		if (marker == start_marker) {
+			matched_exception_token_len = ExactStringMatch(_exception_tokens_delimited_before, input_string, marker);
+			if ((matched_exception_token_len > 0)
+				&& CheckDelimiters((int)matched_exception_token_len, 0, input_string, start_marker, marker, result, translit, token_list))
+				continue;
+		}
+
 		int regex_pattern_matched;
-		size_t matched_regex_token_len = RegexStringMatch(_exception_token_group_regex, input_string, marker, &regex_pattern_matched);
+		size_t matched_regex_token_len = RegexStringMatch(_exception_token_group_regex, input_string, marker, (marker == start_marker), &regex_pattern_matched);
 		if ((matched_regex_token_len>0) 
 			&& (get<2>(_exception_token_group_regex[regex_pattern_matched - REGEX_TOKEN_TYPE_START]) || (marker == start_marker))
 			&& CheckDelimiters((int)matched_regex_token_len, regex_pattern_matched, input_string, start_marker, marker, result, translit, token_list))
@@ -311,6 +318,7 @@ list<tuple<int,int,int>> Tokenizer::Tokenize(const string& input_string, bool tr
 			start_marker = marker;
 			continue;
 		}
+
 		size_t retain_token_len = ExactStringMatch(_retain_delimiters, input_string, marker);
 		if (retain_token_len > 0) {
 			if (start_marker < marker) {

@@ -9,8 +9,12 @@ int main(int argc, char* argv[]) {
 	cout << t.Translit(u8"™Hello this is a “test” and there’s more …") << endl;
 //	string tj = t.TokenizeAndJuxtapose("1995 is from 1950s to 1980s $150, 1 man ate 50 sandwiches by himself and the effrot was 0.  thang@quantee.com email me and my homepage is http://www.quantee.com/test.asp. my number is 510-847-7898 or (510)847-7898 or (510) 847-7898");
 //	string tj = t.TokenizeAndJuxtapose("The car on t.v. runs at about 500 r.p.m.");
-	string tj = t.TokenizeAndJuxtapose("hello world");// "John F. Kennedy or john f. kennedy and the F.B.I. his FAQ.");
-	cout << tj << endl;
+	DWORD bef = timeGetTime();
+	string tj;
+	for (int i = 0; i < 1000; i++)
+		tj = t.TokenizeAndJuxtapose("1995 is from 1950s to 1980s $150, 1 man ate 50 sandwiches by himself and the effrot was 0.  thang@quantee.com email me and my homepage is http://www.quantee.com/test.asp. my number is 510-847-7898 or (510)847-7898 or (510) 847-7898");// "John F. Kennedy or john f. kennedy and the F.B.I. his FAQ.");
+	DWORD diff = timeGetTime() - bef;
+	cout << tj << " " << diff << endl;
 	exit(0);
 	if (argc != 3) {
 		cout << "Usage: " << argv[0] << " <input-file> <output-file>" << endl;

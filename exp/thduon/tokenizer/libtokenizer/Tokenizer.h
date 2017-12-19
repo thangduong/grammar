@@ -16,6 +16,7 @@ class Tokenizer
 	list<string> _discard_delimiters;
 	list<string> _retain_delimiters;
 	list<string> _exception_tokens;
+	list<string> _exception_tokens_delimited_before;
 	unordered_map<string, string> _translit_map;
 	int _min_discard_delim_len, _max_discard_delim_len;
 	int _min_retain_delim_len, _max_retain_delim_len;
@@ -35,23 +36,24 @@ class Tokenizer
 		}
 		return 0;
 	}
-	inline size_t RegexStringMatch(vector<tuple<regex,string,bool>>& candidates, const string& input_string, int start, int* pattern_matched)
+	inline size_t RegexStringMatch(vector<tuple<regex,string,bool>>& candidates, const string& input_string, int start, bool test_all_regex, int* pattern_matched)
 	{
 		int idx = 0;
 		for (auto candidate_itr = candidates.begin();
 			candidate_itr != candidates.end(); candidate_itr++, idx++) {
-			smatch sm;
-			regex_search(next(input_string.begin(), start),
-					input_string.end(),
-					sm, get<0>(*candidate_itr));
-			if (sm.length()) {
-				if (pattern_matched)
-					(*pattern_matched) = idx + REGEX_TOKEN_TYPE_START;
-				size_t result = sm[0].length();
-				return result;
+			if (test_all_regex || (get<2>(*candidate_itr))) {
+				smatch sm;
+				regex_search(next(input_string.begin(), start),
+						input_string.end(),
+						sm, get<0>(*candidate_itr));
+				if (sm.length()) {
+					if (pattern_matched)
+						(*pattern_matched) = idx + REGEX_TOKEN_TYPE_START;
+					size_t result = sm[0].length();
+					return result;
+				}
 			}
-		}
-		
+		}		
 		return 0;
 	}
 
