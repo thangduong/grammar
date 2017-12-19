@@ -46,6 +46,8 @@ for e in data:
 		if word2vec_sim == -1:
 			word2vec_unk_list.append(synonym)
 
+		o['e2'] = word2vec_sim + glove_sim * .04
+
 # save output
 with open('/mnt/work/NeuralRewriting/eval/small_eval_data_out.json','w') as f:
 	json.dump(data,f)
