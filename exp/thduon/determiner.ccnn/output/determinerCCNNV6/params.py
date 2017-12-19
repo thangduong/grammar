@@ -1,10 +1,10 @@
 import os
 
 
-model_name = 'determinerCCNNV10'
+model_name = 'determinerCCNNV6'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
-					 'null_sample_factor': 0, #-1,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
+					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
 					 'num_words_before': 10,
 					 'num_words_after': 10,
 					 'embedding_size': 300,
@@ -31,5 +31,5 @@ params = { 'model_name': model_name,
 					 'embedding_wd': 0.0001,                           # L2 WD regularization constant
 					 'enable_regularization': True,
 					 'training_data_dir': '/mnt/work/tokenized_training_data/',
-					 'vocab_file': '../data/filtered_lowercase_vocab.txt'
+					 'vocab_file': 'vocab_lcase.txt'
 					 }

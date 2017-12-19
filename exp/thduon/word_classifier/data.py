@@ -107,8 +107,8 @@ def _gen_data_from_file(dataobj, filename, keywords=[','], num_before=5, num_aft
 	with open(filename) as f:
 		for line in f:
 			line = line.rstrip().lstrip()
-			if all_lowercase:
-				line = line.lower()
+#			if all_lowercase:
+#				line = line.lower()
 			tokens = line.split()
 			if start_token is not None and len(start_token)>0:
 				tokens = [start_token] + tokens
@@ -150,6 +150,7 @@ class ClassifierData:
 		self._ccnn_word_len = utils.get_dict_value(params, 'word_len')
 		self._mimibatch_dump_dir = utils.get_dict_value(params, 'output_location', '.')
 		self._y_count = [0]*utils.get_dict_value(params,'num_classes',2)
+		self._lowercase_char_path = utils.get_dict_value(params, 'lowercase_char_path', True)
 		if self._all_lowercase:
 			if self._start_token is not None:
 				self._start_token = self._start_token.lower()
@@ -202,8 +203,6 @@ class ClassifierData:
 		while (len(batch_y) < batch_size):
 			try:
 				rec = next(self._cur_list)
-				if mb_dump_file is not None:
-					mb_dump_file.write('%03d %s\n'%(rec[1], rec[0]))
 				tok0 = rec[0][int(len(rec[0]) / 2)]
 				# 0 = 1st or 2nd word after, otherwise the # of words after delimited by 0
 				if self._ccnn_num_words == 0:
@@ -211,13 +210,23 @@ class ClassifierData:
 						tok0 = rec[0][int(len(rec[0]) / 2) + 1]
 				else:
 					for i in range(self._ccnn_num_words-1):
-						#tok0 += [0] + rec[0][int(len(rec[0]) / 2) + 1 + i]
-						tok0 += chr(0) + rec[0][int(len(rec[0]) / 2) + 1 + i]
+						tok0 += ' ' + rec[0][int(len(rec[0]) / 2) + 1 + i]
+				if self._use_char_cnn:
+					if mb_dump_file is not None:
+						mb_dump_file.write('[%s]\n' % tok0)
+				if self._all_lowercase:
+					test_sentence = [x.lower() for x in rec[0]]
+				else:
+					test_sentence = rec[0]
+				if mb_dump_file is not None:
+					mb_dump_file.write('%03d %s\n'%(rec[1], test_sentence))
+				if self._lowercase_char_path:
+					tok0 = tok0.lower()
 				if self._indexer is None:
-					batch_x.append(rec[0])
+					batch_x.append(test_sentence)
 #						batch_ccnn.append(tok0)
 				else:
-					num_indexed, rec_indexed, unk_count, unk_list = self._indexer.index_wordlist(rec[0])
+					num_indexed, rec_indexed, unk_count, unk_list = self._indexer.index_wordlist(test_sentence)
 					total_indexed += num_indexed
 					total_unk += unk_count
 					all_unk += unk_list
