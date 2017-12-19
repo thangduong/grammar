@@ -1,6 +1,6 @@
 all: libtokenizer/libtokenizer.a tokenizer/tokenizer_so.so tokenize/tokenize
 	-mkdir bin
-	cp libtokenizer/libtokenizer.a tokenizer/tokenizer_so.so tokenize/tokenize bin
+	cp libtokenizer/libtokenizer.a tokenizer/tokenizer_so.so tokenize/tokenize tokenize/test bin
 	echo all done!
 clean:
 	-rm bin/libtokenizer.a bin/tokenizer_so.so bin/tokenize

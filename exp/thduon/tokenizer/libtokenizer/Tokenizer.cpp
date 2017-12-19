@@ -138,7 +138,7 @@ Tokenizer::Tokenizer()
 	_exception_tokens.push_back(u8"`t");
 	_exception_tokens.push_back(">=");
 	_exception_tokens.push_back("<=");
-	_exception_tokens.push_back("==");
+//	_exception_tokens.push_back("==");
 
 	_exception_tokens_delimited_before.push_back("dr.");
 	_exception_tokens_delimited_before.push_back("Dr.");
@@ -219,13 +219,14 @@ Tokenizer::Tokenizer()
 	//	2 = true if this can act as a retain delimiter, false if not
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[12][0-9][0-9]0s"), "<decade-year>", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[0-9]0s"), "<decade>", false));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^\\([0-9][0-9][0-9]\\)[ -]*[0-9][0-9][0-9][ -]*[0-9][0-9][0-9][0-9]"), "<phone>", false));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[0-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]"), "<phone>", false));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(\\([0-9][0-9][0-9]\\)|[0-9][0-9][0-9])[ -]*[0-9][0-9][0-9][ -]*[0-9][0-9][0-9][0-9]"), "<phone>", false));
+//	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[0-9][0-9][0-9]-[0-9][0-9][0-9]-[0-9][0-9][0-9][0-9]"), "<phone>", false));
 //_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^19[0-9][0-9]"), "<year>"));
 //_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^20[0-9][0-9]"), "<year>"));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9][0-9][0-9]|[0-9][0-9]|[0-9])(,[0-9][0-9][0-9])+"), "<large-int>", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*)[.]([0-9])+"), "<decimal>", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([A-Za-z][.])+[A-Za-z]?"), "", false));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^[=]+"), "", true));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9]*[04-9]th)|^([0-9]*[1]st)|^([0-9]*[2]nd)|^([0-9]*[3]rd)"), "<ordinal>", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9])+k"), "<int-k>", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^([0-9])+"), "<int>", false));
@@ -234,8 +235,8 @@ Tokenizer::Tokenizer()
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^2"), "<two>", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^3"), "<three>", false));
 	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+"), "<email>", false));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^http://[a-zA-z.]+(/[a-zA-z.]+)*"), "<url>", false));
-	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^https://[a-zA-z.]+(/[a-zA-z.]+)*"), "<url>", false));
+	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^http[s]?://[a-zA-z.]+(/[a-zA-z.]+)*"), "<url>", false));
+//	_exception_token_group_regex.push_back(tuple<regex, string, bool>(regex("^https://[a-zA-z.]+(/[a-zA-z.]+)*"), "<url>", false));
 }
 
 
