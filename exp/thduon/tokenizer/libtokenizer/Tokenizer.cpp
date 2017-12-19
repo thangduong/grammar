@@ -27,6 +27,8 @@ Tokenizer::Tokenizer()
 	_discard_delimiters.push_back(u8"\xc2\xa0");
 	_discard_delimiters.push_back(u8"¬");	// not sure what this is.  probably just noise!
 
+	_retain_delimiters.push_back("....");
+	_retain_delimiters.push_back("...");
 	_retain_delimiters.push_back("''");
 	_retain_delimiters.push_back(u8"$");
 	_retain_delimiters.push_back(u8"`");
@@ -81,8 +83,6 @@ Tokenizer::Tokenizer()
 	_retain_delimiters.push_back(u8"•");
 	_retain_delimiters.push_back(u8"·");
 
-	_exception_tokens.push_back("...");
-	_exception_tokens.push_back("....");
 	_exception_tokens.push_back(u8"'s");
 	_exception_tokens.push_back(u8"'S");
 	_exception_tokens.push_back(u8"n't");
