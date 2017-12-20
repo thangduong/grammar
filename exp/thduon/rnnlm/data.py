@@ -30,7 +30,7 @@ class RnnLmData:
 		for sentence in self._current_file:
 			if self._all_lowercase:
 				sentence = sentence.lower()
-			tokens = ['<s>'] + sentence.split() + ['</s>']
+			tokens = ['<s>'] + sentence.split() + ['<s>']
 			if self._indexer is not None:
 				_,tokens,_,_ = self._indexer.index_wordlist(tokens, unk_word=self._unk_token)
 			yield tokens

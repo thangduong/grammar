@@ -454,7 +454,7 @@ class Trainer(object):
 			state = trainer.state
 		else:
 #			print("NO PRIOR STATE_ ZEROING")
-			state = np.zeros([trainer._batch_size, 2*trainer._params['cell_size']])
+			state = np.zeros([trainer._params['num_layers'], 2, trainer._batch_size, trainer._params['cell_size']])
 
 		data_batch['state'] = state
 
