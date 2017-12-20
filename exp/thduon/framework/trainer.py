@@ -44,10 +44,9 @@ def _default_train_iteration_done(trainer, epoch, index, iteration_count,
 					training_time, overhead_time,
 					training_time / sum([next_batch_time, training_time, overhead_time])))
 	if "eval_results" in params:
-		msg += (", %0.4f, %0.4f, %0.4f"%
-					(params['eval_results'][0],
-					params['eval_results'][1],
-					params['eval_results'][2]))
+		eval_results = params['eval_results']
+		for x in eval_results:
+			msg += ", %0.4f"%x
 
 	print('%s' % msg)
 	trainer._training_log_file.write('%s\n' % msg)
@@ -482,7 +481,7 @@ class Trainer(object):
 
 		results_map = {}
 		if additional_nodes_to_evaluate is not None:
-			for node, result in zip(additional_nodes_to_evaluate, run_results[4:]):
+			for node, result in zip(additional_nodes_to_evaluate, run_results[3:]):
 				results_map[node] = result
 
 		trainer.mb_on_state += 1

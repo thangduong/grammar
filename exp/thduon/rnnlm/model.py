@@ -19,6 +19,9 @@ def loss(network, params=None, name='rnnlm_loss'):
 		average_across_timesteps=False,
 		average_across_batch=True)
 	loss = tf.reduce_sum(loss)
+
+	tpp = tf.exp(tf.div(loss, num_steps),'tpp')
+
 	return [loss]
 
 def inference(params):
