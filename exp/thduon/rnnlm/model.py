@@ -27,6 +27,7 @@ def inference(params):
 	cell_size = params['cell_size']
 	vocab_size = params['vocab_size']
 	num_layers = params['num_layers']
+	cell_type = params['cell_type']
 	is_training = tf.get_default_graph().get_tensor_by_name('is_training:0')
 	embedding_wd = utils.get_dict_value(params, 'embedding_wd')
 #	embedding_device = utils.get_dict_value(params, 'embedding_device')
@@ -39,7 +40,7 @@ def inference(params):
 																												 initializer=embedding_initializer,
 																												 wd=embedding_wd)
 
-	words = tf.placeholder(tf.int32, [batch_size, num_steps], name='x')
+	words = tf.placeholder(tf.int32, [None, None], name='x')
 	emb_words = tf.nn.embedding_lookup(embedding_matrix, words, 'emb_words')
 
 	# add dropout if needed
@@ -50,25 +51,38 @@ def inference(params):
 	if num_layers > 1:
 		cell_list = []
 		for _ in range(num_layers):
-			cell = tf.contrib.rnn.BasicLSTMCell(cell_size)
+			if cell_type == 'GRU':
+				cell = tf.contrib.rnn.GRUCell(cell_size)
+			elif cell_type == 'BlockLSTM':
+				cell = tf.contrib.rnn.LSTMBlockCell(cell_size)
+			else:
+				cell = tf.contrib.rnn.BasicLSTMCell(cell_size)
 			if rnn_dropout_keep_prob < 1.00:
 				[cell],_ = core.rnn_dropout([cell],[rnn_dropout_keep_prob])
 			cell_list.append(cell)
 		cell = tf.contrib.rnn.MultiRNNCell(
 			cell_list, state_is_tuple=True)
 	else:
-		cell = tf.contrib.rnn.BasicLSTMCell(cell_size)
+		if cell_type == 'GRU':
+			cell = tf.contrib.rnn.GRUCell(cell_size)
+		elif cell_type == 'BlockLSTM':
+			cell = tf.contrib.rnn.LSTMBlockCell(cell_size)
+		else:
+			cell = tf.contrib.rnn.BasicLSTMCell(cell_size)
 		if rnn_dropout_keep_prob < 1.00:
 			[cell],_ = core.rnn_dropout([cell],[rnn_dropout_keep_prob])
 
-	state = initial_state = cell.zero_state(batch_size, tf.float32)
-
+	state_c = tf.placeholder(tf.float32, [None, cell_size], name='state_c')
+	state_h = tf.placeholder(tf.float32, [None, cell_size], name='state_h')
+	state = tf.contrib.rnn.LSTMStateTuple(h=state_h,c=state_c)
 	outputs = []
 	# run through RNN
 	for i in range(num_steps):
 		output, state = cell(emb_words[:, i, :], state)
 		outputs.append(output)
 
+	final_h = tf.identity(state.h, name='final_state_h')
+	final_c = tf.identity(state.c, name='final_state_c')
 	output = tf.reshape(tf.concat(outputs,1),[-1,cell_size])
 	softmax_w = nlp.variable_with_weight_decay('softmax_w',
 																						 [cell_size,vocab_size])
@@ -76,6 +90,6 @@ def inference(params):
 																						 [vocab_size])
 
 	logits = tf.nn.xw_plus_b(output, softmax_w, softmax_b)
-	logits = tf.reshape(logits, [batch_size, num_steps, vocab_size], name='output_logits')
-
+	logits = tf.reshape(logits, [-1, num_steps, vocab_size], name='output_logits')
+	logits_sm = tf.nn.softmax(logits, name='output_logits_sm')
 	return [logits]

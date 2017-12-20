@@ -27,7 +27,6 @@ default_params = {
   IS_TRAINING_PLACEHOLDER_NAME: DEFAULT_LEARNING_RATE
 }
 
-
 def _default_train_iteration_done(trainer, epoch, index, iteration_count,
 								  loss_value, training_done, run_results, params):
 
@@ -232,7 +231,7 @@ class Trainer(object):
 						first_batch = data_batch
 
 					time_before = time()
-					training_done, loss_value, run_results = self._train_iteration(self._session, data_map, self._network_output_nodes, self._loss_nodes,
+					training_done, loss_value, run_results = self._train_iteration(self, self._session, data_map, self._network_output_nodes, self._loss_nodes,
 																	  self._optimizer_nodes, data_batch, additional_nodes_to_evaluate)
 					time_after = time()
 					training_time = time_after - time_before
@@ -389,7 +388,7 @@ class Trainer(object):
 		return optimizer_nodes
 
 	@staticmethod
-	def _default_train_iteration(tf_session, data_map, network_output_nodes, loss_nodes, optimizer_nodes, data_batch, additional_nodes_to_evaluate=None):
+	def _default_train_iteration(trainer, tf_session, data_map, network_output_nodes, loss_nodes, optimizer_nodes, data_batch, additional_nodes_to_evaluate=None):
 		"""
 		Default function to handle a single train iteration
 
@@ -429,6 +428,65 @@ class Trainer(object):
 		if additional_nodes_to_evaluate is not None:
 			for node, result in zip(additional_nodes_to_evaluate, run_results[2:]):
 				results_map[node] = result
+		return False, loss_value, results_map
+
+	@staticmethod
+	def _rnn_train_iteration(trainer, tf_session, data_map, network_output_nodes, loss_nodes, optimizer_nodes, data_batch,
+															 additional_nodes_to_evaluate=None):
+		"""
+		Default function to handle a single train iteration
+			@param tf_session: the tf session
+		@param data_map: a dict that maps from name of the data field in minibatch to name of placeholder
+		@param network_output_nodes: output nodes of the network
+		@param loss_nodes: loss nodes
+		@param optimizer_nodes: optimizer operations
+		@param data_batch: the data mini batch to be used for training
+		@return:
+		  training_done, loss_value
+		  training_done will tell the main loop to exit.
+		  loss_value = loss value after current training iteration.
+		"""
+		# create feed_dict from data_batch and data_map
+		# data_batch is the actual data by columns
+		# data_map maps from column names to the placeholder
+
+		if hasattr(trainer, 'state'):
+			state_c = trainer.state[0]
+			state_h = trainer.state[1]
+		else:
+#			print("NO PRIOR STATE_ ZEROING")
+			state_c = np.zeros([trainer._batch_size, trainer._params['cell_size']])
+			state_h = np.zeros([trainer._batch_size, trainer._params['cell_size']])
+
+		data_batch['state_c'] = state_c
+		data_batch['state_h'] = state_h
+
+		feed_dict = {}
+		for data_column_name, data_column in data_batch.items():
+			if (data_column_name in data_map):
+				feed_dict[data_map[data_column_name]] = data_column
+		feed_dict[data_map[IS_TRAINING_PLACEHOLDER_NAME]] = True
+
+		nodes_to_evaluate = [loss_nodes[0], optimizer_nodes[0],
+												 tf.get_default_graph().get_tensor_by_name('final_state_c:0'),
+												 tf.get_default_graph().get_tensor_by_name('final_state_h:0')]
+		if isinstance(additional_nodes_to_evaluate, list):
+			for node in additional_nodes_to_evaluate:
+				n = node
+				if isinstance(node, str):
+					n = tf.get_default_graph().get_tensor_by_name(node + ':0')
+				nodes_to_evaluate += [n]  # additional_nodes_to_evaluate
+			#		print(feed_dict)
+
+		run_results = tf_session.run(nodes_to_evaluate, feed_dict)
+		loss_value = run_results[0]
+
+		results_map = {}
+		if additional_nodes_to_evaluate is not None:
+			for node, result in zip(additional_nodes_to_evaluate, run_results[4:]):
+				results_map[node] = result
+
+		trainer.state = [run_results[2], run_results[3]]
 		return False, loss_value, results_map
 
 	def _eval_iteration(self, tf_session, data_map, network_output_nodes, loss_nodes, optimizer_nodes, data_batch, additional_nodes_to_evaluate=None):

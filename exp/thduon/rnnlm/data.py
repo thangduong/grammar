@@ -1,4 +1,5 @@
 import os
+import numpy as np
 
 class RnnLmData:
 	def __init__(self, params = {}, indexer=None):
@@ -13,6 +14,7 @@ class RnnLmData:
 		self._current_epoch = 0
 		self._current_index = 0
 		self._num_steps = params['num_steps']
+		self._all_lowercase = params['all_lowercase']
 
 	def current_epoch(self):
 		return self._current_epoch
@@ -24,6 +26,8 @@ class RnnLmData:
 		self._file_index += 1
 		self._current_file = open(self._files[self._file_index], 'r', encoding='utf-8')
 		for sentence in self._current_file:
+			if self._all_lowercase:
+				sentence = sentence.lower()
 			tokens = ['<s>'] + sentence.split() + ['</s>']
 			if self._indexer is not None:
 				_,tokens,_,_ = self._indexer.index_wordlist(tokens, unk_word=self._unk_token)
