@@ -17,7 +17,6 @@ params = { 'model_name': model_name,
 					 'use_no_conv_path': False,                       # enable embedding pass through to second stage
 					 'min_vocab_freq': 10,
 					 'all_lowercase': True,
-					 'lowercase_char_path': False,
 					 'mlp_config': [300,100],
 					 'bipass_conv': False,
 					 'mlp_activations': 'sigmoid',

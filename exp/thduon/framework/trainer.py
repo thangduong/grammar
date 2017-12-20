@@ -126,7 +126,7 @@ class Trainer(object):
 			self._model_graph_def = copy.copy(self._graph.as_graph_def())
 
 			# loss is an array of loss functions
-			self._loss_nodes = self._loss(self._network_output_nodes, self._params)
+			self._loss_nodes = self._loss(self._network_output_nodes, params=self._params)
 
 			# build optimizer
 			self._optimizer_nodes = self._optimizer(self._params, self._loss_nodes, self._learning_rate)

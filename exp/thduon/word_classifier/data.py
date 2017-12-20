@@ -280,7 +280,7 @@ class ClassifierData:
 		return self._current_index
 
 	@staticmethod
-	def get_training_data(base_dir='/mnt/work/toenized_training_data', indexer=None,
+	def get_training_data(base_dir='/mnt/work/tokenized_training_data', indexer=None,
 															 params=None,
 															 gen_data_from_file_fcn=_gen_data_from_file,
 															 gen_data_fcn=_gen_data):

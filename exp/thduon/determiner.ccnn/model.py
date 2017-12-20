@@ -61,13 +61,12 @@ def inference(params):
 	word_embedding_matrix = nlp.variable_with_weight_decay('word_embedding_matrix', [128, word_embedding_size],
 																										initializer=embedding_initializer, wd=embedding_wd)
 
-	if embedding_keep_prob is not None and embedding_keep_prob < 1.0:
-		[embedding_matrix],_ = core.dropout([embedding_matrix], [embedding_keep_prob])
 	input_sentence = tf.placeholder(tf.int32, [None, sentence_len], 'sentence')
 	input_word = tf.placeholder(tf.int32, [None, word_len], 'word')
 	emb_sentence = tf.nn.embedding_lookup(embedding_matrix, input_sentence, 'emb_sentence')
+	if embedding_keep_prob is not None and embedding_keep_prob < 1.0:
+		[emb_sentence],_ = core.dropout([emb_sentence], [embedding_keep_prob])
 	emb_word = tf.nn.embedding_lookup(word_embedding_matrix, input_word, 'emb_word')
-#	emb_sentence = tf.concat([emb_sentence, emb_word], axis=1)
 	enc_sentence, _ = sentence_encoder(emb_sentence, emb_word, params)
 
 	return enc_sentence, None
