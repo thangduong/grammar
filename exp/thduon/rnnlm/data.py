@@ -1,10 +1,12 @@
 import os
 import numpy as np
+import random
 
 class RnnLmData:
 	def __init__(self, params = {}, indexer=None):
 		data_dir = params['training_data_dir']
 		self._files = [os.path.join(data_dir, x) for x in os.listdir(data_dir)]
+		random.shuffle(self._files)
 		print(self._files)
 		self._file_index = -1
 		self._current_file = None
@@ -29,6 +31,7 @@ class RnnLmData:
 	def next_file(self):
 		self._file_index += 1
 		if self._file_index == len(self._files):
+			random.shuffle(self._files)
 			print("NEW EPOCH!")
 			self._current_epoch += 1
 			self._file_index = 0
