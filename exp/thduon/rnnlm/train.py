@@ -36,7 +36,6 @@ def on_checkpoint_saved(trainer, params, save_path):
 
 def train_iteration_done(trainer, epoch, index, iteration_count,
 								  loss_value, training_done, run_results, params):
-	print(run_results)
 	params['eval_results'] = [run_results['tpp']]
 	return framework.trainer._default_train_iteration_done(trainer, epoch, index, iteration_count,
 								  loss_value, training_done, run_results, params)
