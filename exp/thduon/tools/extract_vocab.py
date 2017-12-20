@@ -4,6 +4,7 @@ import operator
 import gflags
 data_dir = '/mnt/work/test' #/mnt/work/tokenized_training_data'
 data_dir = '/mnt/work/training_data.tok'
+data_dir = '/mnt/work/ptb'
 filenames = [os.path.join(data_dir, f) for f in os.listdir(data_dir)]
 vocab = {}
 lowercase = True
