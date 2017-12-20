@@ -5,6 +5,7 @@ class RnnLmData:
 	def __init__(self, params = {}, indexer=None):
 		data_dir = params['training_data_dir']
 		self._files = [os.path.join(data_dir, x) for x in os.listdir(data_dir)]
+		print(self._files)
 		self._file_index = -1
 		self._current_file = None
 		self._current_sentences = self.next_file()
@@ -25,6 +26,7 @@ class RnnLmData:
 	def next_file(self):
 		self._file_index += 1
 		self._current_file = open(self._files[self._file_index], 'r', encoding='utf-8')
+		print("OPENING: %s"%self._files[self._file_index])
 		for sentence in self._current_file:
 			if self._all_lowercase:
 				sentence = sentence.lower()
@@ -34,7 +36,14 @@ class RnnLmData:
 			yield tokens
 
 	def next_sentence(self):
-		return next(self._current_sentences)
+		try:
+			result = next(self._current_sentences)
+		except StopIteration:
+			self._current_sentences = self.next_file()
+			result = next(self._current_sentences)
+		except Exception as e:
+			raise
+		return result
 
 	def next_batch(self, batch_size=5):
 		num_steps = self._num_steps

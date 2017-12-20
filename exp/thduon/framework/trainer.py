@@ -451,15 +451,12 @@ class Trainer(object):
 		# data_map maps from column names to the placeholder
 
 		if hasattr(trainer, 'state'):
-			state_c = trainer.state[0]
-			state_h = trainer.state[1]
+			state = trainer.state
 		else:
 #			print("NO PRIOR STATE_ ZEROING")
-			state_c = np.zeros([trainer._batch_size, trainer._params['cell_size']])
-			state_h = np.zeros([trainer._batch_size, trainer._params['cell_size']])
+			state = np.zeros([trainer._batch_size, 2*trainer._params['cell_size']])
 
-		data_batch['state_c'] = state_c
-		data_batch['state_h'] = state_h
+		data_batch['state'] = state
 
 		feed_dict = {}
 		for data_column_name, data_column in data_batch.items():
@@ -468,8 +465,7 @@ class Trainer(object):
 		feed_dict[data_map[IS_TRAINING_PLACEHOLDER_NAME]] = True
 
 		nodes_to_evaluate = [loss_nodes[0], optimizer_nodes[0],
-												 tf.get_default_graph().get_tensor_by_name('final_state_c:0'),
-												 tf.get_default_graph().get_tensor_by_name('final_state_h:0')]
+												 tf.get_default_graph().get_tensor_by_name('final_state:0')]
 		if isinstance(additional_nodes_to_evaluate, list):
 			for node in additional_nodes_to_evaluate:
 				n = node
@@ -486,7 +482,7 @@ class Trainer(object):
 			for node, result in zip(additional_nodes_to_evaluate, run_results[4:]):
 				results_map[node] = result
 
-		trainer.state = [run_results[2], run_results[3]]
+		trainer.state = run_results[2]
 		return False, loss_value, results_map
 
 	def _eval_iteration(self, tf_session, data_map, network_output_nodes, loss_nodes, optimizer_nodes, data_batch, additional_nodes_to_evaluate=None):

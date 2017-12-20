@@ -56,7 +56,7 @@ def inference(params):
 			elif cell_type == 'BlockLSTM':
 				cell = tf.contrib.rnn.LSTMBlockCell(cell_size)
 			else:
-				cell = tf.contrib.rnn.BasicLSTMCell(cell_size)
+				cell = tf.contrib.rnn.BasicLSTMCell(cell_size,state_is_tuple=False)
 			if rnn_dropout_keep_prob < 1.00:
 				[cell],_ = core.rnn_dropout([cell],[rnn_dropout_keep_prob])
 			cell_list.append(cell)
@@ -68,21 +68,28 @@ def inference(params):
 		elif cell_type == 'BlockLSTM':
 			cell = tf.contrib.rnn.LSTMBlockCell(cell_size)
 		else:
-			cell = tf.contrib.rnn.BasicLSTMCell(cell_size)
+			cell = tf.contrib.rnn.BasicLSTMCell(cell_size,state_is_tuple=False)
 		if rnn_dropout_keep_prob < 1.00:
 			[cell],_ = core.rnn_dropout([cell],[rnn_dropout_keep_prob])
 
-	state_c = tf.placeholder(tf.float32, [None, cell_size], name='state_c')
-	state_h = tf.placeholder(tf.float32, [None, cell_size], name='state_h')
-	state = tf.contrib.rnn.LSTMStateTuple(h=state_h,c=state_c)
-	outputs = []
-	# run through RNN
-	for i in range(num_steps):
-		output, state = cell(emb_words[:, i, :], state)
-		outputs.append(output)
+#	init_state = get_initial_cell_state(cell, initializer, batch_size, tf.float32)
+#	outputs, final_state = tf.nn.dynamic_rnn(cell, emb_words, initial_state=init_state)
+	print(cell.zero_state(batch_size, dtype=tf.float32))
 
-	final_h = tf.identity(state.h, name='final_state_h')
-	final_c = tf.identity(state.c, name='final_state_c')
+	state = tf.placeholder(tf.float32, [None, num_layers, cell_size*2], name='state')
+	state_pieces = [tf.squeeze(x) for x in tf.split(state, num_layers, 1)]
+	exit(0)
+	outputs, final_state = tf.nn.dynamic_rnn(cell, emb_words, initial_state=state)
+#	state_h = tf.placeholder(tf.float32, [None, cell_size], name='state_h')
+#	state = tf.contrib.rnn.LSTMStateTuple(h=state_h,c=state_c)
+#	print(cell.zero_state())
+#	outputs = []
+	# run through RNN
+#	for i in range(num_steps):
+#		output, state = cell(emb_words[:, i, :], state)
+#		outputs.append(output)
+
+	final = tf.identity(final_state, name='final_state')
 	output = tf.reshape(tf.concat(outputs,1),[-1,cell_size])
 	softmax_w = nlp.variable_with_weight_decay('softmax_w',
 																						 [cell_size,vocab_size])

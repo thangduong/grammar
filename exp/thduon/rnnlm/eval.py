@@ -4,6 +4,8 @@ import framework.utils.common as utils
 import os
 import numpy as np
 import time
+import pickle
+import math
 run_server = False
 
 params = utils.load_param_file('output/rnnlmV0/params.py')
@@ -28,7 +30,13 @@ sentences = ['<s> I ate a pair of orange .'
 cell_size = params['cell_size']
 num_steps = params['num_steps']
 
+if os.path.exists('sent_list.pkl') and False:
+	with open('sent_list.pkl','rb') as f:
+		sentences = pickle.load(f)
+
+all_sentence_prob = {}
 for sentence in sentences:
+	orig_sentence = sentence
 	sentence = sentence.lower()
 	state_h = np.zeros([1, cell_size])
 	state_c = np.zeros([1, cell_size])
@@ -51,5 +59,9 @@ for sentence in sentences:
 			if toki*20+j > sentence_len:
 				break
 	diff = time.time() - before
-	print("execute time = %s, unk_count = %s" % (diff, num_unk))
-	print("%s:%s"%(sentence_prob, sentence))
+	print("execute time = %s, unk_count = %s %s" % (diff, num_unk, unk_words))
+	print("%s:%s:%s"%(sentence_prob, math.log(sentence_prob), sentence))
+	all_sentence_prob[orig_sentence] = math.log(sentence_prob)
+
+with open('sent_prob.pkl', 'wb') as f:
+	pickle.dump(all_sentence_prob,f)
