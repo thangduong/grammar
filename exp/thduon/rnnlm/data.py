@@ -23,8 +23,15 @@ class RnnLmData:
 	def current_index(self):
 		return self._current_index
 
+	def reset_stream(self):
+		self._streams = []
+
 	def next_file(self):
 		self._file_index += 1
+		if self._file_index == len(self._files):
+			print("NEW EPOCH!")
+			self._current_epoch += 1
+			self._file_index = 0
 		self._current_file = open(self._files[self._file_index], 'r', encoding='utf-8')
 		print("OPENING: %s"%self._files[self._file_index])
 		for sentence in self._current_file:
@@ -58,7 +65,6 @@ class RnnLmData:
 			x = [0] * num_steps
 			y = [0] * num_steps
 
-			# w is for importance sampling
 			w = [0] * num_steps
 			while steps_filled < num_steps:
 				if self._streams[i] is None or len(self._streams[i]) <= 1:

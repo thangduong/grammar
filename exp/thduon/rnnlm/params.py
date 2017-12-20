@@ -1,13 +1,14 @@
 import os
 
 
-model_name = 'rnnlmV1'
+model_name = 'rnnlmV5'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'training_data_dir': '/mnt/work/tokenized_training_data/',
 					 'vocab_file': '../data/filtered_lowercase_vocab.txt',
 					 'batch_size': 256,
 				   'num_steps': 20,
+					 'max_mb_on_state': 0,
 					 'cell_size': 256,
 					 'num_layers': 2,
 					 'max_vocab_size': -1,#20000,

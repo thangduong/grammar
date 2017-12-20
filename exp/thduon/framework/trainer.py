@@ -450,11 +450,14 @@ class Trainer(object):
 		# data_batch is the actual data by columns
 		# data_map maps from column names to the placeholder
 
-		if hasattr(trainer, 'state'):
+		max_mb_on_state = utils.get_dict_value(trainer._params, 'max_mb_on_state', -1)
+		if hasattr(trainer, 'state') and ((max_mb_on_state<0) or (trainer.mb_on_state < max_mb_on_state)):
 			state = trainer.state
 		else:
-#			print("NO PRIOR STATE_ ZEROING")
+#			print("RESETING STATE")
+			trainer._training_data.reset_stream()
 			state = np.zeros([trainer._params['num_layers'], 2, trainer._batch_size, trainer._params['cell_size']])
+			trainer.mb_on_state = 0
 
 		data_batch['state'] = state
 
@@ -482,6 +485,7 @@ class Trainer(object):
 			for node, result in zip(additional_nodes_to_evaluate, run_results[4:]):
 				results_map[node] = result
 
+		trainer.mb_on_state += 1
 		trainer.state = run_results[2]
 		return False, loss_value, results_map
 
