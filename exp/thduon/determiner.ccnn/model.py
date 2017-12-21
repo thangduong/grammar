@@ -22,6 +22,11 @@ def sentence_encoder(emb_sentence, word_emb, params, name='encoded_sentence'):
 	mlp_activations = utils.get_dict_value(params, 'mlp_activations')
 	mlp_dropout_keep_probs = utils.get_dict_value(params, 'mlp_keep_probs')
 	use_no_conv_path = utils.get_dict_value(params, 'use_no_conv_path')
+
+	char_conv_num_features = utils.get_dict_value(params, 'char_conv_num_features')
+	char_conv_widths = utils.get_dict_value(params, 'char_conv_widths')
+	char_use_no_conv_path = utils.get_dict_value(params, 'char_use_no_conv_path', False)
+
 	if bipass_conv:
 		conv_group = [emb_sentence]
 	else:
@@ -32,7 +37,17 @@ def sentence_encoder(emb_sentence, word_emb, params, name='encoded_sentence'):
 		for i, (conv_num_feature, conv_width) in enumerate(zip(conv_num_features, conv_widths)):
 			conv_out = nlp.conv1d_array(emb_sentence, conv_num_feature, conv_width,name='conv%s'%(str(i)), w_wds=0.000, b_wds=0.000, keep_probs=conv_keep_probs)
 			conv_group.append(conv_out)
-	conv_group.append(word_emb)
+
+	# deal with the word path
+	if char_conv_widths is not None and char_conv_num_features is not None:
+		if char_use_no_conv_path:
+			conv_group.append(word_emb)
+		for i, (char_conv_num_feature, char_conv_width) in enumerate(zip(char_conv_num_features, char_conv_widths)):
+			conv_out = nlp.conv1d_array(word_emb, char_conv_num_feature, char_conv_width,name='conv%s'%(str(i)), w_wds=0.000, b_wds=0.000, keep_probs=conv_keep_probs)
+			conv_group.append(conv_out)
+	else:
+		conv_group.append(word_emb)
+
 	conv_out, _ = misc.concat(conv_group)
 	mlp_out, _ = mlp.fully_connected_network(conv_out, mlp_config, layer_activations=mlp_activations, dropout_keep_probs=mlp_dropout_keep_probs)
 	return [tf.identity(mlp_out[0], name=name)], {}
