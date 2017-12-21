@@ -14,6 +14,9 @@ class TextIndexer(object):
         @param vocab: dict that maps from word/token to index
         """
         self._vocab = vocab
+        self._index_to_word = {}
+        for x,y in vocab.items():
+            self._index_to_word[y] = x
 
 
     def save_vocab_as_pkl(self, pkl_filename, compress=False):

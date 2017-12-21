@@ -1,15 +1,15 @@
 import os
 import framework.subgraph.losses as losses
 
-model_name = 'clmV4'
+model_name = 'clmV6'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
 					 'num_words_before': 10,
 					 'num_words_after': 10,
 					 'embedding_size': 150,
-					 'conv_num_features': [[500, 400, 300]],
-					 'conv_widths': [[2, 2, 2]],
+					 'conv_num_features': [[200]],
+					 'conv_widths': [[2]],
 					 'conv_keep_probs': None,
 					 'all_lowercase': True,
 					 'use_no_conv_path': True,                       # enable embedding pass through to second stage
@@ -21,7 +21,9 @@ params = { 'model_name': model_name,
 					 'batch_size': 1024*8,
 					 'learning_rate': 0.001,
 					 'data_sampling': 'freeform',
-					 'loss_function': losses.sampled_softmax_xentropy,
+					 'max_vocab_size': 50000,
+					 'min_vocab_freq': 1000,
+					 'loss_function': losses.softmax_xentropy,
 					 'ignore_negative_data': True,
 					 'start_token': '<s>',
 					 'unk_token': 'unk',
@@ -30,7 +32,7 @@ params = { 'model_name': model_name,
 					 'embedding_wd': 0.0001,                           # L2 WD regularization constant
 					 'enable_regularization': True,
 						'keywords_as_map': True,
-					 'monolingual_dir': '/mnt/work/1-billion-word-language-modeling-benchmark',
-					 'vocab_file': '../data/filtered_lowercase_vocab.txt'
-					 'out_vocab_file': ''
+					 'training_data_dir': '/mnt/work/tokenized_training_data/',
+					 'vocab_file': '../data/filtered_lowercase_vocab.txt',
+					 'out_vocab_file': '',
 					 }

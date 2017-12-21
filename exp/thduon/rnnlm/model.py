@@ -38,11 +38,12 @@ def inference(params):
 	embedding_keep_prob = utils.get_dict_value(params, 'embedding_keep_prob')
 	rnn_dropout_keep_prob = utils.get_dict_value(params, 'rnn_dropout_keep_prob', 1.0)
 
-	embedding_matrix = nlp.variable_with_weight_decay('embedding_matrix',
-																												 [vocab_size, cell_size],
-																												 initializer=embedding_initializer,
-																												 wd=embedding_wd)
-
+	embedding_matrix = tf.get_variable("embedding_matrix", [vocab_size, cell_size], dtype=tf.float32)
+#	embedding_matrix = nlp.variable_with_weight_decay('embedding_matrix',
+#																												 [vocab_size, cell_size],
+#																												 initializer=embedding_initializer,
+#																												 wd=embedding_wd)
+#
 	words = tf.placeholder(tf.int32, [None, None], name='x')
 	emb_words = tf.nn.embedding_lookup(embedding_matrix, words, 'emb_words')
 
@@ -85,10 +86,12 @@ def inference(params):
 
 	final = tf.identity(final_state, name='final_state')
 	output = tf.reshape(tf.concat(outputs,1),[-1,cell_size])
-	softmax_w = nlp.variable_with_weight_decay('softmax_w',
-																						 [cell_size,vocab_size])
-	softmax_b = nlp.variable_with_weight_decay('softmax_b',
-																						 [vocab_size])
+	softmax_w = tf.get_variable('softmax_w', [cell_size, vocab_size])
+	softmax_b = tf.get_variable('softmax_b', [vocab_size])
+#	softmax_w = nlp.variable_with_weight_decay('softmax_w',
+#																						 [cell_size,vocab_size])
+#	softmax_b = nlp.variable_with_weight_decay('softmax_b',
+#																						 [vocab_size])
 
 	logits = tf.nn.xw_plus_b(output, softmax_w, softmax_b)
 	logits = tf.reshape(logits, [-1, num_steps, vocab_size], name='output_logits')

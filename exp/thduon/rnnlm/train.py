@@ -36,11 +36,24 @@ def on_checkpoint_saved(trainer, params, save_path):
 
 def train_iteration_done(trainer, epoch, index, iteration_count,
 								  loss_value, training_done, run_results, params):
+	if hasattr(trainer, 'last_epoch') and trainer.last_epoch != epoch:
+		# lr decay
+		lrd_epoch_start = utils.get_dict_value(params, 'learning_rate_decay_start_epoch', -1)
+		if epoch > lrd_epoch_start:
+			lr_decay = utils.get_dict_value(params, 'learning_rate_decay', -1)
+			lr = utils.get_dict_value(params, 'learning_rate', 0.001)
+			if lr_decay > 0:
+				new_lr = lr * (lr_decay ** (epoch - lrd_epoch_start))
+				print("NEW LEARNING RATE %s" % new_lr)
+				trainer.set_learning_rate(new_lr)
+
 	params['eval_results'] = [run_results['tpp']]
+	trainer.last_epoch = epoch
 	return framework.trainer._default_train_iteration_done(trainer, epoch, index, iteration_count,
 								  loss_value, training_done, run_results, params)
 
-
+print(data.next_batch(2))
+exit(0)
 #print(training_data.next_batch(10))
 trainer = Trainer(inference=model.inference, batch_size=utils.get_dict_value(params, 'batch_size', 128),
                   loss=model.loss
@@ -51,7 +64,7 @@ trainer = Trainer(inference=model.inference, batch_size=utils.get_dict_value(par
 									, train_iteration_done = train_iteration_done
                   , params=params)
 
-trainer.run(restore_latest_ckpt=True, save_network=True,
+trainer.run(restore_latest_ckpt=False, save_network=True,
             save_ckpt=True, mini_batches_between_checkpoint=utils.get_dict_value(params, 'mini_batches_between_checkpoint', 1000)
 						,additional_nodes_to_evaluate=['tpp']
             ,on_checkpoint_saved=on_checkpoint_saved)

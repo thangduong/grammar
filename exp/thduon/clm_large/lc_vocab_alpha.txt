@@ -25133,7 +25133,6 @@ fretted 873
 ogden 873
 pantry 873
 expletive 873
-hmv 873
 hermes 873
 magee 873
 smoother 873
@@ -52004,9 +52003,3 @@ stammer 201
 bani 201
 selfishly 201
 viv 201
-. 0
-, 0
-" 0
-' 0
-? 0
-! 0

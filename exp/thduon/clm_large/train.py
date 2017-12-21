@@ -14,7 +14,9 @@ import numpy as np
 
 param_file = 'params.py'
 params = utils.load_param_file(param_file)
-indexer = TextIndexer.from_txt_file(utils.get_dict_value(params, 'vocab_file'))
+indexer = TextIndexer.from_txt_file(utils.get_dict_value(params, 'vocab_file')
+																		, max_size=utils.get_dict_value(params,'max_vocab_size',-1)
+																		, min_freq=utils.get_dict_value(params,'min_vocab_freq',-1))
 indexer.add_token('<pad>')
 indexer.add_token('unk')
 #params['keywords'] = indexer.vocab_map()
@@ -24,8 +26,10 @@ with open('lc_vocab_alpha.txt', 'r') as f:
 		line = line.rstrip().lstrip()
 		pieces = line.split()
 		word = pieces[0]
-		if word.isalpha():
+		count = int(pieces[1])
+		if word.isalpha() and count>1000 and count < 500000:
 			keywords.append(word)
+
 params['keywords'] = keywords
 params['num_classes'] = len(params['keywords'])
 os.makedirs(utils.get_dict_value(params,'output_location'), exist_ok=True)
@@ -38,10 +42,14 @@ for file in files_to_copy:
 	shutil.copyfile(file,os.path.join(utils.get_dict_value(params,'output_location'), file))
 
 params['vocab_size'] = indexer.vocab_size()
-training_data = ClassifierData.get_monolingual_training(base_dir=params['monolingual_dir'],
-																												indexer=indexer,
-																												params=params,
-																												gen_data_fcn=data.gen_data)
+print("VOCAB SIZE: %s" % params['vocab_size'])
+if 'training_data_dir' in params:
+	training_data = ClassifierData.get_training_data(base_dir=params['training_data_dir'], indexer=indexer, params=params,gen_data_fcn=data.gen_data)
+else:
+	training_data = ClassifierData.get_monolingual_training(base_dir=params['monolingual_dir'],
+																													indexer=indexer,
+																													params=params
+																													, gen_data_fcn = data.gen_data)
 live_replacement_count_filename = os.path.join(utils.get_dict_value(params,'output_location'), 'live_replacement_count.txt')
 saved_replacement_count_filename = os.path.join(utils.get_dict_value(params,'output_location'), 'saved_replacement_count.txt')
 

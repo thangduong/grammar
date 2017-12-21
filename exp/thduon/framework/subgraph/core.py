@@ -39,7 +39,7 @@ def rnn_dropout(in_nodes, keep_probs, name="dropout"):
         out_nodes = []
         for in_node, keep_prob in zip(in_nodes, keep_probs):
             keep_prop_tensor = tf.cond(is_training, lambda: tf.constant(keep_prob), lambda: tf.constant(1.0))
-            out_nodes.append(tf.contrib.rnn.DropoutWrapper(in_node, keep_prop_tensor, keep_prop_tensor))
+            out_nodes.append(tf.contrib.rnn.DropoutWrapper(in_node, output_keep_prob=keep_prop_tensor))
         return out_nodes, {}
 
 def dropout(in_nodes, keep_probs, name="dropout"):
