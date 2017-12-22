@@ -453,7 +453,7 @@ class Trainer(object):
 		if hasattr(trainer, 'state') and ((max_mb_on_state<0) or (trainer.mb_on_state < max_mb_on_state)):
 			state = trainer.state
 		else:
-#			print("RESETING STATE")
+			print("RESETING STATE")
 			trainer._training_data.reset_stream()
 			state = np.zeros([trainer._params['num_layers'], 2, trainer._batch_size, trainer._params['cell_size']])
 			trainer.mb_on_state = 0

@@ -79,9 +79,10 @@ def inference(params):
 	input_sentence = tf.placeholder(tf.int32, [None, sentence_len], 'sentence')
 	input_word = tf.placeholder(tf.int32, [None, word_len], 'word')
 	emb_sentence = tf.nn.embedding_lookup(embedding_matrix, input_sentence, 'emb_sentence')
+	emb_word = tf.nn.embedding_lookup(word_embedding_matrix, input_word, 'emb_word')
 	if embedding_keep_prob is not None and embedding_keep_prob < 1.0:
 		[emb_sentence],_ = core.dropout([emb_sentence], [embedding_keep_prob])
-	emb_word = tf.nn.embedding_lookup(word_embedding_matrix, input_word, 'emb_word')
+		[emb_word], _ = core.dropout([emb_word], [embedding_keep_prob])
 	enc_sentence, _ = sentence_encoder(emb_sentence, emb_word, params)
 
 	return enc_sentence, None

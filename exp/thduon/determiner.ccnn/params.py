@@ -1,10 +1,10 @@
 import os
 
 
-model_name = 'determinerCCNNV11'
+model_name = 'determinerCCNNV12'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
-					 'null_sample_factor': -1,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
+					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
 					 'num_words_before': 10,
 					 'num_words_after': 10,
 					 'embedding_size': 300,
