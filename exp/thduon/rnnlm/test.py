@@ -15,7 +15,7 @@ else:
 
 # load result from large LM if available
 sent_prob = None
-if os.path.exists('sent_prob.pkl'):
+if os.path.exists('sent_prob.pkl') or False:
 	print("Loading cached sentence probability")
 	with open('sent_prob.pkl', 'rb') as f:
 		sent_prob = pickle.load(f)
@@ -45,7 +45,7 @@ for e in data:
 		# from large LM, if available
 		if sent_prob is not None:
 			sp = sent_prob[o['sent']]
-			o['large_lm'] = sp
+			o['lm'] = sp
 
 		# from word2vec
 		if word2vec is not None:

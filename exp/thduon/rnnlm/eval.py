@@ -8,7 +8,7 @@ import pickle
 import math
 run_server = False
 
-params = utils.load_param_file('output/rnnlmV2/params.py')
+params = utils.load_param_file('output/rnnlmV5/params.py')
 
 vocab_file = os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl')
 ckpt = os.path.join(utils.get_dict_value(params,'output_location'),
@@ -35,9 +35,12 @@ if os.path.exists('sent_list.pkl'):# and False:
 		sentences = pickle.load(f)
 
 all_sentence_prob = {}
+unk_list = []
 for sentence in sentences:
 	orig_sentence = sentence
 	sentence = "<s> " + sentence
+	sentence = sentence.replace("\u20a9 s","'s")
+	sentence = sentence.replace("’ s", "'s")
 	sentence = sentence.lower()
 	state = np.zeros([num_layers, 2, 1, cell_size])
 	tokens = sentence.split()
@@ -49,6 +52,7 @@ for sentence in sentences:
 	if (len(tokens)%num_steps) > 0:
 		tokens += ['.'] * (num_steps-(len(tokens)%num_steps))
 	_,indexed,num_unk,unk_words = i.index_wordlist(tokens)
+	unk_list += unk_words
 #	print(indexed)
 	for toki in range((int(len(indexed)/num_steps))):
 		r = e.eval({'x': [indexed[(toki*num_steps):(toki+1)*num_steps]],
@@ -72,3 +76,5 @@ for sentence in sentences:
 
 with open('sent_prob.pkl', 'wb') as f:
 	pickle.dump(all_sentence_prob,f)
+
+print(unk_list)

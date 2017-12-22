@@ -52,8 +52,6 @@ def train_iteration_done(trainer, epoch, index, iteration_count,
 	return framework.trainer._default_train_iteration_done(trainer, epoch, index, iteration_count,
 								  loss_value, training_done, run_results, params)
 
-print(data.next_batch(2))
-exit(0)
 #print(training_data.next_batch(10))
 trainer = Trainer(inference=model.inference, batch_size=utils.get_dict_value(params, 'batch_size', 128),
                   loss=model.loss
