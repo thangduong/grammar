@@ -1,0 +1,6 @@
+[submodule "dlframework"]
+	path = dlframework
+	url = ssh://dlwteam@vs-ssh.visualstudio.com:22/DefaultCollection/OfficeAnalytics/_ssh/dlframework
+[submodule "tokenex"]
+	path = tokenex
+	url = ssh://dlwteam@vs-ssh.visualstudio.com:22/DefaultCollection/OfficeAnalytics/_ssh/tokenex
