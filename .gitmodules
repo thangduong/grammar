@@ -4,3 +4,6 @@
 [submodule "tokenex"]
 	path = tokenex
 	url = ssh://dlwteam@vs-ssh.visualstudio.com:22/DefaultCollection/OfficeAnalytics/_ssh/tokenex
+[submodule "grammar_server"]
+	path = grammar_server
+	url = https://dlwteam.visualstudio.com/DefaultCollection/OfficeAnalytics/_git/grammar_server
