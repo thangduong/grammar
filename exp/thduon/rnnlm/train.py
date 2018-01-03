@@ -60,7 +60,8 @@ trainer = Trainer(inference=model.inference, batch_size=utils.get_dict_value(par
 									, training_data=data
 									, train_iteration=Trainer._rnn_train_iteration
 									, train_iteration_done = train_iteration_done
-                  , params=params)
+									, optimizer=model.optimizer
+									, params=params)
 
 trainer.run(restore_latest_ckpt=False, save_network=True,
             save_ckpt=True, mini_batches_between_checkpoint=utils.get_dict_value(params, 'mini_batches_between_checkpoint', 1000)
