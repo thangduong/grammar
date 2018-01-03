@@ -6,9 +6,11 @@ import numpy as np
 import time
 import pickle
 import math
+import sys
+from tokenex.tokenizer import Tokenizer
 run_server = False
 
-params = utils.load_param_file('output/rnnlmV5/params.py')
+params = utils.load_param_file(sys.argv[1])#'output/rnnlmV8/params.py')
 
 vocab_file = os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl')
 ckpt = os.path.join(utils.get_dict_value(params,'output_location'),
@@ -17,7 +19,7 @@ ckpt = os.path.join(utils.get_dict_value(params,'output_location'),
 
 e = Evaluator.load2(ckpt)
 i = TextIndexer.from_file(vocab_file)
-
+tok = Tokenizer(0)
 num_before = utils.get_dict_value(params, "num_words_before")
 num_after = utils.get_dict_value(params, "num_words_after")
 pad_tok = utils.get_dict_value(params, "pad_tok", '<pad>')
@@ -30,20 +32,22 @@ sentences = ["I ate a pair of orange ."
 cell_size = params['cell_size']
 num_steps = params['num_steps']
 num_layers = params['num_layers']
-if os.path.exists('sent_list.pkl'):# and False:
-	with open('sent_list.pkl','rb') as f:
+infile = '../we_test/sent_list.pkl'
+if os.path.exists(infile):# and False:
+	with open(infile,'rb') as f:
 		sentences = pickle.load(f)
 
 all_sentence_prob = {}
 unk_list = []
 for sentence in sentences:
 	orig_sentence = sentence
-	sentence = "<s> " + sentence
+	sentence = sentence
 	sentence = sentence.replace("\u20a9 s","'s")
 	sentence = sentence.replace("’ s", "'s")
 	sentence = sentence.lower()
 	state = np.zeros([num_layers, 2, 1, cell_size])
-	tokens = sentence.split()
+	tokens = ["<s>"]+tok.tokenize(sentence)
+	print(tokens)
 	sentence_len = len(tokens)
 #	print(tokens)
 #	print(sentence_len)
@@ -61,6 +65,7 @@ for sentence in sentences:
 		for j in range(num_steps):
 			if toki*20+j >= sentence_len-1:
 				break
+#			print(tokens[j+toki*20])
 			sm = np.argmax(r[0][0][j])
 			#print(r[0][0][j][indexed[toki*20+j]])
 			nw = indexed[toki*20+j+1]
@@ -71,10 +76,10 @@ for sentence in sentences:
 	diff = time.time() - before
 	print("execute time = %s, unk_count = %s %s" % (diff, num_unk, unk_words))
 #	print("%s:%s:%s"%(sentence_prob, math.log(sentence_prob), sentence))
-	print("%s:%s"%(sentence_prob,  sentence))
+	print("%s:%s"%(sentence_prob,  tokens))
 	all_sentence_prob[orig_sentence] = (sentence_prob)
 
-with open('sent_prob.pkl', 'wb') as f:
+with open('../we_test/sent_prob.pkl', 'wb') as f:
 	pickle.dump(all_sentence_prob,f)
 
 print(unk_list)

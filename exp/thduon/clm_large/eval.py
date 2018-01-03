@@ -11,7 +11,7 @@ import os
 import sys
 import json
 
-gflags.DEFINE_string('paramsfile', 'output/clmV2/params.py', 'parameter files')
+gflags.DEFINE_string('paramsfile', 'output/clmV6/params.py', 'parameter files')
 FLAGS = gflags.FLAGS
 
 
@@ -108,8 +108,8 @@ def eval(params,
 	with open('/mnt/work/NeuralRewriting/eval/small_eval_data_out.json','w') as f:
 		json.dump(data,f)
 
-	print(len(unk_list))
-	print(unk_list)
+#	print(len(unk_list))
+#	print(unk_list)
 def main(argv):
 	try:
 		argv = FLAGS(argv)  # parse flags
