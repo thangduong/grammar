@@ -10,12 +10,12 @@ sentence_list_path = 'sent_list.pkl'
 sentence_prob_path = 'sent_prob.pkl'
 use_tok_sent = False
 
-input_path = '/mnt/work/NeuralRewriting.old/eval/small_eval_data.json'
-output_path = '/mnt/work/NeuralRewriting.old/eval/small_eval_data_out.json'
-output_data_file = "small_eval_data.txt"
-sentence_prob_path = 'sent_prob.pkl'
-sentence_list_path = 'sent_list.pkl'
-use_tok_sent = False
+#input_path = '/mnt/work/NeuralRewriting.old/eval/small_eval_data.json'
+#output_path = '/mnt/work/NeuralRewriting.old/eval/small_eval_data_out.json'
+#output_data_file = "small_eval_data.txt"
+#sentence_list_path = 'sent_list.pkl'
+#sentence_prob_path ='sent_prob.pkl'
+#use_tok_sent = False
 
 input_path = '/mnt/work/NeuralRewriting/eval/small_eval_data.json'
 output_path = '/mnt/work/NeuralRewriting/eval/small_eval_data_out.json'
