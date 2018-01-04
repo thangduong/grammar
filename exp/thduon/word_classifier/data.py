@@ -3,6 +3,23 @@ import random
 import framework.utils.common as utils
 import math
 
+
+def fix_token(token):
+	"""
+	Some tokens are of the form <int>|1945 . For these tokens,
+	it should split and return <int> and 1945.  Otherwise, it should
+	return the token twice.
+	@param token: incoming token
+	@return: two pieces
+	"""
+	left = right = token
+	if token[0] == "<":
+		end = token.find('>')
+		if end > 0 and end < len(token)-1 and token[end+1]=='|':
+			left = token[:end+1]
+			right = token[end+2:]
+	return left, right
+
 def merge_tokens_for_text(tokens):
 	text = ''
 	punctuation = [',', '.', ';', "'s", "n't", "/", ')', '(', '[', ']']
@@ -104,7 +121,7 @@ def _gen_data_from_file(dataobj, filename, keywords=[','], num_before=5, num_aft
 											 ignore_negative_data=False,
 											 all_lowercase=False,
 											 gen_data_fcn = _gen_data):
-	with open(filename) as f:
+	with open(filename, 'r', encoding='utf-8', errors="ignore") as f:
 		for line in f:
 			line = line.rstrip().lstrip()
 #			if all_lowercase:
@@ -203,21 +220,23 @@ class ClassifierData:
 		while (len(batch_y) < batch_size):
 			try:
 				rec = next(self._cur_list)
-				tok0 = rec[0][int(len(rec[0]) / 2)]
+
+				rec0_left, rec0_right = map(list, zip(*[fix_token(x) for x in rec[0]]))
+				tok0 = rec0_right[int(len(rec[0]) / 2)]
 				# 0 = 1st or 2nd word after, otherwise the # of words after delimited by 0
 				if self._ccnn_num_words == 0:
 					if len(tok0) == 1:
-						tok0 = rec[0][int(len(rec[0]) / 2) + 1]
+						tok0 = rec0_right[int(len(rec[0]) / 2) + 1]
 				else:
 					for i in range(self._ccnn_num_words-1):
-						tok0 += ' ' + rec[0][int(len(rec[0]) / 2) + 1 + i]
+						tok0 += ' ' + rec0_right[int(len(rec[0]) / 2) + 1 + i]
 				if self._use_char_cnn:
 					if mb_dump_file is not None:
 						mb_dump_file.write('[%s]\n' % tok0)
 				if self._all_lowercase:
-					test_sentence = [x.lower() for x in rec[0]]
+					test_sentence = [x.lower() for x in rec0_left]
 				else:
-					test_sentence = rec[0]
+					test_sentence = rec0_left
 				if mb_dump_file is not None:
 					mb_dump_file.write('%03d %s\n'%(rec[1], test_sentence))
 				if self._lowercase_char_path:
@@ -280,13 +299,24 @@ class ClassifierData:
 		return self._current_index
 
 	@staticmethod
+	def get_data(base_dir, indexer=None,
+															 params=None,
+															 gen_data_from_file_fcn=_gen_data_from_file,
+															 gen_data_fcn=_gen_data):
+		data_files = os.listdir(base_dir)
+		data_files = [os.path.join(base_dir, x) for x in data_files if os.path.isfile(os.path.join(base_dir,x))]
+		return ClassifierData(file_list=data_files, indexer=indexer, params=params,
+													gen_data_from_file_fcn=gen_data_from_file_fcn,
+													gen_data_fcn=gen_data_fcn)
+
+	@staticmethod
 	def get_training_data(base_dir='/mnt/work/tokenized_training_data', indexer=None,
 															 params=None,
 															 gen_data_from_file_fcn=_gen_data_from_file,
 															 gen_data_fcn=_gen_data):
 		#		sub_path = 'alltrain'
 		data_files = os.listdir(base_dir)
-		data_files = [os.path.join(base_dir, x) for x in data_files]
+		data_files = [os.path.join(base_dir, x) for x in data_files if os.path.isfile(os.path.join(base_dir,x))]
 		return ClassifierData(file_list=data_files, indexer=indexer, params=params,
 													gen_data_from_file_fcn=gen_data_from_file_fcn,
 													gen_data_fcn=gen_data_fcn)
@@ -331,6 +361,9 @@ class ClassifierData:
 #for x in result:
 #	print(x)
 if __name__ == "__main__":
+	print(fix_token("<int>|1920"))
+	print(fix_token("<"))
+	exit(0)
 	from framework.utils.data.text_indexer import TextIndexer
 #	x = "We went to the store , and I bought some fruits".split()
 #	print(x)

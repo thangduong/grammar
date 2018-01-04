@@ -1,7 +1,7 @@
 import os
 
 
-model_name = 'determinerCCNNV12'
+model_name = 'determinerCCNNV14'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
@@ -12,8 +12,8 @@ params = { 'model_name': model_name,
 					 'use_char_cnn': True,
 					 'ccnn_num_words': 3,
 					 'char_use_no_conv_path': True,
-					 'char_conv_num_features': [50,50],
-					 'char_conv_widths:': [2,2],
+					 'char_conv_num_features': [],
+					 'char_conv_widths:': [],
 					 'conv_num_features': [[300,300,300,300,300,300]],
 					 'conv_widths': [[2,2,2,2,2,2]],
 					 'conv_keep_probs': None,
@@ -31,9 +31,10 @@ params = { 'model_name': model_name,
 					 'keywords': ['a','an','the'],
 					 'mini_batches_between_checkpoint': 100,
 					 'embedding_keep_prob': 0.9,
-					 'start_token': "<S>",
+					 'min_vocab_freq': 50,
+					 'start_token': "<s>",
 					 'embedding_wd': 0.0001,                           # L2 WD regularization constant
 					 'enable_regularization': True,
-					 'training_data_dir': '/mnt/work/tokenized_training_data/',
-					 'vocab_file': '../data/filtered_lowercase_vocab.txt'
+					 'training_data_dir': '/mnt/work/training_data.tok',
+					 'vocab_file': '/mnt/work/training_data.tok/vocab/lowercase_vocab.txt',
 					 }

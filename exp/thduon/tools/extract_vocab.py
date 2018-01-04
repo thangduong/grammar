@@ -2,10 +2,15 @@ import os
 import pickle
 import operator
 import gflags
+import sys
+from word_classifier.data import fix_token
 data_dir = '/mnt/work/test' #/mnt/work/tokenized_training_data'
 data_dir = '/mnt/work/training_data.tok'
 data_dir = '/mnt/work/ptb'
 data_dir = '/mnt/work/tokenized_1b'
+data_dir = '/mnt/work/thdata'
+data_dir = '/mnt/work/training_data.tok2/1b'
+data_dir = sys.argv[1]
 filenames = [os.path.join(data_dir, f) for f in os.listdir(data_dir)]
 vocab = {}
 lowercase = True
@@ -25,6 +30,7 @@ for i,filename in enumerate(filenames):
 				line=line.lower()
 			tokens = line.split()
 			for token in tokens:
+				token, _ = fix_token(token)
 				if token in vocab:
 					vocab[token]+=1
 				else:

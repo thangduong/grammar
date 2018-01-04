@@ -11,8 +11,9 @@ with open(input_filename, 'r') as f:
 	for line in f:
 		line = line.rstrip().lstrip()
 		pieces = line.split()
-		if int(pieces[1])>min_freq and len(pieces[0])<25 and not(re.match('\d',pieces[0])) \
-				and not(pieces[0].endswith('.com')):
+#		if int(pieces[1])>min_freq and len(pieces[0])<25 and not(re.match('\d',pieces[0])) \
+#				and not(pieces[0].endswith('.com')):
+		if int(pieces[1])>min_freq:
 			print(line)
 			continue
 #		if pieces[0] in hard_keep_tokens \
