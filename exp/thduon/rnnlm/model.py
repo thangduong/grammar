@@ -90,7 +90,7 @@ def inference(params):
 			if cell_type == 'GRU':
 				cell = tf.contrib.rnn.GRUCell(cell_size)
 			elif cell_type == 'BlockLSTM':
-				cell = tf.contrib.rnn.LSTMBlockCell(cell_size, activation=cell_activation)
+				cell = tf.contrib.rnn.LSTMBlockCell(cell_size)
 			else:
 				cell = tf.contrib.rnn.BasicLSTMCell(cell_size, activation=cell_activation)
 			if rnn_dropout_keep_prob < 1.00:
@@ -102,7 +102,7 @@ def inference(params):
 		if cell_type == 'GRU':
 			cell = tf.contrib.rnn.GRUCell(cell_size)
 		elif cell_type == 'BlockLSTM':
-			cell = tf.contrib.rnn.LSTMBlockCell(cell_size, activation=cell_activation)
+			cell = tf.contrib.rnn.LSTMBlockCell(cell_size)
 		else:
 			cell = tf.contrib.rnn.BasicLSTMCell(cell_size, activation=cell_activation)
 		if rnn_dropout_keep_prob < 1.00:

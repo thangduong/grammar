@@ -2,14 +2,14 @@ import os
 import tensorflow as tf
 
 
-model_name = 'rnnlmV21'
+model_name = 'rnnlmV17'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'training_data_dir': '/mnt/work/training_data.tok2/1b',
 					 'vocab_file': '/mnt/work/training_data.tok2/1b/vocab/merged_vocab.txt',
 					 'batch_size': 128,
-				   	 'num_steps': 20,
-					 'cell_size': 1500,
+				   'num_steps': 20,
+					 'cell_size': 300,
 					 'num_layers': 2,
 					 'max_vocab_size': -1,#20000,
 					 'embedding_keep_prob': .75,
@@ -24,7 +24,7 @@ params = { 'model_name': model_name,
 					 'optimizer':'sgd',
 					 'cell_activation': tf.sigmoid,
 					 'use_single_sm': True,
-					 'cell_type': 'BlockLSTM',  # GRU, BasicLSTM, BlockLSTM
+					 'cell_type': 'GRU',  # GRU, BasicLSTM, BlockLSTM
 }
 
 
