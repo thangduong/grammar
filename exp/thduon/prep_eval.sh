@@ -1,3 +1,3 @@
 source /mnt/work/env-tf/bin/activate
-export PYTHONPATH=/mnt/work/grammar/exp/thduon
+export PYTHONPATH=$(readlink --canonicalize ../../dlframework)
 export CUDA_VISIBLE_DEVICES=
