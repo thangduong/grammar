@@ -23,7 +23,11 @@ def optimizer(optimizer_param, loss_nodes, learning_rate, var_lists=None):
 			reg_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
 			reg_constant = 1.0  # already have wd, make this parametrizable
 			loss += reg_constant * sum(reg_losses)
-		optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
+		if utils.get_dict_value(optimizer_param, 'optimizer', 'adam') == 'adam':
+			optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
+		else:
+			print("USING SGD OPTIMIZER WITH LR OF %s" % learning_rate)
+			optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
 		grads_vars = optimizer.compute_gradients(loss, var_list=var_list)
 		grads = [g for (g,v) in grads_vars]
 		vars = [v for (g, v) in grads_vars]
@@ -65,6 +69,7 @@ def inference(params):
 	embedding_initializer = utils.get_dict_value(params, 'embedding_initializer')
 	embedding_keep_prob = utils.get_dict_value(params, 'embedding_keep_prob')
 	rnn_dropout_keep_prob = utils.get_dict_value(params, 'rnn_dropout_keep_prob', 1.0)
+	cell_activation = utils.get_dict_value(params, 'cell_activation', None)
 
 	embedding_matrix = nlp.variable_with_weight_decay('embedding_matrix',
 																												 [vocab_size, cell_size],
@@ -85,9 +90,9 @@ def inference(params):
 			if cell_type == 'GRU':
 				cell = tf.contrib.rnn.GRUCell(cell_size)
 			elif cell_type == 'BlockLSTM':
-				cell = tf.contrib.rnn.LSTMBlockCell(cell_size)
+				cell = tf.contrib.rnn.LSTMBlockCell(cell_size, activation=cell_activation)
 			else:
-				cell = tf.contrib.rnn.BasicLSTMCell(cell_size)
+				cell = tf.contrib.rnn.BasicLSTMCell(cell_size, activation=cell_activation)
 			if rnn_dropout_keep_prob < 1.00:
 				[cell],_ = core.rnn_dropout([cell],[rnn_dropout_keep_prob])
 			cell_list.append(cell)
@@ -97,9 +102,9 @@ def inference(params):
 		if cell_type == 'GRU':
 			cell = tf.contrib.rnn.GRUCell(cell_size)
 		elif cell_type == 'BlockLSTM':
-			cell = tf.contrib.rnn.LSTMBlockCell(cell_size)
+			cell = tf.contrib.rnn.LSTMBlockCell(cell_size, activation=cell_activation)
 		else:
-			cell = tf.contrib.rnn.BasicLSTMCell(cell_size)
+			cell = tf.contrib.rnn.BasicLSTMCell(cell_size, activation=cell_activation)
 		if rnn_dropout_keep_prob < 1.00:
 			[cell],_ = core.rnn_dropout([cell],[rnn_dropout_keep_prob])
 

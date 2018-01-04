@@ -1,4 +1,5 @@
 import os
+import tensorflow as tf
 
 
 model_name = 'rnnlmV16'
@@ -11,8 +12,8 @@ params = { 'model_name': model_name,
 					 'cell_size': 750,
 					 'num_layers': 2,
 					 'max_vocab_size': -1,#20000,
-					 'embedding_keep_prob': .6,
-					 'rnn_dropout_keep_prob': .6,
+					 'embedding_keep_prob': .75,
+					 'rnn_dropout_keep_prob': .75,
 					 'all_lowercase': True,
 					 'mini_batches_between_checkpoint': 50,
 					 'inference_output_node': 'output_logits_sm',
@@ -20,6 +21,8 @@ params = { 'model_name': model_name,
 					 'learning_rate_decay': 0.95,
 					 'learning_rate_decay_start_epoch': 5,
 					 'max_grad_norm': 5,
+#					 'optimizer':'sgd',
+					 'cell_activation': tf.sigmoid,
 					 'use_single_sm': True,
 					 'cell_type': 'BasicLSTM',  # GRU, BasicLSTM, BlockLSTM
 }
