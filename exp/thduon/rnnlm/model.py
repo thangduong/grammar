@@ -4,6 +4,38 @@ import framework.utils.common as utils
 import framework.subgraph.mlp as mlp
 import framework.subgraph.misc as misc
 import framework.subgraph.core as core
+import framework.trainer as trainer
+
+def optimizer(optimizer_param, loss_nodes, learning_rate, var_lists=None):
+	# this version has gradient clipping
+	optimizer_nodes = []
+	max_grad_norm = utils.get_dict_value(optimizer_param, 'max_grad_norm', 5)
+
+	# if var_lists is None, then make it a list of None matching the # of loss nodes
+	if var_lists == None:
+		var_lists = [None] * len(loss_nodes)
+
+	# just create adam optimizers
+	for loss_node, var_list in zip(loss_nodes, var_lists):
+		loss = loss_node
+
+		if utils.get_dict_value(optimizer_param, trainer.ENABLE_REGULARIZATION_PARAM_NAME, False):
+			reg_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
+			reg_constant = 1.0  # already have wd, make this parametrizable
+			loss += reg_constant * sum(reg_losses)
+		if utils.get_dict_value(optimizer_param, 'optimizer', 'adam') == 'adam':
+			optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
+		else:
+			print("USING SGD OPTIMIZER WITH LR OF %s" % learning_rate)
+			optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
+		grads_vars = optimizer.compute_gradients(loss, var_list=var_list)
+		grads = [g for (g,v) in grads_vars]
+		vars = [v for (g, v) in grads_vars]
+		if max_grad_norm > 0:
+			grad, _ = tf.clip_by_global_norm(grads, max_grad_norm)
+		train_op = optimizer.apply_gradients(zip(grad, vars))
+		optimizer_nodes.append(train_op)
+	return optimizer_nodes
 
 
 def loss(network, params=None, name='rnnlm_loss'):
@@ -37,6 +69,7 @@ def inference(params):
 	embedding_initializer = utils.get_dict_value(params, 'embedding_initializer')
 	embedding_keep_prob = utils.get_dict_value(params, 'embedding_keep_prob')
 	rnn_dropout_keep_prob = utils.get_dict_value(params, 'rnn_dropout_keep_prob', 1.0)
+	cell_activation = utils.get_dict_value(params, 'cell_activation', None)
 
 	embedding_matrix = nlp.variable_with_weight_decay('embedding_matrix',
 																												 [vocab_size, cell_size],
@@ -59,7 +92,7 @@ def inference(params):
 			elif cell_type == 'BlockLSTM':
 				cell = tf.contrib.rnn.LSTMBlockCell(cell_size)
 			else:
-				cell = tf.contrib.rnn.BasicLSTMCell(cell_size)
+				cell = tf.contrib.rnn.BasicLSTMCell(cell_size, activation=cell_activation)
 			if rnn_dropout_keep_prob < 1.00:
 				[cell],_ = core.rnn_dropout([cell],[rnn_dropout_keep_prob])
 			cell_list.append(cell)
@@ -71,7 +104,7 @@ def inference(params):
 		elif cell_type == 'BlockLSTM':
 			cell = tf.contrib.rnn.LSTMBlockCell(cell_size)
 		else:
-			cell = tf.contrib.rnn.BasicLSTMCell(cell_size)
+			cell = tf.contrib.rnn.BasicLSTMCell(cell_size, activation=cell_activation)
 		if rnn_dropout_keep_prob < 1.00:
 			[cell],_ = core.rnn_dropout([cell],[rnn_dropout_keep_prob])
 
@@ -92,5 +125,9 @@ def inference(params):
 
 	logits = tf.nn.xw_plus_b(output, softmax_w, softmax_b)
 	logits = tf.reshape(logits, [-1, num_steps, vocab_size], name='output_logits')
+	if utils.get_dict_value(params, 'use_single_sm', False):
+		smei = tf.placeholder(tf.int32, [None], name='smei')	# softmax evaluation index
+		exp_logits = tf.exp(logits)
+		logits_smei = tf.divide(tf.gather_nd(exp_logits, smei), tf.reduce_sum(exp_logits,axis=-1), 'output_single_sm')
 	logits_sm = tf.nn.softmax(logits, name='output_logits_sm')
 	return [logits]

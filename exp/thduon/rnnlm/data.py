@@ -5,7 +5,7 @@ import random
 class RnnLmData:
 	def __init__(self, params = {}, indexer=None):
 		data_dir = params['training_data_dir']
-		self._files = [os.path.join(data_dir, x) for x in os.listdir(data_dir)]
+		self._files = [os.path.join(data_dir, x) for x in os.listdir(data_dir) if os.path.isfile(os.path.join(data_dir, x))]
 		random.shuffle(self._files)
 		print(self._files)
 		self._file_index = -1

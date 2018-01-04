@@ -19,7 +19,13 @@ e.dump_variable_sizes()
 i = TextIndexer.from_file(vocab_file)
 
 #test_data = ClassifierData.get_monolingual_test(params=params)
+<<<<<<< HEAD
 test_data = ClassifierData.get_data(base_dir='/mnt/work/test_data.tok/',params=params)
+=======
+#test_data = ClassifierData.get_wiki_test(params=params)
+
+test_data = ClassifierData.get_data(base_dir='/mnt/work/test_data', params=params)
+>>>>>>> 1f63968ffae0b51932ceb7545eb9c1af1c6a13e6
 model_results = []
 
 timestr = str(int(time()))

@@ -17,19 +17,26 @@ params = utils.load_param_file(param_file)
 indexer = TextIndexer.from_txt_file(utils.get_dict_value(params, 'vocab_file')
 																		, max_size=utils.get_dict_value(params,'max_vocab_size',-1)
 																		, min_freq=utils.get_dict_value(params,'min_vocab_freq',-1))
+p = indexer.index_to_word()
+keywords = []
+for i in range(len(p)):
+	if p[i].isalpha():
+		keywords.append(p[i])
+print(keywords)
+print(len(keywords))
+print(indexer.vocab_size())
+#params['keywords'] = indexer.vocab_map()
+#keywords = []
+#with open('lc_vocab_alpha.txt', 'r') as f:
+#	for line in f:
+#		line = line.rstrip().lstrip()
+#		pieces = line.split()
+#		word = pieces[0]
+#		count = int(pieces[1])
+#		if word.isalpha() and count>1000 and count < 500000:
+#			keywords.append(word)
 indexer.add_token('<pad>')
 indexer.add_token('unk')
-#params['keywords'] = indexer.vocab_map()
-keywords = []
-with open('lc_vocab_alpha.txt', 'r') as f:
-	for line in f:
-		line = line.rstrip().lstrip()
-		pieces = line.split()
-		word = pieces[0]
-		count = int(pieces[1])
-		if word.isalpha() and count>1000 and count < 500000:
-			keywords.append(word)
-
 params['keywords'] = keywords
 params['num_classes'] = len(params['keywords'])
 os.makedirs(utils.get_dict_value(params,'output_location'), exist_ok=True)

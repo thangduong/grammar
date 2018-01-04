@@ -1,7 +1,7 @@
 import os
 import framework.subgraph.losses as losses
 
-model_name = 'clmV6'
+model_name = 'clmV7'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
@@ -18,11 +18,11 @@ params = { 'model_name': model_name,
 					 'mlp_activations': 'sigmoid',
 					 'mlp_keep_probs': 0.9,
 					 'embedding_device': '/cpu:0',
-					 'batch_size': 1024*8,
+					 'batch_size': 1024,
 					 'learning_rate': 0.001,
 					 'data_sampling': 'freeform',
-					 'max_vocab_size': 50000,
-					 'min_vocab_freq': 1000,
+#					 'max_vocab_size': 50000,
+#					 'min_vocab_freq': 1000,
 					 'loss_function': losses.softmax_xentropy,
 					 'ignore_negative_data': True,
 					 'start_token': '<s>',
@@ -32,7 +32,7 @@ params = { 'model_name': model_name,
 					 'embedding_wd': 0.0001,                           # L2 WD regularization constant
 					 'enable_regularization': True,
 						'keywords_as_map': True,
-					 'training_data_dir': '/mnt/work/tokenized_training_data/',
-					 'vocab_file': '../data/filtered_lowercase_vocab.txt',
+					 'training_data_dir': '/mnt/work/training_data.tok2/',
+					 'vocab_file': '/mnt/work/training_data.tok2/vocab/merged_vocab_500.txt',
 					 'out_vocab_file': '',
 					 }
