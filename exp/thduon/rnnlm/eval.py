@@ -42,8 +42,8 @@ unk_list = []
 for sentence in sentences:
 	orig_sentence = sentence
 	sentence = sentence
-	sentence = sentence.replace("\u20a9 s","'s")
-	sentence = sentence.replace("’ s", "'s")
+#	sentence = sentence.replace("\u20a9 s","'s")
+#	sentence = sentence.replace("’ s", "'s")
 	sentence = sentence.lower()
 	state = np.zeros([num_layers, 2, 1, cell_size])
 	tokens = ["<s>"]+tok.tokenize(sentence)

@@ -16,7 +16,6 @@ params = { 'model_name': model_name,
 					 'rnn_dropout_keep_prob': .75,
 					 'all_lowercase': True,
 					 'mini_batches_between_checkpoint': 50,
-					 'inference_output_node': 'output_logits_sm',
 					 'learning_rate_decay': 0.95,
 					 'learning_rate_decay_start_epoch': 5,
 					 'max_grad_norm': 5,
@@ -25,6 +24,7 @@ params = { 'model_name': model_name,
 #					 'cell_activation': tf.sigmoid,
 					 'use_single_sm': True,
 					 'cell_type': 'BlockLSTM',  # GRU, BasicLSTM, BlockLSTM
+					 'inference_output_node': 'output_logits_sm,final_state,output_single_sm'
 }
 
 

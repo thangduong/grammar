@@ -126,7 +126,7 @@ def inference(params):
 	logits = tf.nn.xw_plus_b(output, softmax_w, softmax_b)
 	logits = tf.reshape(logits, [-1, num_steps, vocab_size], name='output_logits')
 	if utils.get_dict_value(params, 'use_single_sm', False):
-		smei = tf.placeholder(tf.int32, [None], name='smei')	# softmax evaluation index
+		smei = tf.placeholder(tf.int32, [None, None], name='smei')	# softmax evaluation index
 		exp_logits = tf.exp(logits)
 		logits_smei = tf.divide(tf.gather_nd(exp_logits, smei), tf.reduce_sum(exp_logits,axis=-1), 'output_single_sm')
 	logits_sm = tf.nn.softmax(logits, name='output_logits_sm')
