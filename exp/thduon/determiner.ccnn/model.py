@@ -39,11 +39,11 @@ def sentence_encoder(emb_sentence, word_emb, params, name='encoded_sentence'):
 			conv_group.append(conv_out)
 
 	# deal with the word path
-	if char_conv_widths is not None and char_conv_num_features is not None:
+	if (char_conv_widths is not None) and (char_conv_num_features is not None):
 		if char_use_no_conv_path:
 			conv_group.append(word_emb)
 		for i, (char_conv_num_feature, char_conv_width) in enumerate(zip(char_conv_num_features, char_conv_widths)):
-			conv_out = nlp.conv1d_array(word_emb, char_conv_num_feature, char_conv_width,name='conv%s'%(str(i)), w_wds=0.000, b_wds=0.000, keep_probs=conv_keep_probs)
+			conv_out = nlp.conv1d_array(word_emb, char_conv_num_feature, char_conv_width,name='char_conv%s'%(str(i)), w_wds=0.000, b_wds=0.000, keep_probs=conv_keep_probs)
 			conv_group.append(conv_out)
 	else:
 		conv_group.append(word_emb)

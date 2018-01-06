@@ -299,17 +299,6 @@ class ClassifierData:
 		return self._current_index
 
 	@staticmethod
-	def get_data(base_dir, indexer=None,
-															 params=None,
-															 gen_data_from_file_fcn=_gen_data_from_file,
-															 gen_data_fcn=_gen_data):
-		data_files = os.listdir(base_dir)
-		data_files = [os.path.join(base_dir, x) for x in data_files if os.path.isfile(os.path.join(base_dir,x))]
-		return ClassifierData(file_list=data_files, indexer=indexer, params=params,
-													gen_data_from_file_fcn=gen_data_from_file_fcn,
-													gen_data_fcn=gen_data_fcn)
-
-	@staticmethod
 	def get_training_data(base_dir='/mnt/work/tokenized_training_data', indexer=None,
 															 params=None,
 															 gen_data_from_file_fcn=_gen_data_from_file,
@@ -328,7 +317,7 @@ class ClassifierData:
 															 gen_data_fcn=_gen_data):
 		#		sub_path = 'alltrain'
 		data_files = os.listdir(base_dir)
-		data_files = [os.path.join(base_dir, x) for x in data_files]
+		data_files = [os.path.join(base_dir, x) for x in data_files if os.path.isfile(os.path.join(base_dir,x))]
 		return ClassifierData(file_list=data_files, indexer=indexer, params=params,
 													gen_data_from_file_fcn=gen_data_from_file_fcn,
 													gen_data_fcn=gen_data_fcn)
