@@ -108,6 +108,20 @@ def inference(params):
 		if rnn_dropout_keep_prob < 1.00:
 			[cell],_ = core.rnn_dropout([cell],[rnn_dropout_keep_prob])
 
+			"""
+			# change for GRU.  not yet working!
++       if cell_type == 'GRU':
++               state_placeholder = tf.placeholder(tf.float32, [num_layers, None, cell_size], name='state')
++               l = tf.unstack(state_placeholder, axis=0)
++               state = tf.reshape(state_placeholder, [None, num_layers, cell_size])
++       else:
++               state_placeholder = tf.placeholder(tf.float32, [num_layers, 2, None, cell_size], name='state')
++               l = tf.unstack(state_placeholder, axis=0)
++               state = tuple(
++                               [tf.nn.rnn_cell.LSTMStateTuple(l[idx][0], l[idx][1])
++                                for idx in range(num_layers)]
++                       )
+"""
 	state_placeholder = tf.placeholder(tf.float32, [num_layers, 2, None, cell_size], name='state')
 	l = tf.unstack(state_placeholder, axis=0)
 	state = tuple(
