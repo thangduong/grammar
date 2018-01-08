@@ -46,7 +46,7 @@ total_unk = 0
 all_unk_words = []
 for batch_no in range(1):
 	print("WORKING ON BATCH %s" % batch_no)
-	batch = test_data.next_batch(batch_size=200000)
+	batch = test_data.next_batch(batch_size=1000000)
 	for idx, (sentence, ground_truth, word) in enumerate(zip(batch['sentence'], batch['y'], batch['word'])):
 		num_indexed, indexed, num_unk, unk_words = i.index_wordlist(sentence)
 		total_indexed += num_indexed
@@ -73,6 +73,7 @@ for batch_no in range(1):
 			fe.write('%s\n' % x)
 		if (ground_truth == 1 and pick[0] == 2) or (ground_truth == 2 and pick[0] == 1):
 			print([idx, ground_truth, pick, pickpr, r[0][0]])
+			print([chr(x) for x in word])
 			print(sentence)
 		error_scenario[ground_truth][pick[0]] += 1
 		no_total[ground_truth] += 1
