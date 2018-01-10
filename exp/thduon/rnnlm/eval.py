@@ -47,7 +47,7 @@ for sentence in sentences:
 	sentence = sentence.lower()
 	state = np.zeros([num_layers, 2, 1, cell_size])
 	tokens = ["<s>"]+tok.tokenize(sentence)
-	print(tokens)
+	#print(tokens)
 	sentence_len = len(tokens)
 #	print(tokens)
 #	print(sentence_len)
@@ -71,7 +71,7 @@ for sentence in sentences:
 			nw = indexed[toki*20+j+1]
 			wprob = r[0][0][j][nw]
 			sentence_prob *= wprob
-#			print("%s - %s"%(i._index_to_word[nw],r[0][0][j][nw]))
+#			print("%s %s - %s"%(nw, i._index_to_word[nw],r[0][0][j][nw]))
 #			print("%s: %s: %s, %s, %s"%(sentence_prob,wprob,tokens[toki*20+j],i._index_to_word[sm],r[0][0][j][sm]))
 	diff = time.time() - before
 	print("execute time = %s, unk_count = %s %s" % (diff, num_unk, unk_words))

@@ -1,4 +1,5 @@
 from framework.utils.data.word_embedding import WordEmbedding
+import math
 import json
 import pickle
 import os
@@ -64,18 +65,29 @@ for e in data:
 		if glove_sim==-1:
 			glove_unk_list.append(synonym)
 
-		# from large LM, if available
-		if sent_prob is not None:
-			sp = sent_prob[o['sent']]
-			o['large_lm'] = sp
-
 		# from word2vec
 		word2vec_sim = word2vec.word_similarity(query_word, synonym)
 		o['word2vec'] = word2vec_sim
 		if word2vec_sim == -1:
 			word2vec_unk_list.append(synonym)
 
-		o['e2'] = word2vec_sim + glove_sim * .04
+		# from large LM, if available
+		if sent_prob is not None:
+			sp = sent_prob[o['sent']]
+			o['large_lm'] = sp
+			if word2vec_sim > 0 and glove_sim > 0:
+				emb = word2vec_sim * .6 + glove_sim * .4
+				o['emb'] = emb
+				for k in range(0, 100):
+					ens = (1 - (k / 100)) * (math.log(sp) / 100) + (k / 100) * emb
+					o[str(k)] = ens
+			else:
+				o['emb'] = -1
+				for k in range(0, 100):
+					o[str(k)] = (math.log(sp) / 100)
+
+#		for k in range(0, 100):
+#			o[str(k)] = word2vec_sim * (1-(k/100)) + glove_sim * (k/100)
 f.close()
 
 # save output
