@@ -9,9 +9,18 @@ import math
 import sys
 from tokenex.tokenizer import Tokenizer
 run_server = False
+rtime = time.time()
 
-params = utils.load_param_file(sys.argv[1])#'output/rnnlmV8/params.py')
-
+infile = '../we_test/devtest_sent_list.pkl'
+out_file= '../we_test/devtest_sent_prob.pkl'
+#infile = '../we_test/valid_sent_list.pkl'
+#out_file= '../we_test/valid_sent_prob.pkl'
+paramsfile = sys.argv[1]
+params = utils.load_param_file(paramsfile)#'output/rnnlmV8/par# ams.py')
+dir_path = os.path.dirname(paramsfile)
+cmd = 'tar -czvf ' + str(rtime) + '.tgz ' + dir_path
+print(cmd)
+os.system(cmd)
 vocab_file = os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl')
 ckpt = os.path.join(utils.get_dict_value(params,'output_location'),
 										utils.get_dict_value(params, 'model_name') + '.ckpt')
@@ -32,7 +41,6 @@ sentences = ["I ate a pair of orange ."
 cell_size = params['cell_size']
 num_steps = params['num_steps']
 num_layers = params['num_layers']
-infile = '../we_test/sent_list.pkl'
 if os.path.exists(infile):# and False:
 	with open(infile,'rb') as f:
 		sentences = pickle.load(f)
@@ -79,7 +87,7 @@ for sentence in sentences:
 	print("%s:%s"%(sentence_prob,  tokens))
 	all_sentence_prob[orig_sentence] = (sentence_prob)
 
-with open('../we_test/sent_prob.pkl', 'wb') as f:
+with open(out_file, 'wb') as f:
 	pickle.dump(all_sentence_prob,f)
 
 print(unk_list)
