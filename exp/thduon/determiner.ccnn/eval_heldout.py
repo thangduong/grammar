@@ -44,6 +44,8 @@ last = 0
 total_indexed = 0
 total_unk = 0
 all_unk_words = []
+
+right = total = 0
 for batch_no in range(1):
 	print("WORKING ON BATCH %s" % batch_no)
 	batch = test_data.next_batch(batch_size=1000000)
@@ -64,9 +66,11 @@ for batch_no in range(1):
 				 ' '.join(sentence[:int(len(sentence)/2)]+['___']+sentence[int(len(sentence)/2):]),\
 				 r[0][0]]
 		model_pick = pick[0]
+		total += 1
 		if ground_truth in pick:
 			model_pick = ground_truth
 			no_right[ground_truth] += 1
+			right += 1
 			fip.write('1 %s %s %s %d %0.2f\n'%(dt,ground_truth,pickpr[0], num_unk, 100*num_unk/num_indexed))
 		else:
 			fip.write('0 %s %s %s %d %0.2f\n'%(dt,ground_truth,pickpr[0], num_unk, 100*num_unk/num_indexed))
@@ -96,6 +100,7 @@ for batch_no in range(1):
 			print(no_total)
 			print(no_total_model)
 			print(error_scenario)
+			print("ACCURACY = %s" % (right/total))
 			last =idx
 
 #for x in model_results:
@@ -107,6 +112,7 @@ print(no_total)
 print(no_total_model)
 
 print(error_scenario)
+print("ACCURACY = %s" % (right / total))
 
 fscores.write("recall = %s\n"%[x/y for x,y in zip(no_right,no_total)])
 fscores.write("precision = %s\n"%[x/y for x,y in zip(no_right, no_total_model)])
@@ -121,7 +127,13 @@ recall_list = [x/y for x,y in zip(no_right, no_total_model)]
 
 fascores = open(os.path.join(utils.get_dict_value(params,'output_location'),
 											'scores.txt'), 'a')
-fascores.write("%s %s\n"%(time(),  [x for pair in zip(precision_list, recall_list) for x in pair]))
+
+s = str(time())
+for x in [x for pair in zip(precision_list, recall_list) for x in pair]:
+	s += ' ' + str(x)
+s += ' '+str(100.0*right/total)
+#fascores.write("%s %s\n"%(time(),  [x for pair in zip(precision_list, recall_list) for x in pair]))
+fascores.write('%s\n' % s)
 fascores.close()
 
 #		f.write('%0.8f\t%0.8f\t%s\t%s\n'%(after_time-before_time,model_score,ground_truth,sentence))

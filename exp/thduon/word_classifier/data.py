@@ -71,8 +71,12 @@ def _gen_data(dataobj, tokens, keywords,
 	if ignore_negative_data:
 		class_offset = 0
 	for toki, tok in enumerate(tokens):
-		if tok.lower() in keywords:
-			idx = keywords.index(tok.lower())
+		if datobj._all_lowercase:
+			tok_to_check = tok.lower()
+		else:
+			tok_to_check = tok
+		if tok_to_check in keywords:
+			idx = keywords.index(tok_to_check)
 			before_idx = toki - num_before
 			after_idx = toki + num_after + 1
 			#yield [tokens[before_idx:toki] + tokens[toki+1:after_idx], idx + 1]
@@ -168,6 +172,8 @@ class ClassifierData:
 		self._mimibatch_dump_dir = utils.get_dict_value(params, 'output_location', '.')
 		self._y_count = [0]*utils.get_dict_value(params,'num_classes',2)
 		self._lowercase_char_path = utils.get_dict_value(params, 'lowercase_char_path', True)
+		self._ccnn_skip_nonalphanumeric = utils.get_dict_value(params, 'ccnn_skip_nonalphanumeric', False)
+
 		if self._all_lowercase:
 			if self._start_token is not None:
 				self._start_token = self._start_token.lower()
@@ -222,14 +228,22 @@ class ClassifierData:
 				rec = next(self._cur_list)
 
 				rec0_left, rec0_right = map(list, zip(*[fix_token(x) for x in rec[0]]))
-				tok0 = rec0_right[int(len(rec[0]) / 2)]
+				tok0 = '' #rec0_right[int(len(rec[0]) / 2)]
 				# 0 = 1st or 2nd word after, otherwise the # of words after delimited by 0
 				if self._ccnn_num_words == 0:
 					if len(tok0) == 1:
 						tok0 = rec0_right[int(len(rec[0]) / 2) + 1]
 				else:
-					for i in range(self._ccnn_num_words-1):
-						tok0 += ' ' + rec0_right[int(len(rec[0]) / 2) + 1 + i]
+					words_copied = 0
+					while (words_copied < self._ccnn_num_words) or (words_copied + int(len(rec[0]) / 2) < len(rec0_right)):
+						word = rec0_right[int(len(rec[0]) / 2) + words_copied]
+						if not self._ccnn_skip_nonalphanumeric or True: # _ccnn_skip_nonalphanumeric is not used right now
+							if len(tok0)>0:
+								tok0 += ' '
+							tok0 += word
+							words_copied += 1
+#					for i in range(self._ccnn_num_words-1):
+#						tok0 += ' ' + rec0_right[int(len(rec[0]) / 2) + 1 + i]
 				if self._use_char_cnn:
 					if mb_dump_file is not None:
 						mb_dump_file.write('[%s]\n' % tok0)
