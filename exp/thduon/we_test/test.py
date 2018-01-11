@@ -4,12 +4,18 @@ import json
 import pickle
 import os
 
-input_path = '/mnt/work/NeuralRewriting.new/eval/uhrs_dec_2017/devtest.json'
-output_path = '/mnt/work/NeuralRewriting.new/eval/uhrs_dec_2017/output.json'
-output_data_file = 'devtest.txt'
-sentence_list_path = 'sent_list.pkl'
-sentence_prob_path = 'sent_prob.pkl'
+output_data_file = None #'devtest.txt'
+input_path = '../../../NeuralRewriting/eval/uhrs_dec_2017/valid.json'
+output_path = '../../../NeuralRewriting/eval/valid.json'
+sentence_list_path = 'valid_sent_list.pkl'
+sentence_prob_path = 'valid_sent_prob.pkl'
+
+input_path = '../../../NeuralRewriting/eval/uhrs_dec_2017/devtest.json'
+output_path = '../../../NeuralRewriting/eval/devtest.json'
+sentence_list_path = 'devtest_sent_list.pkl'
+sentence_prob_path = 'devtest_sent_prob.pkl'
 use_tok_sent = False
+use_sent_prob = True
 
 #input_path = '/mnt/work/NeuralRewriting.old/eval/small_eval_data.json'
 #output_path = '/mnt/work/NeuralRewriting.old/eval/small_eval_data_out.json'
@@ -18,12 +24,12 @@ use_tok_sent = False
 #sentence_prob_path ='sent_prob.pkl'
 #use_tok_sent = False
 
-input_path = '/mnt/work/NeuralRewriting/eval/small_eval_data.json'
-output_path = '/mnt/work/NeuralRewriting/eval/small_eval_data_out.json'
-output_data_file = "small_eval_data.txt"
-sentence_prob_path = 'sent_prob.pkl'
-sentence_list_path = 'sent_list.pkl'
-use_tok_sent = False
+#input_path = '/mnt/work/NeuralRewriting/eval/small_eval_data.json'
+#output_path = '/mnt/work/NeuralRewriting/eval/small_eval_data_out.json'
+#output_data_file = "small_eval_data.txt"
+#sentence_prob_path = 'sent_prob.pkl'
+#sentence_list_path = 'sent_list.pkl'
+#use_tok_sent = False
 
 # load embeddings
 glove = WordEmbedding.from_file('glove.pkl')
@@ -31,7 +37,7 @@ word2vec = WordEmbedding.from_file('GoogleNews-vectors-negative300.pkl')
 
 # load result from large LM if available
 sent_prob = None
-if sentence_prob_path is not None and os.path.exists(sentence_prob_path):
+if sentence_prob_path is not None and os.path.exists(sentence_prob_path) and use_sent_prob:
 	print("Loading cached sentence probability")
 	with open(sentence_prob_path, 'rb') as f:
 		sent_prob = pickle.load(f)
@@ -43,20 +49,27 @@ with open(input_path) as f:
 sent_list = []
 glove_unk_list = []
 word2vec_unk_list = []
-f = open(output_data_file, 'w')
+if output_data_file is not None:
+	f = open(output_data_file, 'w')
+else:
+	f = None
 for e in data:
-	f.write('%s\n'% e['orig_sent'])
+	if f is not None:
+		f.write('%s\n'% e['orig_sent'])
 	query_word = e['query_word']
 	options = e['options']
-	f.write('%s\n'% query_word)
+	if f is not None:
+		f.write('%s\n'% query_word)
 	for o in options:
-		f.write('%s\n'% o['sent'])
+		if f is not None:
+			f.write('%s\n'% o['sent'])
 		if use_tok_sent:
 			sent_list.append(o['tok_sent'])
 		else:
 			sent_list.append(o['sent'])
 		synonym = o['synonym']
-		f.write('%s\n'% synonym)
+		if f is not None:
+			f.write('%s\n'% synonym)
 #		print(sent_list[-1])
 
 		# from glove
@@ -74,9 +87,11 @@ for e in data:
 		# from large LM, if available
 		if sent_prob is not None:
 			sp = sent_prob[o['sent']]
+			if sp <= 0:
+				sp = 1e-10
 			o['large_lm'] = sp
 			if word2vec_sim > 0 and glove_sim > 0:
-				emb = word2vec_sim * .6 + glove_sim * .4
+				emb = word2vec_sim * .5 + glove_sim * .5
 				o['emb'] = emb
 				for k in range(0, 100):
 					ens = (1 - (k / 100)) * (math.log(sp) / 100) + (k / 100) * emb
@@ -86,9 +101,17 @@ for e in data:
 				for k in range(0, 100):
 					o[str(k)] = (math.log(sp) / 100)
 
-#		for k in range(0, 100):
-#			o[str(k)] = word2vec_sim * (1-(k/100)) + glove_sim * (k/100)
-f.close()
+		for k in range(0, 101):
+			if word2vec_sim > 0 and glove_sim > 0:
+				o["e"+str(k)] = word2vec_sim * (1-(k/100)) + glove_sim * (k/100)
+			else:
+				if word2vec_sim > 0:
+					o["e"+str(k)] = word2vec_sim
+				else:
+					o["e"+str(k)] = glove_sim
+
+if f is not None:
+	f.close()
 
 # save output
 with open(output_path,'w') as f:
