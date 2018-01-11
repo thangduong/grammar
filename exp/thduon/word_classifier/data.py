@@ -3,6 +3,16 @@ import random
 import framework.utils.common as utils
 import math
 
+def has_alphanumeric(input_string):
+	"""
+	returns true if input_string has an alpha_numeric char
+	:param input_string:
+	:return: true if iput_string has an alpha_numeric char
+	"""
+	for x in input_string:
+		if x.isalnum():
+			return True
+	return False
 
 def fix_token(token):
 	"""
@@ -237,7 +247,7 @@ class ClassifierData:
 					words_copied = 0
 					while (words_copied < self._ccnn_num_words) or (words_copied + int(len(rec[0]) / 2) < len(rec0_right)):
 						word = rec0_right[int(len(rec[0]) / 2) + words_copied]
-						if not self._ccnn_skip_nonalphanumeric or True: # _ccnn_skip_nonalphanumeric is not used right now
+						if not self._ccnn_skip_nonalphanumeric or has_alphanumeric(word): # _ccnn_skip_nonalphanumeric is not used right now
 							if len(tok0)>0:
 								tok0 += ' '
 							tok0 += word

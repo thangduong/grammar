@@ -41,7 +41,7 @@ no_total_model = [0]*num_classes
 
 error_scenario = []
 for x in range(num_classes):
-	error_scenario += [0] * num_classes
+	error_scenario += [[0] * num_classes]
 
 topn = 1
 last = 0
@@ -52,7 +52,7 @@ all_unk_words = []
 right = total = 0
 for batch_no in range(1):
 	print("WORKING ON BATCH %s" % batch_no)
-	batch = test_data.next_batch(batch_size=1000000)
+	batch = test_data.next_batch(batch_size=200000)
 	for idx, (sentence, ground_truth, word) in enumerate(zip(batch['sentence'], batch['y'], batch['word'])):
 		num_indexed, indexed, num_unk, unk_words = i.index_wordlist(sentence)
 		total_indexed += num_indexed
@@ -91,15 +91,15 @@ for batch_no in range(1):
 		if idx-last > 10000:
 #			print(all_unk_words)
 			fscores.write("NUMBER OF UNK: %d (%0.2f)\n" % (total_unk, 100 * total_unk / max(total_indexed, 1)))
-			fscores.write("recall = %s\n" % [x / y for x, y in zip(no_right, no_total)])
-			fscores.write("precision = %s\n" % [x / y for x, y in zip(no_right, no_total_model)])
+			fscores.write("recall = %s\n" % [x / max(y,1) for x, y in zip(no_right, no_total)])
+			fscores.write("precision = %s\n" % [x / max(y,1) for x, y in zip(no_right, no_total_model)])
 			fscores.write("%s\n"%no_right)
 			fscores.write("%s\n"%no_total)
 			fscores.write("%s\n"%no_total_model)
 			fscores.write("%s\n"%error_scenario)
 			print("NUMBER OF UNK: %d (%0.2f)" % (total_unk, 100 * total_unk / max(total_indexed, 1)))
-			print("recall = %s" % [x / y for x, y in zip(no_right, no_total)])
-			print("precision = %s" % [x / y for x, y in zip(no_right, no_total_model)])
+			print("recall = %s" % [x / max(y,1) for x, y in zip(no_right, no_total)])
+			print("precision = %s" % [x / max(y,1) for x, y in zip(no_right, no_total_model)])
 			print(no_right)
 			print(no_total)
 			print(no_total_model)
@@ -109,8 +109,8 @@ for batch_no in range(1):
 
 #for x in model_results:
 #	print(x)
-print("recall = %s"%[x/y for x,y in zip(no_right,no_total)])
-print("precision = %s"%[x/y for x,y in zip(no_right, no_total_model)])
+print("recall = %s"%[x/max(y,1) for x,y in zip(no_right,no_total)])
+print("precision = %s"%[x/max(y,1) for x,y in zip(no_right, no_total_model)])
 print(no_right)
 print(no_total)
 print(no_total_model)
@@ -118,16 +118,16 @@ print(no_total_model)
 print(error_scenario)
 print("ACCURACY = %s" % (right / total))
 
-fscores.write("recall = %s\n"%[x/y for x,y in zip(no_right,no_total)])
-fscores.write("precision = %s\n"%[x/y for x,y in zip(no_right, no_total_model)])
+fscores.write("recall = %s\n"%[x/max(y,1) for x,y in zip(no_right,no_total)])
+fscores.write("precision = %s\n"%[x/max(y,1) for x,y in zip(no_right, no_total_model)])
 fscores.write("%s\n"%no_right)
 fscores.write("%s\n"%no_total)
 fscores.write("%s\n"%no_total_model)
 fscores.write("%s\n"%error_scenario)
 
 # timestamp, precision, recall, precision, recall, precision, recall, precision, recall
-precision_list = [x/y for x,y in zip(no_right,no_total)]
-recall_list = [x/y for x,y in zip(no_right, no_total_model)]
+precision_list = [x/max(y,1) for x,y in zip(no_right,no_total)]
+recall_list = [x/max(y,1) for x,y in zip(no_right, no_total_model)]
 
 fascores = open(os.path.join(utils.get_dict_value(params,'output_location'),
 											'scores.txt'), 'a')

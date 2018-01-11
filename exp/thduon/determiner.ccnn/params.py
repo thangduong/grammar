@@ -1,7 +1,7 @@
 import os
 
 
-model_name = 'determinerCCNNV21'
+model_name = 'determinerCCNNV25'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
@@ -9,24 +9,24 @@ params = { 'model_name': model_name,
 					 'num_words_after': 10,
 					 'embedding_size': 300,
 					 'word_embedding_size': 100,
-					 'word_len': 15,
 					 'use_char_cnn': True,
+					 'ccnn_skip_nonalphanumeric': True,
+					 'word_len': 15,
 					 'ccnn_num_words': 5,
-					 'ccnn_skip_nonalphanumeric': False,
 					 'char_conv_num_features': [[50, 50]],
-					 'char_conv_widths': [[3,3]],
-					 'conv_num_features': [[300,300]],
-					 'conv_widths': [[9,3]],
+					 'char_conv_widths': [[2, 2]],
+					 'conv_num_features': [[300,300,300,300,300,300]],
+					 'conv_widths': [[2,2,2,2,2,2]],
 					 'char_use_no_conv_path': True,
 					 'use_no_conv_path': True,                       # enable embedding pass through to second stage
-					 'all_lowercase': False,
+					 'all_lowercase': True,
 					 'lowercase_char_path': False,
 					 'mlp_config': [300, 100],
 					 'bipass_conv': False,
 					 'mlp_activations': 'sigmoid',
-					 'batch_size': 8192,
-					 'learning_rate': 0.0001,
-					 'keywords': ['a','an','the', 'A', 'An', 'The'],
+					 'batch_size': 1024*4,
+					 'learning_rate': 0.001,
+					 'keywords': ['a','an','the'],
 					 'mini_batches_between_checkpoint': 100,
 #					 'embedding_device': '/cpu:0',
 #					 'min_vocab_freq': 50,
@@ -43,5 +43,5 @@ params = { 'model_name': model_name,
 					 'word_bias_wd_regularization': 0.001,                           # L2 WD regularization constant
 					 'enable_regularization': True,
 					 'training_data_dir': '/mnt/work/training_data.tok4',
-					 'vocab_file': '/mnt/work/training_data.tok4/vocab/vocab.50.txt',
+					 'vocab_file': '/mnt/work/training_data.tok4/vocab/lowercase_vocab.50.txt',
 					 }
