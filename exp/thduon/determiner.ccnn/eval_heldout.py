@@ -40,7 +40,7 @@ no_total_model = [0]*num_classes
 
 
 error_scenario = []
-for i in range(num_classes):
+for x in range(num_classes):
 	error_scenario += [0] * num_classes
 
 topn = 1
