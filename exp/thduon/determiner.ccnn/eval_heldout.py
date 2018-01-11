@@ -32,13 +32,17 @@ fscores = open(os.path.join(utils.get_dict_value(params,'output_location'),
 											'scores_%s.txt'%timestr), 'w')
 f.write('Exec Time\tModel Pick\tModel Score\tGround Truth\tSentence\n')
 fe.write('Exec Time\tModel Pick\tModel Score\tGround Truth\tSentence\n')
-no_right = [0,0,0,0]
-no_total = [0,0,0,0]
-no_total_model = [0,0,0,0]
-error_scenario = [[0,0,0,0],
-									[0, 0, 0, 0],
-									[0, 0, 0, 0],
-									[0, 0, 0, 0]]
+
+num_classes = params['num_classes']
+no_right = [0]*num_classes
+no_total = [0]*num_classes
+no_total_model = [0]*num_classes
+
+
+error_scenario = []
+for i in range(num_classes):
+	error_scenario += [0] * num_classes
+
 topn = 1
 last = 0
 total_indexed = 0
