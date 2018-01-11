@@ -71,7 +71,7 @@ def _gen_data(dataobj, tokens, keywords,
 	if ignore_negative_data:
 		class_offset = 0
 	for toki, tok in enumerate(tokens):
-		if datobj._all_lowercase:
+		if dataobj._all_lowercase:
 			tok_to_check = tok.lower()
 		else:
 			tok_to_check = tok
