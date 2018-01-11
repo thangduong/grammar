@@ -32,10 +32,10 @@ params = { 'model_name': model_name,
 #					 'min_vocab_freq': 50,
 #					 'min_vocab_freq': 10,
 					 'start_token': "<s>",
-					 'conv_keep_probs': 0.75,
-					 'char_conv_keep_probs': 0.75,
-					 'mlp_keep_probs': 0.5,
-					 'embedding_keep_prob': 0.75,
+#					 'conv_keep_probs': 0.75,
+#					 'char_conv_keep_probs': 0.75,
+#					 'mlp_keep_probs': 0.5,
+#					 'embedding_keep_prob': 0.75,
 					 'embedding_wd': 0.001,                           # L2 WD regularization constant
 					 'char_weight_wd_regularization': 0.001,                           # L2 WD regularization constant
 					 'char_bias_wd_regularization': 0.001,                           # L2 WD regularization constant
