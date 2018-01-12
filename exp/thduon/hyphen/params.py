@@ -1,17 +1,17 @@
 import os
 
 
-model_name = 'commaV30'
+model_name = 'hyphenV0'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
-					 'num_words_before': 10,
-					 'num_words_after': 10,
-					 'embedding_size': 300,
-					 'conv_num_features': [[300, 64]],
-					 'conv_widths': [[9,3]],
+					 'num_words_before': 5,
+					 'num_words_after': 5,
+					 'embedding_size': 100,
+					 'conv_num_features': [[128, 64]],
+					 'conv_widths': [[3,3]],
 					 'use_no_conv_path': False,                       # enable embedding pass through to second stage
-					 'mlp_config': [256, 64],
+					 'mlp_config': [64, 32],
 					 'bipass_conv': False,
 #					 'max_vocab_size': 20000,
 #					 'min_vocab_freq': 100,
