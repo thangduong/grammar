@@ -245,13 +245,17 @@ class ClassifierData:
 						tok0 = rec0_right[int(len(rec[0]) / 2) + 1]
 				else:
 					words_copied = 0
-					while (words_copied < self._ccnn_num_words) or (words_copied + int(len(rec[0]) / 2) < len(rec0_right)):
-						word = rec0_right[int(len(rec[0]) / 2) + words_copied]
+					words_examined = 0
+					while (words_copied < self._ccnn_num_words) and (words_examined + int(len(rec[0]) / 2) < len(rec0_right)):
+						word = rec0_right[int(len(rec[0]) / 2) + words_examined]
+						if word=='<pad>':
+							break
 						if not self._ccnn_skip_nonalphanumeric or has_alphanumeric(word): # _ccnn_skip_nonalphanumeric is not used right now
 							if len(tok0)>0:
 								tok0 += ' '
 							tok0 += word
 							words_copied += 1
+						words_examined += 1
 #					for i in range(self._ccnn_num_words-1):
 #						tok0 += ' ' + rec0_right[int(len(rec[0]) / 2) + 1 + i]
 				if self._use_char_cnn:
