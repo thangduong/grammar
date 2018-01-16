@@ -1,7 +1,7 @@
 import os
 
 
-model_name = 'determinerCCNNV26'
+model_name = 'determinerCCNNV31'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
@@ -13,13 +13,13 @@ params = { 'model_name': model_name,
 					 'use_char_cnn': True,
 					 'ccnn_num_words': 5,
 					 'ccnn_skip_nonalphanumeric': True,
-					 'char_conv_num_features': [[200, 100, 50]],
+					 'char_conv_num_features': [[150, 100, 50]],
 					 'char_conv_widths': [[3,3,3]],
-					 'conv_num_features': [[1000,500,300]],
+					 'conv_num_features': [[700,500,300]],
 					 'conv_widths': [[9,3,3]],
 					 'char_use_no_conv_path': True,
 					 'use_no_conv_path': True,                       # enable embedding pass through to second stage
-					 'all_lowercase': False,
+					 'all_lowercase': True,
 					 'lowercase_char_path': False,
 					 'mlp_config': [300, 100],
 					 'bipass_conv': False,
@@ -28,14 +28,14 @@ params = { 'model_name': model_name,
 					 'learning_rate': 0.0001,
 					 'keywords': ['a','an','the'],
 					 'mini_batches_between_checkpoint': 100,
-#					 'embedding_device': '/cpu:0',
+					 'embedding_device': '/cpu:0',
 #					 'min_vocab_freq': 50,
 #					 'min_vocab_freq': 10,
 					 'start_token': "<s>",
-#					 'conv_keep_probs': 0.75,
-#					 'char_conv_keep_probs': 0.75,
-#					 'mlp_keep_probs': 0.5,
-#					 'embedding_keep_prob': 0.75,
+					 'conv_keep_probs': 0.75,
+					 'char_conv_keep_probs': 0.75,
+					 'mlp_keep_probs': 0.5,
+					 'embedding_keep_prob': 0.75,
 					 'embedding_wd': 0.001,                           # L2 WD regularization constant
 					 'char_weight_wd_regularization': 0.001,                           # L2 WD regularization constant
 					 'char_bias_wd_regularization': 0.001,                           # L2 WD regularization constant

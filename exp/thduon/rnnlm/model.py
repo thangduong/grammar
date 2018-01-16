@@ -57,7 +57,7 @@ def loss(network, params=None, name='rnnlm_loss'):
 	return [loss]
 
 def inference(params):
-	batch_size = params['batch_size']
+#	batch_size = params['batch_size']
 	num_steps = params['num_steps']
 	cell_size = params['cell_size']
 	vocab_size = params['vocab_size']
@@ -142,6 +142,9 @@ def inference(params):
 	if utils.get_dict_value(params, 'use_single_sm', False):
 		smei = tf.placeholder(tf.int32, [None, None], name='smei')	# softmax evaluation index
 		exp_logits = tf.exp(logits)
-		logits_smei = tf.divide(tf.gather_nd(exp_logits, smei), tf.reduce_sum(exp_logits,axis=-1), 'output_single_sm')
+		numerator = tf.gather_nd(exp_logits, tf.stack([tf.tile(tf.expand_dims(tf.range(tf.shape(smei)[0]), 1),
+							[1, tf.shape(smei)[1]]), tf.transpose(tf.tile(tf.expand_dims(tf.range(tf.shape(smei)[1]), 1),
+							[1, tf.shape(smei)[0]])), smei], 2))
+		logits_smei = tf.divide(numerator, tf.reduce_sum(exp_logits,axis=-1), 'output_single_sm')
 	logits_sm = tf.nn.softmax(logits, name='output_logits_sm')
 	return [logits]

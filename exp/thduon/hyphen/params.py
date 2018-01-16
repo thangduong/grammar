@@ -1,7 +1,7 @@
 import os
 
 
-model_name = 'hyphenV0'
+model_name = 'hyphenV1'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
@@ -19,7 +19,7 @@ params = { 'model_name': model_name,
 #					 'embedding_device': '/cpu:0',
 					 'batch_size': 1024*8,
 					 'learning_rate': 0.001,
-					 'keywords': [','],
+					 'keywords': ['-'],
 					 'mini_batches_between_checkpoint': 100,
 					 'mlp_keep_probs': 0.75,
 					 'conv_keep_probs': 0.75,
