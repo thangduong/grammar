@@ -2,7 +2,7 @@
 import sys
 
 min_freq_union = 5
-min_freq = 1000
+min_freq = 100
 
 v2list = {}
 with open(sys.argv[2], 'r') as f:
