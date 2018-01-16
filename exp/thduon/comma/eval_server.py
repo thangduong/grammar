@@ -4,13 +4,14 @@ import framework.utils.common as utils
 import word_classifier.data as data
 import os
 import urllib.parse
+import sys
 from time import time
 from urllib.parse import urlparse
 from http.server import BaseHTTPRequestHandler, HTTPServer
 run_server = True
 
-DEFAULT_THRESHOLD = .4
-paramsfile = "params.py"
+DEFAULT_THRESHOLD = .7
+paramsfile = sys.argv[1] #"params.py"
 data_base_dir = ""
 http_port = 8081
 params = utils.load_param_file(paramsfile)
@@ -86,7 +87,7 @@ class HttpHandler(BaseHTTPRequestHandler):
 		if parsed_path.path == "/decode":
 			self.send_header("Content-type", "text/html")
 			self.end_headers()
-			sentence = urllib.parse.unquote(parsed_path.query)
+			sentence = urllib.parse.unquote(parsed_path.query).lower()
 			done = False
 			scores = []
 			debug = False

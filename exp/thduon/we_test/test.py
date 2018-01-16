@@ -4,18 +4,31 @@ import json
 import pickle
 import os
 
-output_data_file = None #'devtest.txt'
-input_path = '../../../NeuralRewriting/eval/uhrs_dec_2017/valid.json'
-output_path = '../../../NeuralRewriting/eval/valid.json'
-sentence_list_path = 'valid_sent_list.pkl'
-sentence_prob_path = 'valid_sent_prob.pkl'
+dataset = 'devtest'
 
-input_path = '../../../NeuralRewriting/eval/uhrs_dec_2017/devtest.json'
-output_path = '../../../NeuralRewriting/eval/devtest.json'
-sentence_list_path = 'devtest_sent_list.pkl'
-sentence_prob_path = 'devtest_sent_prob.pkl'
+
+if dataset == 'valid':
+	output_data_file = 'valid_txt.txt'
+	input_path = '../../../NeuralRewriting/eval/uhrs_dec_2017/valid.json'
+	output_path = '../../../NeuralRewriting/eval/valid.json'
+	sentence_list_path = 'valid_sent_list.pkl'
+	sentence_prob_path = 'valid_sent_prob.pkl'
+elif dataset == 'devtest':
+	output_data_file = 'devtest_txt.txt'
+	input_path = '../../../NeuralRewriting/eval/uhrs_dec_2017/devtest.json'
+	output_path = '../../../NeuralRewriting/eval/devtest.json'
+	sentence_list_path = 'devtest_sent_list.pkl'
+	sentence_prob_path = 'devtest_sent_prob.pkl'
+elif dataset == 'test':
+	output_data_file = 'test_txt.txt'
+	input_path = '../../../NeuralRewriting/eval/uhrs_dec_2017/test.json'
+	output_path = '../../../NeuralRewriting/eval/test.json'
+	sentence_list_path = 'test_sent_list.pkl'
+	sentence_prob_path = 'test_sent_prob.pkl'
+
 use_tok_sent = False
 use_sent_prob = True
+
 
 #input_path = '/mnt/work/NeuralRewriting.old/eval/small_eval_data.json'
 #output_path = '/mnt/work/NeuralRewriting.old/eval/small_eval_data_out.json'
@@ -46,6 +59,7 @@ if sentence_prob_path is not None and os.path.exists(sentence_prob_path) and use
 with open(input_path) as f:
 	data = json.load(f)
 
+unk_count = 0
 sent_list = []
 glove_unk_list = []
 word2vec_unk_list = []
@@ -77,29 +91,30 @@ for e in data:
 		o['glove'] = glove_sim
 		if glove_sim==-1:
 			glove_unk_list.append(synonym)
+			unk_count += 1
 
 		# from word2vec
 		word2vec_sim = word2vec.word_similarity(query_word, synonym)
 		o['word2vec'] = word2vec_sim
 		if word2vec_sim == -1:
 			word2vec_unk_list.append(synonym)
+			unk_count += 1
 
 		# from large LM, if available
 		if sent_prob is not None:
 			sp = sent_prob[o['sent']]
-			if sp <= 0:
-				sp = 1e-10
+#			if sp <= 0:
+#				sp = -10
+			print("sp = %s\n"%sp)
 			o['large_lm'] = sp
 			if word2vec_sim > 0 and glove_sim > 0:
 				emb = word2vec_sim * .5 + glove_sim * .5
-				o['emb'] = emb
-				for k in range(0, 100):
-					ens = (1 - (k / 100)) * (math.log(sp) / 100) + (k / 100) * emb
-					o[str(k)] = ens
 			else:
-				o['emb'] = -1
-				for k in range(0, 100):
-					o[str(k)] = (math.log(sp) / 100)
+				emb = 0
+			o['emb'] = emb
+			for k in range(0, 100):
+				ens = (1 - (k / 100)) * (sp / 10) + (k / 100) * emb
+				o[str(k)] = ens
 
 		for k in range(0, 101):
 			if word2vec_sim > 0 and glove_sim > 0:
@@ -122,3 +137,4 @@ with open(sentence_list_path, 'wb') as f:
 
 print("There are %s unknown synonyms for GloVe" % len(glove_unk_list))
 print("There are %s unknown synonyms for Word2Vec" % len(word2vec_unk_list))
+print("UNK COUNT = %s"%unk_count)

@@ -18,13 +18,14 @@ params = { 'model_name': model_name,
 					 'mini_batches_between_checkpoint': 50,
 					 'inference_output_node': 'output_logits_sm',
 					 'learning_rate_decay': 0.95,
-					 'learning_rate_decay_start_epoch': 5,
+					 'learning_rate_decay_start_epoch': 1,
 					 'max_grad_norm': 5,
-					 'learning_rate': 1.0,
+					 'learning_rate': .2,
 					 'optimizer':'sgd',
 #					 'cell_activation': tf.sigmoid,
 					 'use_single_sm': True,
 					 'cell_type': 'BasicLSTM',  # GRU, BasicLSTM, BlockLSTM
-}
+					 'inference_output_node': 'final_state,output_single_sm'
+					 }
 
 
