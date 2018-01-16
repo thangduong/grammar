@@ -80,11 +80,13 @@ def inference(params):
 			embedding_matrix = nlp.variable_with_weight_decay('embedding_matrix',
 																												[vocab_size, embedding_size],
 																												initializer=embedding_initializer, wd=embedding_wd)
+			word_embedding_matrix = nlp.variable_with_weight_decay('word_embedding_matrix', [128, word_embedding_size],
+																														 initializer=embedding_initializer, wd=embedding_wd)
 	else:
 		embedding_matrix = nlp.variable_with_weight_decay('embedding_matrix', [vocab_size, embedding_size],
 																											initializer=embedding_initializer, wd=embedding_wd)
-	word_embedding_matrix = nlp.variable_with_weight_decay('word_embedding_matrix', [128, word_embedding_size],
-																										initializer=embedding_initializer, wd=embedding_wd)
+		word_embedding_matrix = nlp.variable_with_weight_decay('word_embedding_matrix', [128, word_embedding_size],
+																											initializer=embedding_initializer, wd=embedding_wd)
 
 	input_sentence = tf.placeholder(tf.int32, [None, sentence_len], 'sentence')
 	input_word = tf.placeholder(tf.int32, [None, word_len], 'word')
