@@ -1,7 +1,7 @@
 import os
 
 
-model_name = 'determinerCCNNV25'
+model_name = 'determinerCCNNV26'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
@@ -26,7 +26,7 @@ params = { 'model_name': model_name,
 					 'mlp_activations': 'sigmoid',
 					 'batch_size': 8192,
 					 'learning_rate': 0.0001,
-					 'keywords': ['a','an','the', 'A', 'An', 'The'],
+					 'keywords': ['a','an','the'],
 					 'mini_batches_between_checkpoint': 100,
 #					 'embedding_device': '/cpu:0',
 #					 'min_vocab_freq': 50,
@@ -43,5 +43,5 @@ params = { 'model_name': model_name,
 					 'word_bias_wd_regularization': 0.001,                           # L2 WD regularization constant
 					 'enable_regularization': True,
 					 'training_data_dir': '/mnt/work/training_data.tok4',
-					 'vocab_file': '/mnt/work/training_data.tok4/vocab/vocab.50.txt',
+					 'vocab_file': '/mnt/work/training_data.tok4/vocab/lowercase_vocab.50.txt',
 					 }
