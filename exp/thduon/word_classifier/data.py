@@ -80,17 +80,27 @@ def _gen_data(dataobj, tokens, keywords,
 	class_offset = 1
 	if ignore_negative_data:
 		class_offset = 0
+	last_tok = ""
 	for toki, tok in enumerate(tokens):
 		if dataobj._all_lowercase:
 			tok_to_check = tok.lower()
 		else:
 			tok_to_check = tok
 		if tok_to_check in keywords:
+
+
 			idx = keywords.index(tok_to_check)
 			before_idx = toki - num_before
 			after_idx = toki + num_after + 1
-			#yield [tokens[before_idx:toki] + tokens[toki+1:after_idx], idx + 1]
-			n1.append([tokens[before_idx:toki] + tokens[toki+1:after_idx], idx + class_offset])#tokens[before_idx:toki] + tokens[toki+1:after_idx])
+			word_after = tokens[toki+1]
+			n1.append([tokens[before_idx:toki] + [word_after] + tokens[toki+2:after_idx], idx + class_offset])#tokens[before_idx:toki] + tokens[toki+1:after_idx])
+
+			if last_tok == dataobj._start_token \
+				and dataobj._start_sentence_synthetic_capital_and_lowercase \
+				and	not dataobj._all_lowercase:
+				word_after = tokens[toki+1].title()
+				n1.append([tokens[before_idx:toki] + [word_after] + tokens[toki+2:after_idx], idx + class_offset])#tokens[before_idx:toki] + tokens[toki+1:after_idx])
+
 			n2.append(tokens[(before_idx + 1):after_idx])
 			n2.append(tokens[(before_idx):(after_idx-1)])
 		elif toki > num_before and toki < len(tokens)-num_after and not ignore_negative_data:
@@ -100,6 +110,8 @@ def _gen_data(dataobj, tokens, keywords,
 			#yield [tokens[before_idx:toki] + tokens[toki+1:after_idx], 0]
 			for keyword in keywords:
 				n3.append(tokens[before_idx:toki] + [keyword] + tokens[toki:after_idx-1])
+		last_tok = tok
+
 	if len(n1) > 0:
 		if ignore_negative_data:
 			n0 = []
@@ -160,6 +172,7 @@ class ClassifierData:
 		self._cur_list = []
 		self._next_file = 0
 		self._params = params
+		self._start_sentence_synthetic_capital_and_lowercase = utils.get_dict_value(params, 'start_sentence_synthetic_capital_and_lowercase', False)
 		_keywords = utils.get_dict_value(params, 'keywords', [])
 		if utils.get_dict_value(params, 'keywords_as_map', False):
 			self._keywords = {}
@@ -180,7 +193,11 @@ class ClassifierData:
 		self._ccnn_num_words = utils.get_dict_value(params, 'ccnn_num_words', 0)  # 0 = 1st or 2nd word after, otherwise the # of words after delimited by 0
 		self._ccnn_word_len = utils.get_dict_value(params, 'word_len')
 		self._mimibatch_dump_dir = utils.get_dict_value(params, 'output_location', '.')
-		self._y_count = [0]*utils.get_dict_value(params,'num_classes',2)
+		if self._ignore_negative_data:
+			num_classes = len(_keywords)
+		else:
+			num_classes = len(_keywords) + 1
+		self._y_count = [0]*utils.get_dict_value(params,'num_classes',num_classes)
 		self._lowercase_char_path = utils.get_dict_value(params, 'lowercase_char_path', True)
 		self._ccnn_skip_nonalphanumeric = utils.get_dict_value(params, 'ccnn_skip_nonalphanumeric', False)
 
@@ -293,6 +310,8 @@ class ClassifierData:
 					batch_ccnn.append(cinput)
 				batch_y.append(rec[1])
 				if self._count_y:
+#					print(self._y_count)
+#					print(rec[1])
 					self._y_count[rec[1]] += 1
 				self._current_index += 1
 			except StopIteration:
@@ -390,9 +409,6 @@ class ClassifierData:
 #for x in result:
 #	print(x)
 if __name__ == "__main__":
-	print(fix_token("<int>|1920"))
-	print(fix_token("<"))
-	exit(0)
 	from framework.utils.data.text_indexer import TextIndexer
 #	x = "We went to the store , and I bought some fruits".split()
 #	print(x)
@@ -404,9 +420,11 @@ if __name__ == "__main__":
 																			max_size=utils.get_dict_value(params, 'max_vocab_size', -1))
 	indexer.add_token('<pad>')
 	indexer.add_token('unk')
-	d = ClassifierData.get_monolingual_training(indexer=indexer, params=params)
-	a = d.next_batch(batch_size=2)
-	print(a)
+	indexer = None
+	d = ClassifierData.get_data('/mnt/work/data_gen_test', indexer=indexer, params=params)
+	a = d.next_batch(batch_size=20)
+	for x in a['sentence']:
+		print(x)
 #	print(training_data.next_batch(batch_size=16))
 #	x = ['fraud', 'or', 'wrongdoing', 'have', 'contributed', 'to', 'the', 'current', 'problems', ';', 'authorities', 'need', 'to', ',', 'and', 'are', 'prosecuting', 'them', '.', '<pad>']
 #	a,b = merge_tokens_for_text(x)
