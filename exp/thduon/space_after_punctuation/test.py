@@ -4,15 +4,19 @@ from time import time
 import numpy as np
 import os
 import sys
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 
 params = utils.load_param_file(sys.argv[1])
 
 vocab_file = os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl')
 ckpt = os.path.join(utils.get_dict_value(params,'output_location'),
 										utils.get_dict_value(params, 'model_name') + '.ckpt')
-
-#e = Evaluator.load_graphdef('commaV10.graphdef')
-e = Evaluator.load2(ckpt)
+gd = os.path.join(utils.get_dict_value(params,'output_location'),'release',
+										utils.get_dict_value(params, 'model_name') + '.graphdef')
+print("USING: %s"%gd)
+e = Evaluator.load_graphdef(gd)
+#e = Evaluator.load2(ckpt)
+#e.dump_variable_sizes()
 
 sentence = sys.argv[2]
 def generate_data_from_sentence(params, sentence):
@@ -34,6 +38,7 @@ x = generate_data_from_sentence(params, sentence)
 sbatch = []
 idx = []
 for a,b in x:
+	print(' '.join([str(y) for y in a]))
 	sbatch.append(a)
 #	print([chr(x) for x in a])
 	idx.append(b)
@@ -41,7 +46,15 @@ for a,b in x:
 
 result = e.eval({'sentence':sbatch},['sm_decision'])
 result = result[0]
-print(sentence)
+sentence_result = sentence
+adjust = 0
 for i,r in enumerate(result):
 	j = idx[i]
-	print("%s,%s"%(sentence[j:(j+2)],r[1]))
+	if r[1] > .90:
+		jj = j + adjust
+		sentence_result = sentence_result[:jj+1] + ' ' + sentence_result[jj+1:]
+		adjust += 1
+	print("%s,%s"%(sentence[j:(j+2)],r[0]))
+
+print(sentence)
+print(sentence_result)

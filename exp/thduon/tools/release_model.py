@@ -19,7 +19,9 @@ release_cmd2 = 'cp -rvf %s %s %s' % (
 									os.path.join(model_dirname, "release")
 								)
 
-cmds = [freeze_cmd, vocab_cmd, params_cmd, release_cmd, release_cmd2, keywords_cmd]
+copy2repo = 'python3 %s/copy2repo.py --paramsfile %s'%(script_path, os.path.join(model_dirname,'params.py'))
+
+cmds = [freeze_cmd, vocab_cmd, params_cmd, release_cmd, release_cmd2, keywords_cmd, copy2repo]
 for c in cmds:
 	if len(c)>0:
 		print("EXECUTING: %s"%c)

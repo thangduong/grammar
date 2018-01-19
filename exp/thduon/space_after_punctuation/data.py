@@ -8,18 +8,29 @@ def generate_data_from_sentence(params, sentence):
 	num_chars_before = params['num_chars_before']
 	num_chars_after = params['num_chars_after']
 	vocab_size = params['vocab_size']
+	space_before = utils.get_dict_value(params, 'space_before', False) # if not before, then after
 	ord_sentence = [0]*num_chars_before + [min(ord(x), vocab_size-1) for x in sentence] + [0]*num_chars_after
 
 	for i in range(num_chars_before, num_chars_before + len(sentence) - 2):
 		if chr(ord_sentence[i]) in punctuations:
-			before = ord_sentence[(i - num_chars_before + 1):(i+1)]
-			if ord_sentence[i+1] == ord(' '):
-				# yes, space
-				after = ord_sentence[(i+2):(i+num_chars_after+2)]
-				yield before + after, 1
-			# no, no space
-			after = ord_sentence[(i+1):(i+num_chars_after+1)]
-			yield before + after, 0
+			if space_before:
+				after = ord_sentence[(i):(i+num_chars_after)]
+				if ord_sentence[i-1] == ord(' '):
+					before = ord_sentence[(i - num_chars_before - 1):(i-1)]
+					# yes, space
+					yield before + after, 1
+				# no, no space
+				before = ord_sentence[(i - num_chars_before):(i)]
+				yield before + after, 0
+			else:
+				before = ord_sentence[(i - num_chars_before + 1):(i+1)]
+				if ord_sentence[i+1] == ord(' '):
+					# yes, space
+					after = ord_sentence[(i+2):(i+num_chars_after+2)]
+					yield before + after, 1
+				# no, no space
+				after = ord_sentence[(i+1):(i+num_chars_after+1)]
+				yield before + after, 0
 
 def generate_data_from_file(params, filepath):
 	lines_per_group = params['lines_per_group']
@@ -68,7 +79,7 @@ class Data(BaseDataObject):
 				if not (self._debug_file is None):
 					self._debug_file.write('%s - %s\n'%(y,''.join([chr(a) for a in x])))
 					self._debug_write_count += 1
-					if self._debug_write_count > 1000:
+					if self._debug_write_count > 1000000:
 						self._debug_file.close()
 						self._debug_file = None
 					else:
@@ -89,11 +100,11 @@ class Data(BaseDataObject):
 
 
 if __name__ == '__main__':
-	sentence = "Hello, world! This is a test. There are 10,000 people on earth."
+	sentence = "Hello (1,2,3)"
 	params = utils.load_param_file('params.py')
-	#data = generate_data(sentence, params)
+	data = generate_data_from_sentence(params,sentence)
 	#data = generate_data_from_file(params, '/mnt/work/training-monolingual/news.2007.en.shuffled')
-	#for x,y in data:
-	#	print('%s %s->%s'%(len(x), [chr(a) for a in x],y))
-	d = Data.get_data(params, '/mnt/work/training-monolingual' )
-	print(d.next_batch(5))
+	for x,y in data:
+		print('%s %s->%s'%(len(x), [chr(a) for a in x],y))
+#	d = Data.get_data(params, '/mnt/work/training-monolingual' )
+#	print(d.next_batch(5))
