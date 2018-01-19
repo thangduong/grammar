@@ -12,16 +12,21 @@ if os.path.exists(os.path.join(model_dirname,'keywords.pkl')):
 else:
 	keywords_cmd = ''
 params_cmd = 'python3 %s/params2json.py %s' % (script_path, paramsfile)
-release_cmd = 'mkdir %s' % os.path.join(model_dirname, "release")
-release_cmd2 = 'cp -rvf %s %s %s' % (
-									model_dirname + '/*.graphdef',
+
+
+release_cmds = []
+release_cmds.append('mkdir %s' % os.path.join(model_dirname, "release"))
+
+release_files = [	model_dirname + '/*.graphdef',
 									model_dirname + '/*.json',
-									os.path.join(model_dirname, "release")
-								)
+									model_dirname + '/release.timestamp.txt',
+								]
+for src_file in release_files:
+	release_cmds.append('cp -rvf %s %s' % (src_file, os.path.join(model_dirname, "release")))
 
 copy2repo = 'python3 %s/copy2repo.py --paramsfile %s'%(script_path, os.path.join(model_dirname,'params.py'))
 
-cmds = [freeze_cmd, vocab_cmd, params_cmd, release_cmd, release_cmd2, keywords_cmd, copy2repo]
+cmds = [freeze_cmd, vocab_cmd, params_cmd] + release_cmds + [keywords_cmd, copy2repo]
 for c in cmds:
 	if len(c)>0:
 		print("EXECUTING: %s"%c)
