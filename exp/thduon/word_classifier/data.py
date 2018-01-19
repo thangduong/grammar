@@ -423,8 +423,8 @@ if __name__ == "__main__":
 	indexer = None
 	d = ClassifierData.get_data('/mnt/work/data_gen_test', indexer=indexer, params=params)
 	a = d.next_batch(batch_size=20)
-	for x in a['sentence']:
-		print(x)
+	for x,y in zip(a['y'],a['sentence']):
+		print("%s:%s"%(y,x))
 #	print(training_data.next_batch(batch_size=16))
 #	x = ['fraud', 'or', 'wrongdoing', 'have', 'contributed', 'to', 'the', 'current', 'problems', ';', 'authorities', 'need', 'to', ',', 'and', 'are', 'prosecuting', 'them', '.', '<pad>']
 #	a,b = merge_tokens_for_text(x)

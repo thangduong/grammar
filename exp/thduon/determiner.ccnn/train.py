@@ -54,7 +54,7 @@ trainer = Trainer(inference=model.inference, batch_size=utils.get_dict_value(par
 									, training_data=training_data,
                   params=params)
 
-trainer.run(restore_latest_ckpt=True, save_network=True,
+trainer.run(restore_latest_ckpt=False, save_network=True,
             save_ckpt=True, mini_batches_between_checkpoint=utils.get_dict_value(params, 'mini_batches_between_checkpoint', 1000),
             additional_nodes_to_evaluate=['encoded_sentence']
             ,on_checkpoint_saved=on_checkpoint_saved)
