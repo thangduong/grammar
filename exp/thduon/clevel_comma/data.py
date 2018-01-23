@@ -4,15 +4,17 @@ import framework.utils.common as utils
 
 max_value = 0
 
-def _gen_data(sentence, num_before, num_after, null_sample_factor=0):
+def _gen_data(params, sentence, num_before, num_after, null_sample_factor=0):
 	global max_value
+	vocab_size = utils.get_dict_value(params, 'vocab_size', 256)
+	start_char = utils.get_dict_value(params, 'start_char', 1)
 	slen = len(sentence)
-	z = [ord(x) for x in sentence if ord(x)>255]
+	z = [ord(x) for x in sentence if ord(x)>vocab_size-1]
 	if len(z)>0 and max(z) > max_value:
 		max_value = max(z)
 		print('max_value = %s'%max_value)
-	sentence = [min(ord(x),255) for x in sentence]
-	sentence = [0]*(num_before-1) + [1] + sentence + [2] + [0]*(num_after - 1)
+	sentence = [min(ord(x),vocab_size-1) for x in sentence]
+	sentence = [0]*(num_before-1) + [start_char] + sentence + [0]*(num_after - 1)
 
 	null_list = []
 	pos_list = []
@@ -32,12 +34,12 @@ def _gen_data(sentence, num_before, num_after, null_sample_factor=0):
 	for x in result:
 		yield x
 
-def _gen_data_from_file(filename, num_before, num_after, null_sample_factor=0):
+def _gen_data_from_file(params, filename, num_before, num_after, null_sample_factor=0):
 	with open(filename) as f:
 		for line in f:
 			line = line.rstrip().lstrip()
-			yield from _gen_data(line, num_before, num_after, null_sample_factor=null_sample_factor)
-			yield from _gen_data(line.lower(), num_before, num_after, null_sample_factor=null_sample_factor)
+			yield from _gen_data(params, line, num_before, num_after, null_sample_factor=null_sample_factor)
+			yield from _gen_data(params, line.lower(), num_before, num_after, null_sample_factor=null_sample_factor)
 
 class CharLevelData:
 	def __init__(self, file_list, params):
@@ -66,7 +68,7 @@ class CharLevelData:
 
 	def load_next_file(self):
 		print(self._file_list[self._next_file])
-		self._cur_list = _gen_data_from_file(self._file_list[self._next_file], self._num_before,
+		self._cur_list = _gen_data_from_file(self._params, self._file_list[self._next_file], self._num_before,
 																				 self._num_after, null_sample_factor=self._null_sample_factor)
 		self._next_file += 1
 		self._next_file %= len(self._file_list)

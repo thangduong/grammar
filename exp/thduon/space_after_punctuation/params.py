@@ -1,12 +1,12 @@
 import os
 
-model_name = 'sbpV0'
+model_name = 'sapV8'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'num_chars_before': 10,
 					 'num_chars_after': 10,
 					 'lines_per_group': 10,
-					 'space_before': True,
+					 'space_before': False,
 					 'vocab_size': 128,
 					 'punctuations': [',','.',';',':','!','?','(','[','-'],
 					 'training_data_dir': '/mnt/work/training-monolingual/',

@@ -4,13 +4,14 @@ import os
 model_name = 'clcV0'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
-					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
-					 'num_before': 50,
-					 'num_after': 50,
-					 'embedding_size': 200,
+					 'null_sample_factor': 3,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
+					 'num_before': 100,
+					 'num_after': 100,
+					 'vocab_size': 128,
+					 'embedding_size': 100,
+					 'start_char':1,
 					 'conv_num_features': [[200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200, 200]],
 					 'conv_widths': [[2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]],
-					 'conv_keep_probs': None,
 					 'use_no_conv_path': False,                       # enable embedding pass through to second stage
 					 'mlp_config': [512, 128],
 					 'bipass_conv': False,

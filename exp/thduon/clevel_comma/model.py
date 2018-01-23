@@ -48,13 +48,13 @@ def inference(params):
 	embedding_initializer = utils.get_dict_value(params, 'embedding_initializer')
 	embedding_keep_prob = utils.get_dict_value(params, 'embedding_keep_prob')
 	word_embedding_size = utils.get_dict_value(params, 'word_embedding_size', embedding_size)
-
+	vocab_size = utils.get_dict_value(params, 'vocab_size', 256)
 	if embedding_device is not None:
 		with tf.device(embedding_device):
-			word_embedding_matrix = nlp.variable_with_weight_decay('word_embedding_matrix', [256, word_embedding_size],
+			word_embedding_matrix = nlp.variable_with_weight_decay('word_embedding_matrix', [vocab_size, word_embedding_size],
 																														 initializer=embedding_initializer, wd=embedding_wd)
 	else:
-		word_embedding_matrix = nlp.variable_with_weight_decay('word_embedding_matrix', [256, word_embedding_size],
+		word_embedding_matrix = nlp.variable_with_weight_decay('word_embedding_matrix', [vocab_size, word_embedding_size],
 																													 initializer=embedding_initializer, wd=embedding_wd)
 
 	input_sentence = tf.placeholder(tf.int32, [None, sentence_len], 'sentence')
