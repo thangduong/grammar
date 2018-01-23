@@ -1,10 +1,10 @@
 import os
 
 
-model_name = 'clcV1'
+model_name = 'clcV0'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
-					 'null_sample_factor': 5,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
+					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
 					 'num_before': 50,
 					 'num_after': 50,
 					 'embedding_size': 200,
@@ -15,14 +15,16 @@ params = { 'model_name': model_name,
 					 'mlp_config': [512, 128],
 					 'bipass_conv': False,
 					 'mlp_activations': 'sigmoid',
-					 'mlp_keep_probs': 0.9,
 					 'embedding_device': '/cpu:0',
-					 'batch_size': 1024*4,
+					 'batch_size': 1024*16,
 					 'learning_rate': 0.001,
 					 'keywords': [','],
 					 'mini_batches_between_checkpoint': 100,
-					 'embedding_wd': 0.0001,                           # L2 WD regularization constant
+					 'mlp_keep_probs': 0.5,
+					 'conv_keep_probs': 0.75,
+					 'weight_wd_regularization': 0.001,
+					 'bias_wd_regularization': 0.001,
+					 'embedding_wd': 0.001,                           # L2 WD regularization constant
 					 'enable_regularization': True,
-					 'monolingual_dir': '/mnt/work/1-billion-word-language-modeling-benchmark',
-					 'vocab_file': '/mnt/work/1-billion-word-language-modeling-benchmark/1b_word_vocab.txt'
+					 'training_data_dir': '/mnt/work/training-monolingual/',
 					 }

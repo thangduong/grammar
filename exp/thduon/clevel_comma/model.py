@@ -19,6 +19,10 @@ def encoder(emb_sentence, params, name='encoded'):
 	mlp_activations = utils.get_dict_value(params, 'mlp_activations')
 	mlp_dropout_keep_probs = utils.get_dict_value(params, 'mlp_keep_probs')
 	use_no_conv_path = utils.get_dict_value(params, 'use_no_conv_path')
+
+	weight_wd_regularization = utils.get_dict_value(params, 'weight_wd_regularization', 0.0)
+	bias_wd_regularization = utils.get_dict_value(params, 'bias_wd_regularization', 0.0)
+
 	if bipass_conv:
 		conv_group = [emb_sentence]
 	else:
@@ -27,7 +31,9 @@ def encoder(emb_sentence, params, name='encoded'):
 		else:
 			conv_group = []
 		for i, (conv_num_feature, conv_width) in enumerate(zip(conv_num_features, conv_widths)):
-			conv_out = nlp.conv1d_array(emb_sentence, conv_num_feature, conv_width,name='conv%s'%(str(i)), w_wds=0.000, b_wds=0.000, keep_probs=conv_keep_probs)
+			conv_out = nlp.conv1d_array(emb_sentence, conv_num_feature, conv_width,name='conv%s'%(str(i)),
+																	w_wds=weight_wd_regularization,
+																	b_wds=bias_wd_regularization, keep_probs=conv_keep_probs)
 			conv_group.append(conv_out)
 	conv_out, _ = misc.concat(conv_group)
 	mlp_out, _ = mlp.fully_connected_network(conv_out, mlp_config, layer_activations=mlp_activations, dropout_keep_probs=mlp_dropout_keep_probs)
@@ -51,10 +57,10 @@ def inference(params):
 		word_embedding_matrix = nlp.variable_with_weight_decay('word_embedding_matrix', [256, word_embedding_size],
 																													 initializer=embedding_initializer, wd=embedding_wd)
 
-	if embedding_keep_prob is not None and embedding_keep_prob < 1.0:
-		[word_embedding_matrix],_ = core.dropout([word_embedding_matrix], [embedding_keep_prob])
 	input_sentence = tf.placeholder(tf.int32, [None, sentence_len], 'sentence')
 	emb_sentence = tf.nn.embedding_lookup(word_embedding_matrix, input_sentence, 'emb_word')
+	if embedding_keep_prob is not None and embedding_keep_prob < 1.0:
+		[emb_sentence],_ = core.dropout([emb_sentence], [embedding_keep_prob])
 	enc_sentence, _ = encoder(emb_sentence, params)
 
 	return enc_sentence, None

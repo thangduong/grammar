@@ -53,7 +53,9 @@ class Data(BaseDataObject):
 		self._current_file = 0
 		self._filelist = filelist
 		self._debug_write_count = 0
-		self._debug_file = open('test.txt','w')
+		self._debug_write_count_max = 1000000
+		self._minibatch_dump_dir = utils.get_dict_value(params, 'output_location', '.')
+		self._debug_file = open(os.path.join(self._minibatch_dump_dir, 'minibatch_dump.txt'),'w')
 		random.shuffle(self._filelist)
 		self.advance_file()
 
@@ -73,17 +75,16 @@ class Data(BaseDataObject):
 		while (records_read < batch_size):
 			try:
 				x,y = next(self._data)
+				if self._debug_file is not None and self._debug_write_count < self._debug_write_count_max:
+					self._debug_file.write("%s: %s\r\n"%(y,''.join([chr(a) for a in x])))
+					self._debug_file.flush()
+					self._debug_write_count += 1
+				elif self._debug_file is not None:
+					self._debug_file.close()
+					self._debug_file = None
 				sentences.append(x)
 				need_space.append(y)
 				records_read += 1
-				if not (self._debug_file is None):
-					self._debug_file.write('%s - %s\n'%(y,''.join([chr(a) for a in x])))
-					self._debug_write_count += 1
-					if self._debug_write_count > 1000000:
-						self._debug_file.close()
-						self._debug_file = None
-					else:
-						self._debug_file.flush()
 			except StopIteration:
 				self.advance_file()
 

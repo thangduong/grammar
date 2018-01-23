@@ -1,9 +1,10 @@
 # copy model to repo after release is called
 from shell_command import shell_call
 import framework.utils.common as utils
-import os
-import sys
 import gflags
+import json
+import sys
+import os
 
 
 def callcmd(cmd):
@@ -25,7 +26,7 @@ def copy2repo(source_dir, target_dir, model_name):
 	if not os.path.isdir(source_model_dir):
 		return -1, source_model_dir
 	if not os.path.isdir(target_dir):
-		return -3, target_dir
+		return -3, target_dir, target_model_dir
 
 	cmd = 'cp -rvf \"%s\" \"%s\"'%(source_model_dir,target_dir)
 	callcmd(cmd)
@@ -41,12 +42,23 @@ def copy2repo(source_dir, target_dir, model_name):
 
 	source_release_dir = os.path.join(source_model_dir, 'release')
 	if not os.path.isdir(source_release_dir):
-		return -2, source_release_dir
+		return -2, source_release_dir, target_model_dir
 
 	cmd = 'cp -rvf \"%s\" \"%s\"'%(source_release_dir,target_release_dir)
 	callcmd(cmd)
-	return release_num, None
+	return release_num, None, target_model_dir
 
+def add_release_num_to_json(json_file, release_num):
+	# load
+	with open(json_file, 'r', encoding='utf-8') as data_file:
+		data = json.loads(data_file.read())
+
+	# modify
+	data['release_num'] = release_num
+
+	# save back
+	with open(json_file, 'w', encoding='utf-8') as data_file:
+		json.dump(data, data_file)
 
 def main(argv):
 	try:
@@ -60,15 +72,17 @@ def main(argv):
 	src_dir = os.path.abspath(os.path.join(model_dirname, '..'))
 	target_dir = FLAGS.target_dir
 	model_name = params['model_name']
-	result, dir_name = copy2repo(src_dir, target_dir, model_name)
-	if result == -1:
+	release_num, dir_name, target_model_dir = copy2repo(src_dir, target_dir, model_name)
+	if release_num == -1:
 		print("source dir %s doesn't exist" % dir_name)
-	elif result == -2:
+	elif release_num == -2:
 		print("release source dir %s doesn't exist" % dir_name)
-	elif result == -3:
+	elif release_num == -3:
 		print("target dir %s doesn't exist" % dir_name)
 	else:
-		print("SUCCESSFULLY COPY MODEL %s.%s TO REPO"%(model_name, result))
+		add_release_num_to_json(os.path.join(target_model_dir,'release','params.json'), release_num)
+		add_release_num_to_json(os.path.join(target_model_dir,'release.%s'%release_num,'params.json'), release_num)
+		print("SUCCESSFULLY COPY MODEL %s.%s TO REPO"%(model_name, release_num))
 
 if __name__ == '__main__':
 	gflags.DEFINE_string('paramsfile', 'params.py', 'parameters file')

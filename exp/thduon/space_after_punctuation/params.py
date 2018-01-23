@@ -1,13 +1,14 @@
 import os
 
-model_name = 'sapV6'
+model_name = 'sbpV0'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'num_chars_before': 10,
 					 'num_chars_after': 10,
 					 'lines_per_group': 10,
+					 'space_before': True,
 					 'vocab_size': 128,
-					 'punctuations': [',','.',';',':','!','?',')',']'],
+					 'punctuations': [',','.',';',':','!','?','(','[','-'],
 					 'training_data_dir': '/mnt/work/training-monolingual/',
 					 'conv_num_features': [],#[25,25]],
 					 'conv_widths': [],#[3,3]],

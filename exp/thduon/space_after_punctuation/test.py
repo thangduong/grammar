@@ -8,7 +8,6 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 params = utils.load_param_file(sys.argv[1])
 
-vocab_file = os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl')
 ckpt = os.path.join(utils.get_dict_value(params,'output_location'),
 										utils.get_dict_value(params, 'model_name') + '.ckpt')
 gd = os.path.join(utils.get_dict_value(params,'output_location'),'release',

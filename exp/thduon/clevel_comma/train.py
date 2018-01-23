@@ -13,7 +13,7 @@ params['num_classes'] = len(params['keywords'])+1
 os.makedirs(utils.get_dict_value(params,'output_location'), exist_ok=True)
 shutil.copyfile(param_file,os.path.join(utils.get_dict_value(params,'output_location'), param_file))
 
-training_data = CharLevelData.get_monolingual_training(base_dir=params['monolingual_dir'],
+training_data = CharLevelData.get_training_data(base_dir=params['training_data_dir'],
 																												params=params)
 def on_checkpoint_saved(trainer, params, save_path):
     msg = 'saved checkpoint: ' + save_path

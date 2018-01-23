@@ -87,7 +87,7 @@ class CharLevelData:
 			try:
 				rec = next(self._cur_list)
 				if mb_dump_file is not None:
-					mb_dump_file.write('%03d %s\n'%(rec[1], rec[0]))
+					mb_dump_file.write('%03d %s\n'%(rec[1], ''.join([chr(x) for x in rec[0]])))
 				batch_x.append(rec[0])
 				batch_y.append(rec[1])
 				self._current_index += 1
@@ -119,6 +119,11 @@ class CharLevelData:
 		sub_path = 'training-monolingual'
 		data_files = os.listdir(os.path.join(base_dir, sub_path))
 		data_files = [os.path.join(base_dir, sub_path, x) for x in data_files]
+		return CharLevelData(file_list = data_files, params=params)
+	@staticmethod
+	def get_training_data(base_dir = '/mnt/work/1-billion-word-language-modeling-benchmark', params=None):
+		data_files = os.listdir(base_dir)
+		data_files = [os.path.join(base_dir, x) for x in data_files]
 		return CharLevelData(file_list = data_files, params=params)
 
 if __name__ == "__main__":
