@@ -35,8 +35,10 @@ params = { 'model_name': model_name,
 					 'word_weight_wd_regularization': 0.001,                           # L2 WD regularization constant
 					 'word_bias_wd_regularization': 0.001,                           # L2 WD regularization constant
 					 'enable_regularization': True,
-					 'training_data_dir': '/mnt/work/tokenized_training_data/',
-					 'vocab_file': '../data/filtered_lowercase_vocab.txt'
+					 'training_data_dir': '/mnt/work/training_data.tok4',
+					 'vocab_file': '/mnt/work/training_data.tok4/vocab/lowercase_vocab.50.txt',
+#					 'training_data_dir': '/mnt/work/tokenized_training_data/',
+#					 'vocab_file': '../data/filtered_lowercase_vocab.txt'
 					 }
 
 """
