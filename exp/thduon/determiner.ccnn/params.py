@@ -1,7 +1,7 @@
 import os
 
 
-model_name = 'determinerCCNNV51'
+model_name = 'determinerCCNNV50'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
@@ -15,6 +15,7 @@ params = { 'model_name': model_name,
 					 'conv_widths': [[2,2,2,2,2,2]],
 					 'use_no_conv_path': False,                       # enable embedding pass through to second stage
 					 'min_vocab_freq': 10,
+					 'max_vocab_size': 100000,
 					 'all_lowercase': True,
 					 'mlp_config': [300,100],
 					 'bipass_conv': False,
@@ -24,7 +25,7 @@ params = { 'model_name': model_name,
 					 'learning_rate': 0.001,
 					 'keywords': ['a','an','the'],
 					 'mini_batches_between_checkpoint': 100,
-					 'start_token': "<S>",
+					 'start_token': "<s>",
 					 'conv_keep_probs': 0.75,
 					 'char_conv_keep_probs': 0.75,
 					 'mlp_keep_probs': 0.5,
