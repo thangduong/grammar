@@ -32,6 +32,9 @@ def generate_data_from_sentence(params, sentence):
 			yield before + after, i-num_chars_before
 
 
+thres = .9
+if len(sys.argv)>3:
+	thres = float(sys.argv[3])
 x = generate_data_from_sentence(params, sentence)
 
 sbatch = []
@@ -47,9 +50,11 @@ result = e.eval({'sentence':sbatch},['sm_decision'])
 result = result[0]
 sentence_result = sentence
 adjust = 0
+print("thres = %0.2f"%thres)
 for i,r in enumerate(result):
 	j = idx[i]
-	if r[1] > .90:
+	print(r)
+	if r[1] > thres:
 		jj = j + adjust
 		sentence_result = sentence_result[:jj+1] + ' ' + sentence_result[jj+1:]
 		adjust += 1
