@@ -15,6 +15,7 @@ indexer = TextIndexer.from_txt_file(utils.get_dict_value(params, 'vocab_file'),
 																		max_size=utils.get_dict_value(params, 'max_vocab_size', 0),
 																		min_freq=utils.get_dict_value(params, 'min_vocab_freq', 0))
 indexer.add_token('<pad>')
+indexer.add_token(params['start_token'])
 indexer.add_token('unk')
 print("VOCAB SIZE %s" % indexer.vocab_size())
 os.makedirs(utils.get_dict_value(params,'output_location'), exist_ok=True)

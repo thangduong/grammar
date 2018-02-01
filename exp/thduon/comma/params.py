@@ -23,7 +23,7 @@ params = { 'model_name': model_name,
 					 'keywords': [','],
 					 'mini_batches_between_checkpoint': 100,
 					 'embedding_wd': 0.0001,                           # L2 WD regularization constant
-					 'start_token': '<S>',
+					 'start_token': '<s>',
 					 'enable_regularization': True,
 					 'monolingual_dir': '/mnt/work/1-billion-word-language-modeling-benchmark',
 					 'vocab_file': '/mnt/work/1-billion-word-language-modeling-benchmark/1b_word_vocab.txt'
