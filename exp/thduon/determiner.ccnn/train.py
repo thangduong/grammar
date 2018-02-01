@@ -10,7 +10,8 @@ import shutil
 
 param_file = 'params.py'
 params = utils.load_param_file(param_file)
-params['num_classes'] = len(params['keywords'])+1
+if not "num_classes" in params:
+	params['num_classes'] = len(params['keywords'])+1
 indexer = TextIndexer.from_txt_file(utils.get_dict_value(params, 'vocab_file'),
 																		max_size=utils.get_dict_value(params,'max_vocab_size',-1),
 																		min_freq=utils.get_dict_value(params,'min_vocab_freq',-1))

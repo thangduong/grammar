@@ -192,7 +192,7 @@ class ClassifierData:
 		self._all_lowercase = utils.get_dict_value(params, 'all_lowercase', False)
 		self._ccnn_num_words = utils.get_dict_value(params, 'ccnn_num_words', 0)  # 0 = 1st or 2nd word after, otherwise the # of words after delimited by 0
 		self._ccnn_word_len = utils.get_dict_value(params, 'word_len')
-		self._mimibatch_dump_dir = utils.get_dict_value(params, 'output_location', '.')
+		self._dump_dir = utils.get_dict_value(params, 'output_location', '.')
 		if self._ignore_negative_data:
 			num_classes = len(_keywords)
 		else:
@@ -205,6 +205,7 @@ class ClassifierData:
 			if self._start_token is not None:
 				self._start_token = self._start_token.lower()
 		self._num_files_processed = -1
+		self._processed_data_files_fp = open(os.path.join(self._dump_dir, "processed_data_files.txt"), 'w')
 		self.load_next_file()
 		self._indexer = indexer
 		self._current_epoch = 0
@@ -216,6 +217,8 @@ class ClassifierData:
 
 	def load_next_file(self):
 		print(self._file_list[self._next_file])
+		self._processed_data_files_fp.write("%s\r\n"%self._file_list[self._next_file])
+		self._processed_data_files_fp.flush();
 		self._num_files_processed += 1
 		self._cur_list = self._gen_data_from_file_fcn(self, self._file_list[self._next_file],
 																				keywords=self._keywords,
@@ -242,7 +245,7 @@ class ClassifierData:
 
 
 		if self._dump_num_batches > 0:
-			mb_dump_file = open(os.path.join(self._mimibatch_dump_dir, "mb_dump_%05d.txt"%self._dump_num_batches ),'w')
+			mb_dump_file = open(os.path.join(self._dump_dir, "mb_dump_%05d.txt" % self._dump_num_batches), 'w')
 			self._dump_num_batches-=1
 		else:
 			mb_dump_file = None
