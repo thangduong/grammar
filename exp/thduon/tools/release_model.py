@@ -1,5 +1,6 @@
 # build release package
 from shell_command import shell_call
+import framework.utils.common as utils
 import sys
 import os
 paramsfile = sys.argv[1]
