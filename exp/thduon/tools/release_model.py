@@ -14,7 +14,7 @@ else:
 	keywords_cmd = ''
 params_cmd = 'python3 %s/params2json.py %s' % (script_path, paramsfile)
 
-params = utils.load_param_file(FLAGS.paramsfile)
+params = utils.load_param_file(paramsfile)
 model_name = params['model_name']
 
 release_dir_name = model_name
