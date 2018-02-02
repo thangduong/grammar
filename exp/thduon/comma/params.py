@@ -1,7 +1,7 @@
 import os
 
 
-model_name = 'commaV42'
+model_name = 'commaV44'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
@@ -20,6 +20,7 @@ params = { 'model_name': model_name,
 					 'batch_size': 8192,
 					 'embedding_keep_prob': .8,
 					 'learning_rate': 0.0001,
+					 'all_lowercase': True,
 					 'keywords': [','],
 					 'mini_batches_between_checkpoint': 100,
 					 'embedding_wd': 0.0001,                           # L2 WD regularization constant
