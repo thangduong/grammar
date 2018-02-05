@@ -75,7 +75,7 @@ class Data(BaseDataObject):
 		self._current_epoch = -1
 		self._filelist = filelist
 		self._debug_write_count = 0
-		self._debug_write_count_max = 1000000
+		self._debug_write_count_max = utils.get_dict_value(params, 'debug_write_count_max', 1000000)
 		self._output_dump_dir = utils.get_dict_value(params, 'output_location', '.')
 		self._debug_file = open(os.path.join(self._output_dump_dir, 'minibatch_dump.txt'),'w')
 		self._processed_files = open(os.path.join(self._output_dump_dir, 'processed_files.txt'),'w')
@@ -83,7 +83,7 @@ class Data(BaseDataObject):
 		self.advance_file()
 
 	def advance_file(self):
-		self._current_file += 1
+		self._current_file = (self._current_file + 1)%(len(self._filelist))
 		if self._current_file == 0:
 			self._current_epoch += 1
 		self._processed_files.write("%s %s %s\r\n"%(self._current_epoch,
