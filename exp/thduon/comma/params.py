@@ -1,17 +1,17 @@
 import os
 
 
-model_name = 'commaV40'
+model_name = 'commaV41'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
 					 'num_words_before': 10,
 					 'num_words_after': 10,
-					 'embedding_size': 500,
-					 'conv_num_features': [[200, 200, 200], [200]],
-					 'conv_widths': [[2, 3, 4], [3]],
+					 'embedding_size': 300,
+					 'conv_num_features': [[300,300,300,300,300,300]],
+					 'conv_widths': [[3,3,3,3,3,3]],
 					 'use_no_conv_path': True,                       # enable embedding pass through to second stage
-					 'mlp_config': [512],
+					 'mlp_config': [512,256],
 					 'bipass_conv': False,
 					 'mlp_activations': 'sigmoid',
 					 'embedding_device': '/cpu:0',
