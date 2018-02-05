@@ -1,15 +1,15 @@
 import os
 
 
-model_name = 'commaV44'
+model_name = 'commaV45'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
 					 'num_words_before': 10,
 					 'num_words_after': 10,
-					 'embedding_size': 500,
-					 'conv_num_features': [[500, 500, 500, 500, 500]],
-					 'conv_widths': [[2,2,2,2,2]],
+					 'embedding_size': 300,
+					 'conv_num_features': [[300, 300, 300, 300, 300]],
+					 'conv_widths': [[3,3,3,3,3]],
 					 'conv_keep_probs': None,
 					 'use_no_conv_path': True,                       # enable embedding pass through to second stage
 					 'mlp_config': [512],
