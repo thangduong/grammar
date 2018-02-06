@@ -1,24 +1,29 @@
 from framework.utils.data.text_indexer import TextIndexer
 from word_classifier.data import ClassifierData
 from framework.evaluator import Evaluator
+from shell_command import shell_call
 import framework.utils.common as utils
 from time import time
 import numpy as np
 import os
 import sys
 
-params = utils.load_param_file(sys.argv[1])#'output/determinerCCNNV7/params.py')
-#params = utils.load_param_file('params.py')
+params = utils.load_param_file(sys.argv[1])
+
 params['num_classes'] = len(params['keywords'])+1
+release_cmd = 'python3 ../tools/release_model.py %s' % sys.argv[1]
+shell_call(release_cmd)
 vocab_file = os.path.join(utils.get_dict_value(params,'output_location'), 'vocab.pkl')
+release_dir = os.path.join(utils.get_dict_value(params,'output_location'), params['model_name'])
+graphdef_file = os.path.join(release_dir, params['model_name'] + '.graphdef')
 ckpt = os.path.join(utils.get_dict_value(params,'output_location'),
 										utils.get_dict_value(params, 'model_name') + '.ckpt')
 
-e = Evaluator.load2(ckpt)
+e = Evaluator.load_graphdef(graphdef_file)
 e.dump_variable_sizes()
 i = TextIndexer.from_file(vocab_file)
 
-test_data = ClassifierData.get_data(base_dir='/mnt/work/test_data.tok2',params=params)
+test_data = ClassifierData.get_data_from_dirs(['/mnt/work/training_data/statmt.tokenized/devtest'],params=params)
 model_results = []
 
 timestr = str(int(time()))

@@ -1,7 +1,7 @@
 import os
 
 
-model_name = 'determinerCCNNV57'
+model_name = 'determinerCCNNV58'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
@@ -20,14 +20,14 @@ params = { 'model_name': model_name,
 					 'char_use_no_conv_path': True,
 					 'use_no_conv_path': True,                       # enable embedding pass through to second stage
 					 'start_sentence_synthetic_capital_and_lowercase': True,
-					 'all_lowercase': False,
+					 'all_lowercase': True,
 					 'lowercase_char_path': False,
 					 'mlp_config': [300, 100],
 					 'bipass_conv': False,
 					 'mlp_activations': 'sigmoid',
 					 'batch_size': 1024*4,
 					 'learning_rate': 0.0001,
-					 'keywords': ['a','an','the', 'A', 'An', 'The'],
+					 'keywords': ['a','an','the'],
 					 'mini_batches_between_checkpoint': 100,
 					 'embedding_device': '/cpu:0',
 #					 'min_vocab_freq': 50,
@@ -44,5 +44,5 @@ params = { 'model_name': model_name,
 					 'word_bias_wd_regularization': 0.001,                           # L2 WD regularization constant
 					 'enable_regularization': True,
 					 'training_data_dir': '/mnt/work/training_data/statmt.tokenized/train',
-					 'vocab_file': '/mnt/work/training_data.tok4/vocab/vocab.50.txt',
+					 'vocab_file': '/mnt/work/training_data/statmt.tokenized/train/vocab/lowercase_vocab.50.txt',
 					 }

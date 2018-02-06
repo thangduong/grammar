@@ -349,64 +349,30 @@ class ClassifierData:
 		return self._current_index
 
 	@staticmethod
-	def get_training_data(base_dir='/mnt/work/tokenized_training_data', indexer=None,
-															 params=None,
-															 gen_data_from_file_fcn=_gen_data_from_file,
-															 gen_data_fcn=_gen_data):
-		#		sub_path = 'alltrain'
-		data_files = os.listdir(base_dir)
-		data_files = [os.path.join(base_dir, x) for x in data_files if os.path.isfile(os.path.join(base_dir,x))]
+	def get_data_from_dirs(dir_list, indexer=None, params=None, gen_data_from_file_fcn=_gen_data_from_file, gen_data_fcn=_gen_data):
+		data_files = []
+		for dir in dir_list:
+			cur_data_files = os.listdir(dir)
+			data_files += [os.path.join(dir, x) for x in cur_data_files if os.path.isfile(os.path.join(dir,x))]
 		return ClassifierData(file_list=data_files, indexer=indexer, params=params,
 													gen_data_from_file_fcn=gen_data_from_file_fcn,
 													gen_data_fcn=gen_data_fcn)
-
 	@staticmethod
-	def get_data(base_dir='/mnt/work/tokenized_training_data', indexer=None,
-															 params=None,
-															 gen_data_from_file_fcn=_gen_data_from_file,
-															 gen_data_fcn=_gen_data):
-		#		sub_path = 'alltrain'
-		data_files = os.listdir(base_dir)
-		data_files = [os.path.join(base_dir, x) for x in data_files if os.path.isfile(os.path.join(base_dir,x))]
-		return ClassifierData(file_list=data_files, indexer=indexer, params=params,
-													gen_data_from_file_fcn=gen_data_from_file_fcn,
-													gen_data_fcn=gen_data_fcn)
-
-	@staticmethod
-	def get_monolingual_training(base_dir = '/mnt/work/1-billion-word-language-modeling-benchmark', indexer=None, params=None,
-							 gen_data_from_file_fcn = _gen_data_from_file,
-							 gen_data_fcn = _gen_data):
-		sub_path = 'training-monolingual.tokenized.shuffled'
-#		sub_path = 'alltrain'
-		data_files = os.listdir(os.path.join(base_dir, sub_path))
-		data_files = [os.path.join(base_dir, sub_path, x) for x in data_files]
-		return ClassifierData(file_list = data_files, indexer=indexer, params=params,
-							 gen_data_from_file_fcn = gen_data_from_file_fcn,
-							 gen_data_fcn = gen_data_fcn)
-
-	@staticmethod
-	def get_monolingual_test(base_dir = '/mnt/work/1-billion-word-language-modeling-benchmark', indexer=None, params=None,
-							 gen_data_from_file_fcn = _gen_data_from_file,
-							 gen_data_fcn = _gen_data):
-		sub_path = 'heldout-monolingual.tokenized.shuffled'
-		data_files = os.listdir(os.path.join(base_dir, sub_path))
-		data_files = [os.path.join(base_dir, sub_path, x) for x in data_files]
-		return ClassifierData(file_list = data_files, indexer=indexer, params=params,
-							 gen_data_from_file_fcn = gen_data_from_file_fcn,
-							 gen_data_fcn = gen_data_fcn)
-
-	@staticmethod
-	def get_wiki_test(base_dir = '/mnt/work/1-billion-word-language-modeling-benchmark', indexer=None, params=None,
-							 gen_data_from_file_fcn = _gen_data_from_file,
-							 gen_data_fcn = _gen_data):
-		sub_path = 'wiki'
-		data_files = os.listdir(os.path.join(base_dir, sub_path))
-		data_files = [os.path.join(base_dir, sub_path, x) for x in data_files]
-		print(data_files)
-		return ClassifierData(file_list = data_files, indexer=indexer, params=params,
-							 gen_data_from_file_fcn = gen_data_from_file_fcn,
-							 gen_data_fcn = gen_data_fcn)
-
+	def get_data(params, type='training', indexer=None, params=None, gen_data_from_file_fcn=_gen_data_from_file, gen_data_fcn=_gen_data):
+		data_dir = params['data_dir']
+		if type == 'training':
+			data_dir = os.path.join(data_dir, 'train')
+		elif type == 'test':
+			data_dir = os.path.join(data_dir, 'test')
+		elif type == 'devtest':
+			data_dir = os.path.join(data_dir, 'devtest')
+		elif type == 'valid':
+			data_dir = os.path.join(data_dir, 'valid')
+		return ClassifierData.get_data_from_dirs([data_dir],
+																						 indexer=indexer,
+																						 params=params,
+																						 gen_data_from_file_fcn=gen_data_from_file_fcn,
+																						 gen_data_fcn=gen_data_fcn)
 
 #result = gen_data_from_file('/mnt/work/1-billion-word-language-modeling-benchmark/training-monolingual.tokenized.shuffled/news.en-00001-of-00100')
 #for x in result:
