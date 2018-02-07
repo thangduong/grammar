@@ -19,7 +19,7 @@ e = Evaluator.load2(ckpt)
 #e.dump_variable_sizes()
 i = TextIndexer.from_file(vocab_file)
 
-test_data = ClassifierData.get_monolingual_test(params=params)
+test_data = ClassifierData.get_data(params=params, type='valid')
 model_results = []
 
 timestr = str(int(time()))

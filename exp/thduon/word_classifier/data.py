@@ -357,18 +357,24 @@ class ClassifierData:
 		return ClassifierData(file_list=data_files, indexer=indexer, params=params,
 													gen_data_from_file_fcn=gen_data_from_file_fcn,
 													gen_data_fcn=gen_data_fcn)
+
 	@staticmethod
-	def get_data(params, type='training', indexer=None, params=None, gen_data_from_file_fcn=_gen_data_from_file, gen_data_fcn=_gen_data):
-		data_dir = params['data_dir']
-		if type == 'training':
-			data_dir = os.path.join(data_dir, 'train')
-		elif type == 'test':
-			data_dir = os.path.join(data_dir, 'test')
-		elif type == 'devtest':
-			data_dir = os.path.join(data_dir, 'devtest')
-		elif type == 'valid':
-			data_dir = os.path.join(data_dir, 'valid')
-		return ClassifierData.get_data_from_dirs([data_dir],
+	def get_data(params, type='train', indexer=None, gen_data_from_file_fcn=_gen_data_from_file, gen_data_fcn=_gen_data):
+		data_dirs = params['data_dir']
+		if not isinstance(data_dirs, list):
+			data_dirs = [data_dirs]
+		all_data_dirs = []
+		for data_dir in data_dirs:
+			if type == 'train':
+				data_dir = os.path.join(data_dir, 'train')
+			elif type == 'test':
+				data_dir = os.path.join(data_dir, 'test')
+			elif type == 'devtest':
+				data_dir = os.path.join(data_dir, 'devtest')
+			elif type == 'valid':
+				data_dir = os.path.join(data_dir, 'valid')
+			all_data_dirs.append(data_dir)
+		return ClassifierData.get_data_from_dirs(all_data_dirs,
 																						 indexer=indexer,
 																						 params=params,
 																						 gen_data_from_file_fcn=gen_data_from_file_fcn,

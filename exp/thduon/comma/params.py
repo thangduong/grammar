@@ -1,7 +1,7 @@
 import os
 
 
-model_name = 'commaV45'
+model_name = 'commaV46'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
@@ -25,6 +25,6 @@ params = { 'model_name': model_name,
 					 'embedding_wd': 0.0001,                           # L2 WD regularization constant
 					 'start_token': '<s>',
 					 'enable_regularization': True,
-					 'monolingual_dir': '/mnt/work/1-billion-word-language-modeling-benchmark',
-					 'vocab_file': '/mnt/work/1-billion-word-language-modeling-benchmark/1b_word_vocab.txt'
+					 'data_dir': '/mnt/work/training_data/statmt.tokenized',
+					 'vocab_file': '/mnt/work/training_data/statmt.tokenized/train/vocab/lowercase_vocab.50.txt',
 					 }
