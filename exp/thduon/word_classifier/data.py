@@ -98,8 +98,9 @@ def _gen_data(dataobj, tokens, keywords,
 			if last_tok == dataobj._start_token \
 				and dataobj._start_sentence_synthetic_capital_and_lowercase \
 				and	not dataobj._all_lowercase:
-				word_after = tokens[toki+1].title()
-				n1.append([tokens[before_idx:toki] + [word_after] + tokens[toki+2:after_idx], idx + class_offset])#tokens[before_idx:toki] + tokens[toki+1:after_idx])
+				if not tokens[toki+1][0].isupper():
+					word_after = tokens[toki+1].title()
+					n1.append([tokens[before_idx:toki] + [word_after] + tokens[toki+2:after_idx], idx + class_offset])#tokens[before_idx:toki] + tokens[toki+1:after_idx])
 
 			n2.append(tokens[(before_idx + 1):after_idx])
 			n2.append(tokens[(before_idx):(after_idx-1)])
