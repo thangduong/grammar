@@ -2,6 +2,7 @@ import os
 import random
 import framework.utils.common as utils
 import math
+from time import time
 
 def has_alphanumeric(input_string):
 	"""
@@ -206,7 +207,7 @@ class ClassifierData:
 			if self._start_token is not None:
 				self._start_token = self._start_token.lower()
 		self._num_files_processed = -1
-		self._processed_data_files_fp = open(os.path.join(self._dump_dir, "processed_data_files.txt"), 'w')
+		self._processed_data_files_fp = open(os.path.join(self._dump_dir, "processed_data_files.%s.txt"%time()), 'w')
 		self.load_next_file()
 		self._indexer = indexer
 		self._current_epoch = 0
@@ -219,7 +220,7 @@ class ClassifierData:
 	def load_next_file(self):
 		print(self._file_list[self._next_file])
 		self._processed_data_files_fp.write("%s\r\n"%self._file_list[self._next_file])
-		self._processed_data_files_fp.flush();
+		self._processed_data_files_fp.flush()
 		self._num_files_processed += 1
 		self._cur_list = self._gen_data_from_file_fcn(self, self._file_list[self._next_file],
 																				keywords=self._keywords,
