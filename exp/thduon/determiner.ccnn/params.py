@@ -1,7 +1,7 @@
 import os
 
 
-model_name = 'determinerCCNNV66'
+model_name = 'determinerCCNNV68'
 params = { 'model_name': model_name,
 					 'output_location': './output/%s/'%model_name,
 					 'null_sample_factor': 0,  # <0= equal null as non null per sentence, 0 = don't do anything, >0 = factor
@@ -27,6 +27,7 @@ params = { 'model_name': model_name,
 					 'mlp_activations': 'sigmoid',
 					 'batch_size': 1024*4,
 					 'learning_rate': 0.0001,
+					 'also_remove_end_of_sentence_period': True,
 					 'keywords': ['a','an','the', 'A', 'An', 'The'],
 					 'mini_batches_between_checkpoint': 100,
 					 'embedding_device': '/cpu:0',

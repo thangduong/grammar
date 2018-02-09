@@ -163,6 +163,14 @@ def _gen_data_from_file(dataobj, filename, keywords=[','], num_before=5, num_aft
 													add_redundant_keyword_data=add_redundant_keyword_data,
 													use_negative_only_data=use_negative_only_data,
 													ignore_negative_data=ignore_negative_data)
+			if tokens[-1]=='.' and dataobj._also_remove_end_of_sentence_period:
+				yield from gen_data_fcn(dataobj, tokens[0:-1], keywords=keywords,
+																num_before=num_before, num_after=num_after,
+																pad_tok=pad_tok, null_sample_factor=null_sample_factor,
+																add_redundant_keyword_data=add_redundant_keyword_data,
+																use_negative_only_data=use_negative_only_data,
+																ignore_negative_data=ignore_negative_data)
+
 
 class ClassifierData:
 	def __init__(self, file_list, indexer=None, params=None,
@@ -183,6 +191,7 @@ class ClassifierData:
 		else:
 			self._keywords = _keywords
 
+		self._also_remove_end_of_sentence_period = utils.get_dict_value(params, 'also_remove_end_of_sentence_period', False)
 		self._num_before = utils.get_dict_value(params, 'num_words_before', 5)
 		self._num_after = utils.get_dict_value(params, 'num_words_after', 5)
 		self._null_sample_factor = utils.get_dict_value(params, 'null_sample_factor', 0)
