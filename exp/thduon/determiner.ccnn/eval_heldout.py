@@ -24,6 +24,7 @@ e.dump_variable_sizes()
 i = TextIndexer.from_file(vocab_file)
 
 test_data = ClassifierData.get_data_from_dirs(['/mnt/work/training_data/statmt.tokenized/valid'],params=params)
+#test_data = ClassifierData.get_data(params=params)
 model_results = []
 
 timestr = str(int(time()))

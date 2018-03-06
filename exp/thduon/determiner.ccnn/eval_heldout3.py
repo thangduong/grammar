@@ -22,7 +22,8 @@ e.dump_variable_sizes()
 i = TextIndexer.from_file(vocab_file)
 
 #test_data = ClassifierData.get_data_from_dirs(['/mnt/work/training_data/enron.tokenized/valid'],params=params)
-test_data = ClassifierData.get_data_from_dirs(['/mnt/work/training_data/enron.test.tokenized'],params=params)
+#test_data = ClassifierData.get_data_from_dirs(['/mnt/work/training_data/enron.test.tokenized'],params=params)
+test_data = ClassifierData(file_list=['/mnt/work/training_data/oxoml-enron-sentsentences.test.v2.tokenized.txt'], params=params)
 model_results = []
 
 timestr = str(int(time()))
@@ -43,6 +44,9 @@ total_unk = 0
 all_unk_words = []
 
 right = total = 0
+fefn = '/tmp/eval_heldout3.%s.txt'%time()
+print('writing to %s'%fefn)
+fe = open(fefn,'w')
 for batch_no in range(1):
 	print("WORKING ON BATCH %s" % batch_no)
 	batch = test_data.next_batch(batch_size=200000)
@@ -68,6 +72,9 @@ for batch_no in range(1):
 			model_pick = ground_truth
 			no_right[ground_truth] += 1
 			right += 1
+		else:
+			fe.write('%s\n' % x)
+			fe.flush()
 		if (ground_truth == 1 and pick[0] == 2) or (ground_truth == 2 and pick[0] == 1):
 			print([idx, ground_truth, pick, pickpr, r[0][0]])
 			print([chr(x) for x in word])
@@ -87,7 +94,7 @@ for batch_no in range(1):
 			print(error_scenario)
 			print("ACCURACY = %s" % (right/total))
 			last =idx
-
+fe.close()
 #for x in model_results:
 #	print(x)
 print("recall = %s"%[x/max(y,1) for x,y in zip(no_right,no_total)])
