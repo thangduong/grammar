@@ -4,9 +4,6 @@
 [submodule "tokenex"]
 	path = tokenex
 	url = ssh://dlwteam@vs-ssh.visualstudio.com:22/DefaultCollection/OfficeAnalytics/_ssh/tokenex
-[submodule "NeuralRewriting"]
-	path = NeuralRewriting
-	url = ssh://msrnlp@vs-ssh.visualstudio.com:22/DefaultCollection/_ssh/NeuralRewriting
 [submodule "grammar_server"]
 	path = grammar_server
 	url = ssh://dlwteam@vs-ssh.visualstudio.com:22/DefaultCollection/OfficeAnalytics/_ssh/grammar_server
